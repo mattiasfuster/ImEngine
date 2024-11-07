@@ -1,5 +1,5 @@
 <component name="CopyrightManager">
-  <settings>
+  <settings default="ImEngineCopyright">
     <LanguageOptions name="C++">
       <option name="fileTypeOverride" value="3" />
       <option name="separateBefore" value="true" />
