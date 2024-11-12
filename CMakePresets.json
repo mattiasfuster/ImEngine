@@ -1,0 +1,85 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 29
+  },
+  "configurePresets": [
+    {
+      "name": "windows-base",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/out/build/${presetName}",
+      "installDir": "${sourceDir}/out/install/${presetName}",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "C://Program Files//LLVM//bin//clang-cl.exe",
+        "CMAKE_CXX_COMPILER": "C://Program Files//LLVM//bin//clang-cl.exe",
+        "CMAKE_CXX_STANDARD": "20",
+        "CMAKE_MAKE_PROGRAM": "C:/ProgramData/chocolatey/lib/ninja/tools/ninja.exe"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "x64-debug-engine",
+      "displayName": "x64-debug-engine",
+      "inherits": "windows-base",
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "x64-release-engine",
+      "displayName": "x64-release-engine",
+      "inherits": "windows-base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "x64-debug-editor",
+      "displayName": "x64-debug-editor",
+      "inherits": "windows-base",
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "x64-release-editor",
+      "displayName": "x64-release-editor",
+      "inherits": "windows-base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "x64-debug-engine",
+      "configurePreset": "x64-debug-engine"
+    },
+    {
+      "name": "x64-release-engine",
+      "configurePreset": "x64-release-engine"
+    },
+    {
+      "name": "x64-debug-editor",
+      "configurePreset": "x64-debug-editor"
+    },
+    {
+      "name": "x64-release-editor",
+      "configurePreset": "x64-release-editor"
+    }
+  ]
+}
