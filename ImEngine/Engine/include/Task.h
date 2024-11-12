@@ -27,10 +27,18 @@
  * SOFTWARE.                                                                                                          *
  **********************************************************************************************************************/
 
-#include <iostream>
+//
+// Created by m.fuster on 12/11/2024.
+//
 
-int main()
+#ifndef TASK_H
+#define TASK_H
+
+class Task
 {
-    std::cout << "Hello World!\n";
-    system("pause");
+  public:
+    Task();
+    ~Task();
 }
+
+#endif //TASK_H

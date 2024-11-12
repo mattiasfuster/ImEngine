@@ -27,10 +27,8 @@
  * SOFTWARE.                                                                                                          *
  **********************************************************************************************************************/
 
-#include <iostream>
+//
+// Created by m.fuster on 12/11/2024.
+//
 
-int main()
-{
-    std::cout << "Hello World!\n";
-    system("pause");
-}
+#include "Task.h"

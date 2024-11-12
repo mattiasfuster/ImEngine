@@ -27,10 +27,19 @@
  * SOFTWARE.                                                                                                          *
  **********************************************************************************************************************/
 
-#include <iostream>
+//
+// Created by m.fuster on 12/11/2024.
+//
 
-int main()
-{
-    std::cout << "Hello World!\n";
-    system("pause");
-}
+#ifndef TEMP_H
+#define TEMP_H
+
+
+
+class Temp {
+
+};
+
+
+
+#endif //TEMP_H
