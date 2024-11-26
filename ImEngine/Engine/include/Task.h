@@ -27,18 +27,11 @@
  * SOFTWARE.                                                                                                          *
  **********************************************************************************************************************/
 
-//
-// Created by m.fuster on 12/11/2024.
-//
+#pragma once
 
-#ifndef TASK_H
-#define TASK_H
-
-class Task
+class IMENGINE_ENGINE_API Task
 {
-  public:
+public:
     Task();
     ~Task();
-}
-
-#endif //TASK_H
+};

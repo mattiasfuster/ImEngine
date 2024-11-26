@@ -36,7 +36,8 @@
 
 
 
-class Temp {
+class Temp
+{
 
 };
 

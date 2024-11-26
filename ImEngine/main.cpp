@@ -28,9 +28,11 @@
  **********************************************************************************************************************/
 
 #include <iostream>
+#include "Task.h"
 
 int main()
 {
     std::cout << "Hello World!\n";
+    const auto task = Task();
     system("pause");
 }

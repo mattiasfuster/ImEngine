@@ -32,3 +32,13 @@
 //
 
 #include "Task.h"
+
+Task::Task()
+{
+    std::cout << "Task::Task()" << std::endl;
+}
+
+Task::~Task()
+{
+    std::cout << "Task::~Task()" << std::endl;
+}
