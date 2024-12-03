@@ -1,6 +1,4 @@
-#ifndef PCH_H
-#define PCH_H
-
+#pragma once
 #include <iostream>
 #include <string>
 #include <vector>
@@ -11,6 +9,12 @@
 #include <functional>
 #include <utility>
 
-#include "ImEngineLibrary.h"
-
-#endif // PCH_H
+#ifdef _WIN32
+    #ifdef IMENGINE_ENGINE_EXPORTS
+        #define IMENGINE_ENGINE_API __declspec(dllexport)
+    #else
+        #define IMENGINE_ENGINE_API __declspec(dllimport)
+    #endif
+#else
+    #define IMENGINE_API
+#endif
