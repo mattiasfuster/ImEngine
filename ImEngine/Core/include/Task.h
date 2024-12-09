@@ -28,7 +28,7 @@
  **********************************************************************************************************************/
 #pragma once
 
-class IMENGINE_ENGINE_API Task
+class IMENGINE_CORE_API Task
 {
 public:
     Task();
