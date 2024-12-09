@@ -12,12 +12,18 @@
       "binaryDir": "${sourceDir}/out/build/${presetName}",
       "installDir": "${sourceDir}/out/install/${presetName}",
       "cacheVariables": {
-        "CMAKE_C_COMPILER": "C://Program Files//LLVM//bin//clang-cl.exe",
-        "CMAKE_CXX_COMPILER": "C://Program Files//LLVM//bin//clang-cl.exe",
+        "CMAKE_C_COMPILER": "C://Program Files//LLVM//bin//clang.exe",
+        "CMAKE_CXX_COMPILER": "C://Program Files//LLVM//bin//clang++.exe",
         "CMAKE_CXX_STANDARD": "20",
-        "CMAKE_MAKE_PROGRAM": "C:/ProgramData/chocolatey/lib/ninja/tools/ninja.exe",
-        "CMAKE_MT": "C:/Program Files (x86)/Windows Kits/10/bin/10.0.26100.0/x64/mt.exe",
-        "CMAKE_CXX_STANDARD_REQUIRED": "ON"
+        "CMAKE_CXX_STANDARD_REQUIRED": "ON",
+        "CMAKE_LINKER": "C:/Program Files/LLVM/bin/lld.exe",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "CMAKE_C_COMPILER_LAUNCHER": "${sourceDir}/ImEngine/Tools/ccache.exe",
+        "CMAKE_CXX_COMPILER_LAUNCHER": "${sourceDir}/ImEngine/Tools/ccache.exe"
+      },
+      "environment": {
+        "CC": "ccache clang",
+        "CXX": "ccache clang++"
       },
       "condition": {
         "type": "equals",
@@ -26,8 +32,8 @@
       }
     },
     {
-      "name": "x64-debug",
-      "displayName": "x64-debug",
+      "name": "x64-windows-debug",
+      "displayName": "x64-windows-debug",
       "inherits": "windows-base",
       "architecture": {
         "value": "x64",
@@ -38,8 +44,8 @@
       }
     },
     {
-      "name": "x64-release",
-      "displayName": "x64-release",
+      "name": "x64-windows-release",
+      "displayName": "64-windows-release",
       "inherits": "windows-base",
       "architecture": {
         "value": "x64",
@@ -52,12 +58,12 @@
   ],
   "buildPresets": [
     {
-      "name": "x64-debug",
-      "configurePreset": "x64-debug"
+      "name": "x64-windows-debug",
+      "configurePreset": "x64-windows-debug"
     },
     {
-      "name": "x64-release",
-      "configurePreset": "x64-release"
+      "name": "x64-windows-release",
+      "configurePreset": "x64-windows-release"
     }
   ]
 }
