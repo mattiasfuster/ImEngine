@@ -17,13 +17,7 @@
         "CMAKE_CXX_STANDARD": "20",
         "CMAKE_CXX_STANDARD_REQUIRED": "ON",
         "CMAKE_LINKER": "C:/Program Files/LLVM/bin/lld.exe",
-        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
-        "CMAKE_C_COMPILER_LAUNCHER": "${sourceDir}/ImEngine/Tools/ccache.exe",
-        "CMAKE_CXX_COMPILER_LAUNCHER": "${sourceDir}/ImEngine/Tools/ccache.exe"
-      },
-      "environment": {
-        "CC": "ccache clang",
-        "CXX": "ccache clang++"
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
       },
       "condition": {
         "type": "equals",
