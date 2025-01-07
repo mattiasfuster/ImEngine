@@ -19,6 +19,10 @@
         "CMAKE_LINKER": "C:/Program Files/LLVM/bin/lld.exe",
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
       },
+      "toolset": {
+        "value": "ClangCL",
+        "strategy": "external"
+      },
       "condition": {
         "type": "equals",
         "lhs": "${hostSystemName}",
@@ -39,7 +43,7 @@
     },
     {
       "name": "x64-windows-release",
-      "displayName": "64-windows-release",
+      "displayName": "x64-windows-release",
       "inherits": "windows-base",
       "architecture": {
         "value": "x64",
@@ -48,16 +52,6 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
       }
-    }
-  ],
-  "buildPresets": [
-    {
-      "name": "x64-windows-debug",
-      "configurePreset": "x64-windows-debug"
-    },
-    {
-      "name": "x64-windows-release",
-      "configurePreset": "x64-windows-release"
     }
   ]
 }

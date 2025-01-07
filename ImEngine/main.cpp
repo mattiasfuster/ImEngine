@@ -1,41 +1,28 @@
-/**********************************************************************************************************************
- * MIT License                                                                                                        *
- *                                                                                                                    *
- * Copyright (c) 2024 FUSTER Mattias                                                                                  *
- *                                                                                                                    *
- * This software utilizes code from the following GitHub repositories, which are also licensed under the MIT License: *
- *                                                                                                                    *
- * - [ImGui](https://github.com/ocornut/imgui)                                                                        *
- * - [GLFW](https://github.com/glfw/glfw)                                                                             *
- *                                                                                                                    *
- * Permission is hereby granted, free of charge, to any person obtaining a copy                                       *
- * of this software and associated documentation files (the "Software"), to deal                                      *
- * in the Software without restriction, including without limitation the rights                                       *
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell                                          *
- * copies of the Software, and to permit persons to whom the Software is                                              *
- * furnished to do so, subject to the following conditions:                                                           *
- *                                                                                                                    *
- * The above copyright notice and this permission notice shall be included in all                                     *
- * copies or substantial portions of the Software.                                                                    *
- *                                                                                                                    *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR                                         *
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,                                           *
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE                                        *
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER                                             *
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,                                      *
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE                                      *
- * SOFTWARE.                                                                                                          *
- **********************************************************************************************************************/
+// Dear ImGui: standalone example application for Glfw + Vulkan
 
-#include "ThirdParty/imgui/imgui.h"
-#include "ThirdParty/imgui/backends/imgui_impl_glfw.h"
-#include "ThirdParty/imgui/backends/imgui_impl_vulkan.h"
-#include <cstdio>          // printf, fprintf
-#include <cstdlib>         // abort
+// Learn about Dear ImGui:
+// - FAQ                  https://dearimgui.com/faq
+// - Getting Started      https://dearimgui.com/getting-started
+// - Documentation        https://dearimgui.com/docs (same as your local docs/ folder).
+// - Introduction, links and more at the top of imgui.cpp
+
+// Important note to the reader who wish to integrate imgui_impl_vulkan.cpp/.h in their own engine/app.
+// - Common ImGui_ImplVulkan_XXX functions and structures are used to interface with imgui_impl_vulkan.cpp/.h.
+//   You will use those if you want to use this rendering backend in your engine/app.
+// - Helper ImGui_ImplVulkanH_XXX functions and structures are only used by this example (main.cpp) and by
+//   the backend itself (imgui_impl_vulkan.cpp), but should PROBABLY NOT be used by your own engine/app code.
+// Read comments in imgui_impl_vulkan.h.
+
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_vulkan.h"
+#include <stdio.h>          // printf, fprintf
+#include <stdlib.h>         // abort
 #define GLFW_INCLUDE_NONE
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
+// Volk headers
 #ifdef IMGUI_IMPL_VULKAN_USE_VOLK
 #define VOLK_IMPLEMENTATION
 #include <volk.h>
@@ -65,7 +52,7 @@ static VkPipelineCache          g_PipelineCache = VK_NULL_HANDLE;
 static VkDescriptorPool         g_DescriptorPool = VK_NULL_HANDLE;
 
 static ImGui_ImplVulkanH_Window g_MainWindowData;
-static int                      g_MinImageCount = 2;
+static uint32_t                 g_MinImageCount = 2;
 static bool                     g_SwapChainRebuild = false;
 
 static void glfw_error_callback(int error, const char* description)
@@ -96,35 +83,6 @@ static bool IsExtensionAvailable(const ImVector<VkExtensionProperties>& properti
         if (strcmp(p.extensionName, extension) == 0)
             return true;
     return false;
-}
-
-static VkPhysicalDevice SetupVulkan_SelectPhysicalDevice()
-{
-    uint32_t gpu_count;
-    VkResult err = vkEnumeratePhysicalDevices(g_Instance, &gpu_count, nullptr);
-    check_vk_result(err);
-    IM_ASSERT(gpu_count > 0);
-
-    ImVector<VkPhysicalDevice> gpus;
-    gpus.resize(gpu_count);
-    err = vkEnumeratePhysicalDevices(g_Instance, &gpu_count, gpus.Data);
-    check_vk_result(err);
-
-    // If a number >1 of GPUs got reported, find discrete GPU if present, or use first one available. This covers
-    // most common cases (multi-gpu/integrated+dedicated graphics). Handling more complicated setups (multiple
-    // dedicated GPUs) is out of scope of this sample.
-    for (VkPhysicalDevice& device : gpus)
-    {
-        VkPhysicalDeviceProperties properties;
-        vkGetPhysicalDeviceProperties(device, &properties);
-        if (properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
-            return device;
-    }
-
-    // Use first GPU (Integrated) is a Discrete one is not available.
-    if (gpu_count > 0)
-        return gpus[0];
-    return VK_NULL_HANDLE;
 }
 
 static void SetupVulkan(ImVector<const char*> instance_extensions)
@@ -190,23 +148,12 @@ static void SetupVulkan(ImVector<const char*> instance_extensions)
     }
 
     // Select Physical Device (GPU)
-    g_PhysicalDevice = SetupVulkan_SelectPhysicalDevice();
+    g_PhysicalDevice = ImGui_ImplVulkanH_SelectPhysicalDevice(g_Instance);
+    IM_ASSERT(g_PhysicalDevice != VK_NULL_HANDLE);
 
     // Select graphics queue family
-    {
-        uint32_t count;
-        vkGetPhysicalDeviceQueueFamilyProperties(g_PhysicalDevice, &count, nullptr);
-        VkQueueFamilyProperties* queues = (VkQueueFamilyProperties*)malloc(sizeof(VkQueueFamilyProperties) * count);
-        vkGetPhysicalDeviceQueueFamilyProperties(g_PhysicalDevice, &count, queues);
-        for (uint32_t i = 0; i < count; i++)
-            if (queues[i].queueFlags & VK_QUEUE_GRAPHICS_BIT)
-            {
-                g_QueueFamily = i;
-                break;
-            }
-        free(queues);
-        IM_ASSERT(g_QueueFamily != (uint32_t)-1);
-    }
+    g_QueueFamily = ImGui_ImplVulkanH_SelectQueueFamilyIndex(g_PhysicalDevice);
+    IM_ASSERT(g_QueueFamily != (uint32_t)-1);
 
     // Create Logical Device (with 1 queue)
     {

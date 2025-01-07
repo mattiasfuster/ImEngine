@@ -1,48 +1,49 @@
 cmake_minimum_required(VERSION 3.10)
-
-# Définir le nom du projet
 project(ImEngine-ThirdParty)
 
-# Spécifier la version de Vulkan SDK
-set(VULKAN_SDK "C:/VulkanSDK/1.3.296.0")
-set(Vulkan_INCLUDE_DIR "${VULKAN_SDK}/Include")
-set(Vulkan_LIBRARY "${VULKAN_SDK}/Lib")
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Debug CACHE STRING "" FORCE)
+endif()
 
-# Assurez-vous que Vulkan est trouvé
-find_package(Vulkan REQUIRED)
+set(CMAKE_CXX_STANDARD 11)
+set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DVK_PROTOTYPES")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DVK_PROTOTYPES")
 
-# Inclure Vulkan
-include_directories(${Vulkan_INCLUDE_DIR})
-link_directories(${Vulkan_LIBRARY})
+# GLFW
+# Assurez-vous que le répertoire de GLFW est valide
+set(GLFW_DIR ${CMAKE_CURRENT_SOURCE_DIR}/glfw)
 
-# Définir les répertoires de GLFW et ImGui
-set(GLFW_DIR glfw-3.4)
-set(IMGUI_DIR imgui)
-
-# Inclure les répertoires de GLFW et ImGui
-include_directories(${GLFW_DIR}/include)
-include_directories(${IMGUI_DIR}/include)  # Inclure le répertoire 'include' d'ImGui
-include_directories(${IMGUI_DIR}/backends)
-
-# Désactiver la construction des exemples/tests de GLFW
+# Ajoutez GLFW comme sous-répertoire
 option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" OFF)
 option(GLFW_BUILD_TESTS "Build the GLFW test programs" OFF)
 option(GLFW_BUILD_DOCS "Build the GLFW documentation" OFF)
 option(GLFW_INSTALL "Generate installation target" OFF)
-option(GLFW_DOCUMENT_INTERNALS "Include internals in documentation" OFF)
 
-# Ajouter GLFW en sous-répertoire
-add_subdirectory(${GLFW_DIR} binary_dir EXCLUDE_FROM_ALL)
+# Incluez les headers GLFW
+include_directories(${GLFW_DIR}/include)
 
-# Rechercher les fichiers source
-file(GLOB sources "imgui/*.cpp")
+# Dear ImGui
+set(IMGUI_DIR imgui)
+include_directories(${IMGUI_DIR} ${IMGUI_DIR}/backends ..)
 
-# Créer la bibliothèque ImEngine-Tools
-add_library(ImEngine-ThirdParty ${sources})
+# Libraries
+find_package(Vulkan REQUIRED)
+#find_library(VULKAN_LIBRARY
+#NAMES vulkan vulkan-1)
+#set(LIBRARIES "glfw;${VULKAN_LIBRARY}")
+#set(LIBRARIES "glfw;Vulkan::Vulkan")
 
-# Lier les bibliothèques avec ImEngine-Tools
-target_link_libraries(ImEngine-ThirdParty glfw Vulkan::Vulkan)
+# Use vulkan headers from glfw:
+include_directories(${GLFW_DIR}/deps)
 
-# Ajouter les threads si nécessaire
-find_package(Threads REQUIRED)
-target_link_libraries(ImEngine-ThirdParty Threads::Threads)
+file(GLOB sources *.cpp)
+
+add_library(ImEngine-ThirdParty ${sources} ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp ${IMGUI_DIR}/backends/imgui_impl_vulkan.cpp ${IMGUI_DIR}/imgui.cpp ${IMGUI_DIR}/imgui_draw.cpp ${IMGUI_DIR}/imgui_demo.cpp ${IMGUI_DIR}/imgui_tables.cpp ${IMGUI_DIR}/imgui_widgets.cpp)
+target_include_directories(ImEngine-ThirdParty
+        PUBLIC
+        ${GLFW_DIR}/include
+        ${IMGUI_DIR}
+        ${IMGUI_DIR}/backends
+        ${GLFW_DIR}/deps
+)
+target_link_libraries(ImEngine-ThirdParty ${GLFW_DIR}/lib-vc2010-64/glfw3.lib Vulkan::Vulkan)
