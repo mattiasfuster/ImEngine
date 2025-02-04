@@ -28,22 +28,17 @@ include_directories(${IMGUI_DIR} ${IMGUI_DIR}/backends ..)
 
 # Libraries
 find_package(Vulkan REQUIRED)
-#find_library(VULKAN_LIBRARY
-#NAMES vulkan vulkan-1)
-#set(LIBRARIES "glfw;${VULKAN_LIBRARY}")
-#set(LIBRARIES "glfw;Vulkan::Vulkan")
 
 # Use vulkan headers from glfw:
 include_directories(${GLFW_DIR}/deps)
 
 file(GLOB sources *.cpp)
 
-add_library(ImEngine-ThirdParty ${sources} ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp ${IMGUI_DIR}/backends/imgui_impl_vulkan.cpp ${IMGUI_DIR}/imgui.cpp ${IMGUI_DIR}/imgui_draw.cpp ${IMGUI_DIR}/imgui_demo.cpp ${IMGUI_DIR}/imgui_tables.cpp ${IMGUI_DIR}/imgui_widgets.cpp)
+add_library(ImEngine-ThirdParty SHARED ${sources} ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp ${IMGUI_DIR}/backends/imgui_impl_vulkan.cpp ${IMGUI_DIR}/imgui.cpp ${IMGUI_DIR}/imgui_draw.cpp ${IMGUI_DIR}/imgui_demo.cpp ${IMGUI_DIR}/imgui_tables.cpp ${IMGUI_DIR}/imgui_widgets.cpp)
 target_include_directories(ImEngine-ThirdParty
-        PUBLIC
-        ${GLFW_DIR}/include
-        ${IMGUI_DIR}
-        ${IMGUI_DIR}/backends
-        ${GLFW_DIR}/deps
+        PUBLIC ${GLFW_DIR}/include
+        PUBLIC ${IMGUI_DIR}
+        PUBLIC ${IMGUI_DIR}/backends
+        PUBLIC ${GLFW_DIR}/deps
 )
 target_link_libraries(ImEngine-ThirdParty ${GLFW_DIR}/lib-vc2010-64/glfw3.lib Vulkan::Vulkan)
