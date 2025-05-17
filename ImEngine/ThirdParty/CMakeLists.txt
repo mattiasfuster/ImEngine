@@ -1,44 +1,66 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.29)
 project(ImEngine-ThirdParty)
 
+# Force Debug build type par défaut (utile pour développement uniquement)
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug CACHE STRING "" FORCE)
 endif()
 
-set(CMAKE_CXX_STANDARD 11)
-set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DVK_PROTOTYPES")
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DVK_PROTOTYPES")
+# C++20 requis
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# GLFW
-# Assurez-vous que le répertoire de GLFW est valide
-set(GLFW_DIR ${CMAKE_CURRENT_SOURCE_DIR}/glfw)
+# Répertoire GLFW
+set(GLFW_DIR ${CMAKE_CURRENT_SOURCE_DIR}/glfw-3.4)
 
-# Ajoutez GLFW comme sous-répertoire
+# Options GLFW désactivées
 option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" OFF)
 option(GLFW_BUILD_TESTS "Build the GLFW test programs" OFF)
 option(GLFW_BUILD_DOCS "Build the GLFW documentation" OFF)
 option(GLFW_INSTALL "Generate installation target" OFF)
 
-# Incluez les headers GLFW
-include_directories(${GLFW_DIR}/include)
+# Ajouter GLFW
+add_subdirectory(${GLFW_DIR})
 
-# Dear ImGui
-set(IMGUI_DIR imgui)
-include_directories(${IMGUI_DIR} ${IMGUI_DIR}/backends ..)
+# Répertoire ImGui
+set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/imgui)
 
-# Libraries
+# Sources ImGui + backends Vulkan & GLFW
+set(IMGUI_SOURCES
+        ${IMGUI_DIR}/imgui.cpp
+        ${IMGUI_DIR}/imgui_demo.cpp
+        ${IMGUI_DIR}/imgui_draw.cpp
+        ${IMGUI_DIR}/imgui_tables.cpp
+        ${IMGUI_DIR}/imgui_widgets.cpp
+        ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
+        ${IMGUI_DIR}/backends/imgui_impl_vulkan.cpp
+)
+
+# Recherche Vulkan SDK
 find_package(Vulkan REQUIRED)
 
-# Use vulkan headers from glfw:
-include_directories(${GLFW_DIR}/deps)
+# Inclure les éventuels .cpp supplémentaires
+file(GLOB THIRD_PARTY_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 
-file(GLOB sources *.cpp)
+# Créer une bibliothèque statique (plus simple pour ImGui)
+add_library(ImEngine-ThirdParty STATIC
+        ${THIRD_PARTY_SOURCES}
+        ${IMGUI_SOURCES}
+)
 
-add_library(ImEngine-ThirdParty SHARED ${sources} ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp ${IMGUI_DIR}/backends/imgui_impl_vulkan.cpp ${IMGUI_DIR}/imgui.cpp ${IMGUI_DIR}/imgui_draw.cpp ${IMGUI_DIR}/imgui_demo.cpp ${IMGUI_DIR}/imgui_tables.cpp ${IMGUI_DIR}/imgui_widgets.cpp)
+# Include dirs
 target_include_directories(ImEngine-ThirdParty
-        PUBLIC ${GLFW_DIR}/include
         PUBLIC ${IMGUI_DIR}
         PUBLIC ${IMGUI_DIR}/backends
+        PUBLIC ${GLFW_DIR}/include
         PUBLIC ${GLFW_DIR}/deps
 )
-target_link_libraries(ImEngine-ThirdParty ${GLFW_DIR}/lib-vc2010-64/glfw3.lib Vulkan::Vulkan)
+
+# Lien avec GLFW et Vulkan
+target_link_libraries(ImEngine-ThirdParty
+        glfw
+        Vulkan::Vulkan
+)
+
+# Définir VK_PROTOTYPES pour les headers Vulkan (optionnel)
+target_compile_definitions(ImEngine-ThirdParty PRIVATE VK_PROTOTYPES)
