@@ -30,27 +30,61 @@
       }
     },
     {
-      "name": "x64-windows-debug",
-      "displayName": "x64-windows-debug",
+      "name": "win64-engine-debug",
+      "displayName": "win64-engine-debug",
       "inherits": "windows-base",
       "architecture": {
         "value": "x64",
         "strategy": "external"
       },
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "IMENGINE_BUILD_ENGINE": "ON"
       }
     },
     {
-      "name": "x64-windows-release",
-      "displayName": "x64-windows-release",
+      "name": "win64-engine-release",
+      "displayName": "win64-engine-release",
       "inherits": "windows-base",
       "architecture": {
         "value": "x64",
         "strategy": "external"
       },
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "IMENGINE_BUILD_ENGINE": "ON"
+      }
+    },
+    {
+      "name": "win64-editor-debug",
+      "displayName": "win64-editor-debug",
+      "inherits": "windows-base",
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "IMENGINE_BUILD_ENGINE": "ON",
+        "IMENGINE_BUILD_EDITOR": "ON"
+      }
+    },
+    {
+      "name": "win64-editor-release",
+      "displayName": "win64-editor-release",
+      "inherits": "windows-base",
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "IMENGINE_BUILD_ENGINE": "ON",
+        "IMENGINE_BUILD_EDITOR": "ON"
       }
     }
   ]

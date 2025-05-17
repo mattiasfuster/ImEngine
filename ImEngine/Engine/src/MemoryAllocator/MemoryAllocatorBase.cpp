@@ -29,15 +29,4 @@
 // Created by damma on 17/05/2025.
 //
 
-#ifndef DEFAULT_H
-#define DEFAULT_H
-
-
-
-class Default {
-
-};
-
-
-
-#endif //DEFAULT_H
+#include "MemoryAllocator/MemoryAllocatorBase.h"

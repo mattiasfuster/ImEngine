@@ -26,11 +26,42 @@
 // SOFTWARE.
 
 //
-// Created by mattiasfuster on 17/05/2025.
+// Created by damma on 17/05/2025.
 //
 
-#include "Engine/include/RuntimeEngine.hpp"
-int main(const int argc, char** argv)
-{
-	RuntimeEngine(argc, argv);
-}
+#ifndef ENGINE_H
+#define ENGINE_H
+#define GLFW_INCLUDE_VULKAN
+#include <GLFW/glfw3.h>
+
+class Engine {
+public:
+	static Engine& Get();
+	~Engine();
+
+	Engine(const Engine&) = delete;
+	Engine& operator=(const Engine&) = delete;
+
+	void Run();
+
+	// Getters
+	[[nodiscard]] GLFWwindow* GetWindow() const { return Window; }
+	[[nodiscard]] VkInstance GetVulkanInstance() const { return VulkanInstance; }
+
+private:
+	Engine();
+	void Init();
+	void InitWindow();
+	void InitVulkan();
+	void MainLoop();
+	void Cleanup();
+
+	GLFWwindow* Window = nullptr;
+	const uint32_t Width = 1280;
+	const uint32_t Height = 720;
+	const std::string WindowTitle = "ImEngine Runtime";
+
+	VkInstance VulkanInstance = VK_NULL_HANDLE;
+};
+
+#endif //ENGINE_H

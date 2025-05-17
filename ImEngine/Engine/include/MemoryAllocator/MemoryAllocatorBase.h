@@ -26,11 +26,33 @@
 // SOFTWARE.
 
 //
-// Created by mattiasfuster on 17/05/2025.
+// Created by damma on 17/05/2025.
 //
 
-#include "Engine/include/RuntimeEngine.hpp"
-int main(const int argc, char** argv)
+#ifndef MEMORYALLOCATORBASE_H
+#define MEMORYALLOCATORBASE_H
+
+template <typename DerivedAllocator>
+class MemoryAllocatorBase
 {
-	RuntimeEngine(argc, argv);
-}
+public:
+	void* allocate(size_t size, size_t alignment = alignof(std::max_align_t))
+	{
+		return static_cast<DerivedAllocator*>(this)->impl_allocate(size, alignment);
+	}
+
+	void deallocate(void* ptr)
+	{
+		static_cast<DerivedAllocator*>(this)->impl_deallocate(ptr);
+	}
+
+	size_t get_used_bytes()
+	{
+		return static_cast<DerivedAllocator*>(this)->impl_get_used_bytes();
+	}
+};
+
+
+
+
+#endif //MEMORYALLOCATORBASE_H

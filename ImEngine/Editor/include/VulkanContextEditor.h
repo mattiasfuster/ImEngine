@@ -29,4 +29,12 @@
 // Created by damma on 17/05/2025.
 //
 
-#include "../include/Default.h"
+#ifndef VULKANCONTEXT_H
+#define VULKANCONTEXT_H
+
+class VulkanContextEditor
+{
+
+};
+
+#endif //VULKANCONTEXT_H

@@ -11,7 +11,7 @@
 #include <mutex>
 
 #ifdef _WIN32
-    #ifdef IMENGINE_CORE_EXPORTS
+    #ifdef IMENGINE_EDITOR_EXPORTS
         #define IMENGINE_CORE_API __declspec(dllexport)
     #else
         #define IMENGINE_CORE_API __declspec(dllimport)

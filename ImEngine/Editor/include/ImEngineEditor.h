@@ -28,9 +28,15 @@
 //
 // Created by mattiasfuster on 17/05/2025.
 //
+#pragma once
 
-#include "Engine/include/RuntimeEngine.hpp"
-int main(const int argc, char** argv)
+class ImEngineEditor
 {
-	RuntimeEngine(argc, argv);
-}
+public :
+	ImEngineEditor();
+	~ImEngineEditor();
+
+	void Init();
+	void Run();
+	void Shutdown();
+};

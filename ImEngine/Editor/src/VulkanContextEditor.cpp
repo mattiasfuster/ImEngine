@@ -26,11 +26,7 @@
 // SOFTWARE.
 
 //
-// Created by mattiasfuster on 17/05/2025.
+// Created by damma on 17/05/2025.
 //
 
-#include "Engine/include/RuntimeEngine.hpp"
-int main(const int argc, char** argv)
-{
-	RuntimeEngine(argc, argv);
-}
+#include "../include/VulkanContextEditor.h"
