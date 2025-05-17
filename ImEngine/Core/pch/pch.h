@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <functional>
 #include <utility>
+#include <mutex>
 
 #ifdef _WIN32
     #ifdef IMENGINE_CORE_EXPORTS
