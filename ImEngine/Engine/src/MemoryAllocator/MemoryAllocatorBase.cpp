@@ -25,8 +25,5 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-//
-// Created by damma on 17/05/2025.
-//
 
 #include "MemoryAllocator/MemoryAllocatorBase.h"

@@ -27,12 +27,20 @@
 
 #include "Engine.h"
 
-int RuntimeEngine(const int argc, char** argv) {
-	try {
+int RuntimeEngine(int argc, char* const argv[]) {
+	try
+	{
 		std::cout << "Running Engine..." << std::endl;
 		Engine::Get().Run();
-	} catch (const std::exception& e) {
-		std::cerr << "Fatal error: " << e.what() << std::endl;
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << "[Error] Fatal error: " << e.what() << std::endl;
+		return EXIT_FAILURE;
+	}
+	catch (...)
+	{
+		std::cerr << "[Error] Unknown fatal error occurred." << std::endl;
 		return EXIT_FAILURE;
 	}
 	return EXIT_SUCCESS;

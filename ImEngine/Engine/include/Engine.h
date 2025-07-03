@@ -29,8 +29,8 @@
 // Created by damma on 17/05/2025.
 //
 
-#ifndef ENGINE_H
-#define ENGINE_H
+#pragma once
+
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
@@ -63,5 +63,3 @@ private:
 
 	VkInstance VulkanInstance = VK_NULL_HANDLE;
 };
-
-#endif //ENGINE_H

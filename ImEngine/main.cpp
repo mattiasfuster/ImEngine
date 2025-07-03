@@ -29,7 +29,8 @@
 // Created by mattiasfuster on 17/05/2025.
 //
 
-#include "Engine/include/RuntimeEngine.hpp"
+#include <RuntimeEngine.hpp>
+
 int main(const int argc, char** argv)
 {
 	RuntimeEngine(argc, argv);

@@ -11,6 +11,9 @@
 #include <mutex>
 #include <stdexcept>
 #include <cstddef>
+#include <concepts>
+#include <atomic>
+#include <cassert>
 
 
 #ifdef _WIN32

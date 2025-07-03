@@ -14,7 +14,7 @@
       "cacheVariables": {
         "CMAKE_C_COMPILER": "C://Program Files//LLVM//bin//clang.exe",
         "CMAKE_CXX_COMPILER": "C://Program Files//LLVM//bin//clang++.exe",
-        "CMAKE_CXX_STANDARD": "20",
+        "CMAKE_CXX_STANDARD": "23",
         "CMAKE_CXX_STANDARD_REQUIRED": "ON",
         "CMAKE_LINKER": "C:/Program Files/LLVM/bin/lld.exe",
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"

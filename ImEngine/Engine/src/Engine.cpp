@@ -87,16 +87,18 @@ void Engine::InitVulkan()
 	createInfo.ppEnabledExtensionNames = extensions;
 
 	if (vkCreateInstance(&createInfo, nullptr, &VulkanInstance) != VK_SUCCESS)
-		{
+	{
 		throw std::runtime_error("Failed to create Vulkan instance");
 	}
 }
 
-void Engine::Run() {
+void Engine::Run()
+{
 	MainLoop();
 }
 
-void Engine::MainLoop() {
+void Engine::MainLoop()
+{
 	while (!glfwWindowShouldClose(Window))
 	{
 		glfwPollEvents();
