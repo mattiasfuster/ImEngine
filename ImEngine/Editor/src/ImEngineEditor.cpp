@@ -26,12 +26,30 @@
 // SOFTWARE.
 
 //
-// Created by mattiasfuster on 17/05/2025.
+// Created by damma on 17/05/2025.
 //
+#include "ImEngineEditor.h"
 
-#include <RuntimeEngine.hpp>
-
-int main(const int argc, char** argv)
+ImEngineEditor::ImEngineEditor()
 {
-	RuntimeEngine(argc, argv);
+
+}
+ImEngineEditor::~ImEngineEditor()
+{
+
+}
+
+void ImEngineEditor::Init()
+{
+
+}
+
+void ImEngineEditor::Shutdown()
+{
+
+}
+
+void ImEngineEditor::Run()
+{
+
 }

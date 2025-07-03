@@ -25,19 +25,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-//
-// Created by damma on 17/05/2025.
-//
+#include "Engine.h"
 
-#ifndef DEFAULT_H
-#define DEFAULT_H
-
-
-
-class Default {
-
-};
-
-
-
-#endif //DEFAULT_H
+int RuntimeEngine(int argc, char* const argv[]) {
+	try
+	{
+		std::cout << "Running Engine..." << std::endl;
+		Engine::Get().Run();
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << "[Error] Fatal error: " << e.what() << std::endl;
+		return EXIT_FAILURE;
+	}
+	catch (...)
+	{
+		std::cerr << "[Error] Unknown fatal error occurred." << std::endl;
+		return EXIT_FAILURE;
+	}
+	return EXIT_SUCCESS;
+}
