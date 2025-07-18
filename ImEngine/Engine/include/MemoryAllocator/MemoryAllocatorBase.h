@@ -58,7 +58,7 @@ struct LinearAllocator : MemoryAllocatorBase<LinearAllocator>
 	LinearAllocator(void* memory, const size_t size)
 		: m_start(static_cast<uint8_t*>(memory)), m_capacity(size) {}
 
-	void* impl_allocate(size_t size, size_t alignment)
+	void* impl_allocate(const size_t size, const size_t alignment = alignof(std::max_align_t))
 	{
 		assert((alignment & (alignment - 1)) == 0 && "Alignment must be a power of two");
 
@@ -113,7 +113,7 @@ struct PoolAllocator : MemoryAllocatorBase<PoolAllocator<BlockSize, BlockCount>>
 		m_freeList = m_pool;
 	}
 
-	void* impl_allocate(size_t size, size_t)
+	void* impl_allocate(const size_t size, const size_t alignment = alignof(std::max_align_t))
 	{
 		if (size > BlockSize || !m_freeList) return nullptr;
 		void* block = m_freeList;
@@ -138,4 +138,47 @@ private:
 	alignas(BlockSize) uint8_t m_pool[BlockSize * BlockCount] = {};
 	void*             m_freeList = nullptr;
 	std::atomic_size_t m_used{0};
+};
+
+struct MallocAllocator : MemoryAllocatorBase<MallocAllocator>
+{
+	void* impl_allocate(const size_t size, const size_t alignment = alignof(std::max_align_t))
+	{
+		if (size == 0) return nullptr;
+		const size_t totalSize = size + sizeof(size_t);
+		void* rawPtr = nullptr;
+
+		#if defined(_MSC_VER)
+				rawPtr = _aligned_malloc(totalSize, alignment);
+				if (!rawPtr) throw std::bad_alloc();
+		#else
+				if (posix_memalign(&rawPtr, alignment, totalSize) != 0)
+					throw std::bad_alloc();
+		#endif
+
+		*reinterpret_cast<size_t*>(rawPtr) = size;
+		m_usedBytes.fetch_add(size, std::memory_order_relaxed);
+		return static_cast<uint8_t*>(rawPtr) + sizeof(size_t);
+	}
+
+	void impl_deallocate(void* ptr)
+	{
+		if (!ptr) return;
+		void*        rawPtr = static_cast<uint8_t*>(ptr) - sizeof(size_t);
+		const size_t size = *reinterpret_cast<size_t*>(rawPtr);
+		m_usedBytes.fetch_sub(size, std::memory_order_relaxed);
+		#if defined(_MSC_VER)
+				_aligned_free(rawPtr);
+		#else
+				std::free(rawPtr);
+		#endif
+	}
+
+	[[nodiscard]] size_t impl_get_used_bytes() const
+	{
+		return m_usedBytes.load(std::memory_order_relaxed);
+	}
+
+private:
+	std::atomic_size_t m_usedBytes{0};
 };
