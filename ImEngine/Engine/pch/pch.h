@@ -1,4 +1,5 @@
 #pragma once
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -14,7 +15,7 @@
 #include <concepts>
 #include <atomic>
 #include <cassert>
-
+#include <cstdint>
 
 #ifdef _WIN32
     #ifdef IMENGINE_ENGINE_EXPORTS

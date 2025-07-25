@@ -25,14 +25,52 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-//
-// Created by mattiasfuster on 17/05/2025.
-//
+#pragma once
+#include "MemoryAllocator/MemoryAllocatorBase.h"
 
-#include <RuntimeEngine.hpp>
-#include <MemoryAllocator/Allocators/LinearAllocator.h>
-
-int main(const int argc, char** argv)
+struct LinearAllocator : MemoryAllocatorBase<LinearAllocator>
 {
-	RuntimeEngine(argc, argv);
-}
+	LinearAllocator(void* memory, const size_t size)
+		: m_start(static_cast<uint8_t*>(memory)), m_capacity(size) {}
+
+	void* impl_allocate(const size_t size, const size_t alignment = alignof(std::max_align_t))
+	{
+		assert((alignment & (alignment - 1)) == 0 && "Alignment must be a power of two");
+
+		constexpr int max_attempts = 1000;
+		int attempts = 0;
+
+		while (attempts < max_attempts)
+		{
+			size_t current = m_offset.load(std::memory_order_relaxed);
+			const size_t aligned = (current + alignment - 1) & ~(alignment - 1);
+			const size_t newOff  = aligned + size;
+
+			if (newOff > m_capacity)
+				return nullptr;
+
+			if (m_offset.compare_exchange_weak(current, newOff,
+											   std::memory_order_acquire,
+											   std::memory_order_relaxed))
+			{
+				return m_start + aligned;
+			}
+
+			++attempts;
+		}
+
+		return nullptr; // fail after too many retries
+	}
+
+	void impl_deallocate(void*) {}
+
+	[[nodiscard]] size_t impl_get_used_bytes() const
+	{
+		return m_offset.load(std::memory_order_relaxed);
+	}
+
+private:
+	uint8_t*                 m_start;
+	const size_t             m_capacity;
+	std::atomic_size_t       m_offset{0};
+};
