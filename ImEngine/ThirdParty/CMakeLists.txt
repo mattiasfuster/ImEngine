@@ -8,16 +8,39 @@ endif()
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(GLFW_DIR ${CMAKE_CURRENT_SOURCE_DIR}/glfw-3.4)
+include(FetchContent)
 
+# =============================
+# GLFW
+# =============================
 option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" OFF)
-option(GLFW_BUILD_TESTS "Build the GLFW test programs" OFF)
-option(GLFW_BUILD_DOCS "Build the GLFW documentation" OFF)
-option(GLFW_INSTALL "Generate installation target" OFF)
+option(GLFW_BUILD_TESTS    "Build the GLFW test programs"    OFF)
+option(GLFW_BUILD_DOCS     "Build the GLFW documentation"    OFF)
+option(GLFW_INSTALL        "Generate installation target"    OFF)
 
-add_subdirectory(${GLFW_DIR})
+FetchContent_Declare(
+        glfw_external
+        GIT_REPOSITORY https://github.com/glfw/glfw.git
+        GIT_TAG 3.4
+        GIT_SHALLOW TRUE
+)
+FetchContent_MakeAvailable(glfw_external)
 
-set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/imgui)
+# =============================
+# ImGui
+# =============================
+FetchContent_Declare(
+        imgui_external
+        GIT_REPOSITORY https://github.com/ocornut/imgui.git
+        GIT_TAG docking
+        GIT_SHALLOW TRUE
+)
+FetchContent_MakeAvailable(imgui_external)
+
+# On redéfinit IMGUI_DIR vers le dossier fetché
+set(IMGUI_DIR ${imgui_external_SOURCE_DIR})
+
+# Et on ajoute les sources manuellement (comme tu fais déjà)
 
 set(IMGUI_SOURCES
         ${IMGUI_DIR}/imgui.cpp
@@ -29,8 +52,14 @@ set(IMGUI_SOURCES
         ${IMGUI_DIR}/backends/imgui_impl_vulkan.cpp
 )
 
+# =============================
+# Vulkan
+# =============================
 find_package(Vulkan REQUIRED)
 
+# =============================
+# Build third-party lib
+# =============================
 file(GLOB THIRD_PARTY_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 
 add_library(ImEngine-ThirdParty STATIC
@@ -41,8 +70,8 @@ add_library(ImEngine-ThirdParty STATIC
 target_include_directories(ImEngine-ThirdParty
         PUBLIC ${IMGUI_DIR}
         PUBLIC ${IMGUI_DIR}/backends
-        PUBLIC ${GLFW_DIR}/include
-        PUBLIC ${GLFW_DIR}/deps
+        PUBLIC ${glfw_external_SOURCE_DIR}/include
+        PUBLIC ${glfw_external_SOURCE_DIR}/deps
 )
 
 target_link_libraries(ImEngine-ThirdParty

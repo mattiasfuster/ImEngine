@@ -29,10 +29,13 @@
 // Created by mattiasfuster on 17/05/2025.
 //
 
-#include <RuntimeEngine.hpp>
+#include "MemoryAllocator/Allocators/PoolAllocator.h"
+
 #include <MemoryAllocator/Allocators/LinearAllocator.h>
+#include <RuntimeEngine.hpp>
+#include <RuntimeEditor.hpp>
 
 int main(const int argc, char** argv)
 {
-	RuntimeEngine(argc, argv);
+	RuntimeEditor(argc, argv);
 }

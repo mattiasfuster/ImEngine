@@ -33,7 +33,6 @@ struct PoolAllocator : MemoryAllocatorBase<PoolAllocator<BlockSize, BlockCount>>
 {
 	PoolAllocator()
 	{
-		m_pool = {};
 		for (size_t i = 0; i < BlockCount - 1; ++i)
 			*reinterpret_cast<void**>(&m_pool[i * BlockSize]) = &m_pool[(i + 1) * BlockSize];
 		*reinterpret_cast<void**>(&m_pool[(BlockCount - 1) * BlockSize]) = nullptr;
