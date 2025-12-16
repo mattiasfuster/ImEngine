@@ -39,7 +39,6 @@ Engine& Engine::Get()
 
 Engine::Engine()
 {
-	Init();
 }
 
 Engine::~Engine()
@@ -47,7 +46,7 @@ Engine::~Engine()
 	Cleanup();
 }
 
-void Engine::Init()
+void Engine::Init(const int argc, char* const argv[])
 {
 	InitWindow();
 	InitVulkan();
@@ -56,14 +55,16 @@ void Engine::Init()
 void Engine::InitWindow()
 {
 	if (!glfwInit())
-		throw std::runtime_error("Failed to initialize GLFW");
+		std::cout << "Failed to initialize GLFW\n";
 
-	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API); // Disable OpenGL context
+
+	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-	Window = glfwCreateWindow(Width, Height, WindowTitle.c_str(), nullptr, nullptr);
+	Window = glfwCreateWindow(static_cast<int>(Width), static_cast<int>(Height), WindowTitle, nullptr, nullptr);
 	if (!Window)
-		throw std::runtime_error("Failed to create GLFW window");
+		std::cout << "Failed to create GLFW window\n";
+
 }
 
 void Engine::InitVulkan()
@@ -74,7 +75,7 @@ void Engine::InitVulkan()
 
 	VkApplicationInfo appInfo{};
 	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-	appInfo.pApplicationName = "ImEngine";
+	appInfo.pApplicationName = WindowTitle;
 	appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
 	appInfo.pEngineName = "ImEngine";
 	appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
@@ -87,29 +88,29 @@ void Engine::InitVulkan()
 	createInfo.ppEnabledExtensionNames = extensions;
 
 	if (vkCreateInstance(&createInfo, nullptr, &VulkanInstance) != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to create Vulkan instance");
-	}
+		std::cout << "Failed to create Vulkan instance\n";
 }
 
-void Engine::Run()
+void Engine::Run(const int argc, char* const argv[])
 {
+	Init(argc, argv);
 	MainLoop();
 }
 
-void Engine::MainLoop()
+void Engine::MainLoop() const
 {
 	while (!glfwWindowShouldClose(Window))
 	{
 		glfwPollEvents();
 		// Future: update / render
+
 	}
 }
 
-void Engine::Cleanup()
+void Engine::Cleanup() const
 {
 	if (VulkanInstance != VK_NULL_HANDLE)
-		{
+	{
 		vkDestroyInstance(VulkanInstance, nullptr);
 	}
 

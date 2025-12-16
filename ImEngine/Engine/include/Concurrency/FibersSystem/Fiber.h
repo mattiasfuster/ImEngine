@@ -26,30 +26,12 @@
 // SOFTWARE.
 
 //
-// Created by damma on 17/05/2025.
+// Created by damma on 22/08/2025.
 //
-#include "ImEngineEditor.h"
 
-ImEngineEditor::ImEngineEditor()
+#pragma once
+
+class IMENGINE_API Fiber
 {
 
-}
-ImEngineEditor::~ImEngineEditor()
-{
-
-}
-
-void ImEngineEditor::Init()
-{
-
-}
-
-void ImEngineEditor::Shutdown()
-{
-
-}
-
-void ImEngineEditor::Run()
-{
-
-}
+};

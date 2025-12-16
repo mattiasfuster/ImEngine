@@ -1,24 +1,42 @@
 cmake_minimum_required(VERSION 3.29)
-project(ImEngine-Editor)
 
-file(GLOB_RECURSE HEADER_FILES "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp" "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
-file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
+file(GLOB_RECURSE EDITOR_HEADERS
+        CONFIGURE_DEPENDS
+        "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h"
+)
 
-if (HEADER_FILES OR SOURCE_FILES)
-    add_library(ImEngine-Editor SHARED ${HEADER_FILES} ${SOURCE_FILES})
+file(GLOB_RECURSE EDITOR_SOURCES
+        CONFIGURE_DEPENDS
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c"
+)
 
-    target_compile_definitions(ImEngine-Editor PRIVATE IMENGINE_EDITOR_EXPORTS)
+add_executable(ImEngine-Editor
+        ${EDITOR_HEADERS}
+        ${EDITOR_SOURCES}
+)
 
-    target_precompile_headers(ImEngine-Editor PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/pch/pch.h)
+target_include_directories(ImEngine-Editor
+        PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
 
-    target_include_directories(ImEngine-Editor  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_precompile_headers(ImEngine-Editor
+        PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/misc/EditorExport.h
+        PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/misc/pch.hpp
+)
 
-    target_include_directories(ImEngine-Editor PUBLIC ${CMAKE_SOURCE_DIR}/ThirdParty/glfw/include)
-    target_include_directories(ImEngine-Editor PUBLIC ${CMAKE_SOURCE_DIR}/ThirdParty/imgui)
-    target_include_directories(ImEngine-Editor PUBLIC ${CMAKE_SOURCE_DIR}/ThirdParty/imgui/backends)
-    target_include_directories(ImEngine-Editor PUBLIC ${CMAKE_SOURCE_DIR}/ThirdParty/glfw/deps)
+target_link_libraries(ImEngine-Editor
+        PRIVATE
+        ImEngine-Engine
+        ImEngine-ThirdParty::imgui
+        ImEngine-ThirdParty::glfw
+        ImEngine-ThirdParty::vulkan
+)
 
-    target_link_libraries(ImEngine-Editor PUBLIC ImEngine-ThirdParty)
-else ()
-    message(STATUS "No source files found in ${CMAKE_CURRENT_SOURCE_DIR}")
-endif()
+add_custom_command(TARGET ImEngine-Editor POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_RUNTIME_DLLS:ImEngine-Editor>
+        $<TARGET_FILE_DIR:ImEngine-Editor>
+        COMMAND_EXPAND_LISTS
+)

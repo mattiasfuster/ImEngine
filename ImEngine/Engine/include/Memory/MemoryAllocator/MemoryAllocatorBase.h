@@ -26,42 +26,23 @@
 // SOFTWARE.
 
 #pragma once
-#include "MemoryAllocator/MemoryAllocatorBase.h"
+#include <cstddef>
 
-template <size_t BlockSize, size_t BlockCount>
-struct PoolAllocator : MemoryAllocatorBase<PoolAllocator<BlockSize, BlockCount>>
+template <typename DerivedAllocator>
+struct MemoryAllocatorBase
 {
-	PoolAllocator()
+	void* allocate(const size_t size, const size_t alignment = alignof(std::max_align_t))
 	{
-		for (size_t i = 0; i < BlockCount - 1; ++i)
-			*reinterpret_cast<void**>(&m_pool[i * BlockSize]) = &m_pool[(i + 1) * BlockSize];
-		*reinterpret_cast<void**>(&m_pool[(BlockCount - 1) * BlockSize]) = nullptr;
-		m_freeList = m_pool;
+		return static_cast<DerivedAllocator*>(this)->impl_allocate(size, alignment);
 	}
 
-	void* impl_allocate(const size_t size, const size_t alignment = alignof(std::max_align_t))
+	void deallocate(void* ptr)
 	{
-		if (size > BlockSize || !m_freeList) return nullptr;
-		void* block = m_freeList;
-		m_freeList  = *reinterpret_cast<void**>(m_freeList);
-		m_used.fetch_add(1, std::memory_order_relaxed);
-		return block;
+		static_cast<DerivedAllocator*>(this)->impl_deallocate(ptr);
 	}
 
-	void impl_deallocate(void* ptr)
+	[[nodiscard]] size_t get_used_bytes() const
 	{
-		*reinterpret_cast<void**>(ptr) = m_freeList;
-		m_freeList = ptr;
-		m_used.fetch_sub(1, std::memory_order_relaxed);
+		return static_cast<const DerivedAllocator*>(this)->impl_get_used_bytes();
 	}
-
-	[[nodiscard]] size_t impl_get_used_bytes() const
-	{
-		return m_used.load(std::memory_order_relaxed) * BlockSize;
-	}
-
-private:
-	alignas(BlockSize) uint8_t m_pool[BlockSize * BlockCount] = {};
-	void*             m_freeList = nullptr;
-	std::atomic_size_t m_used{0};
 };

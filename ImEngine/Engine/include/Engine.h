@@ -34,7 +34,8 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
-class Engine {
+class IMENGINE_API Engine
+{
 public:
 	static Engine& Get();
 	~Engine();
@@ -42,7 +43,7 @@ public:
 	Engine(const Engine&) = delete;
 	Engine& operator=(const Engine&) = delete;
 
-	void Run();
+	void Run(int argc, char* const argv[]);
 
 	// Getters
 	[[nodiscard]] GLFWwindow* GetWindow() const { return Window; }
@@ -50,16 +51,16 @@ public:
 
 private:
 	Engine();
-	void Init();
+	void Init(int argc, char* const argv[]);
 	void InitWindow();
 	void InitVulkan();
-	void MainLoop();
-	void Cleanup();
+	void MainLoop() const;
+	void Cleanup() const;
 
 	GLFWwindow* Window = nullptr;
 	const uint32_t Width = 1280;
 	const uint32_t Height = 720;
-	const std::string WindowTitle = "ImEngine Runtime";
+	const char* WindowTitle = "ImEngine Runtime";
 
 	VkInstance VulkanInstance = VK_NULL_HANDLE;
 };

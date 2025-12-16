@@ -25,30 +25,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+//
+// Created by damma on 11/11/2025.
+//
 #pragma once
 
-template <typename A>
-concept MemoryAllocator = requires(A a, std::size_t s, std::size_t al, void* p) {
-	{ a.impl_allocate(s, al) } -> std::same_as<void*>;
-	{ a.impl_deallocate(p) } -> std::same_as<void>;
-	{ std::as_const(a).impl_get_used_bytes() } -> std::same_as<std::size_t>;
-};
-
-template <typename DerivedAllocator>
-struct MemoryAllocatorBase
-{
-	void* allocate(const size_t size, const size_t alignment = alignof(std::max_align_t))
-	{
-		return static_cast<DerivedAllocator*>(this)->impl_allocate(size, alignment);
-	}
-
-	void deallocate(void* ptr)
-	{
-		static_cast<DerivedAllocator*>(this)->impl_deallocate(ptr);
-	}
-
-	[[nodiscard]] size_t get_used_bytes() const
-	{
-		return static_cast<const DerivedAllocator*>(this)->impl_get_used_bytes();
-	}
-};
+#ifdef _WIN32
+	#ifdef IMENGINE_EDITOR_EXPORTS
+		#define IMENGINE_CORE_API __declspec(dllexport)
+	#else
+		#define IMENGINE_CORE_API __declspec(dllimport)
+	#endif
+#else
+	#define IMENGINE_API
+#endif

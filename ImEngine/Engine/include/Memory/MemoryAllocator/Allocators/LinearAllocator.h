@@ -24,25 +24,53 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-#pragma once
-#include "Engine.h"
 
-inline int RuntimeEngine(int argc, char* const argv[])
+#pragma once
+#include "Memory/MemoryAllocator/MemoryAllocatorBase.h"
+
+struct LinearAllocator : MemoryAllocatorBase<LinearAllocator>
 {
-	try
+	LinearAllocator(void* memory, const size_t size)
+		: m_start(static_cast<uint8_t*>(memory)), m_capacity(size) {}
+
+	void* impl_allocate(const size_t size, const size_t alignment = alignof(std::max_align_t))
 	{
-		std::cout << "Running Engine..." << std::endl;
-		Engine::Get().Run();
+		assert((alignment & (alignment - 1)) == 0 && "Alignment must be a power of two");
+
+		constexpr int max_attempts = 1000;
+		int attempts = 0;
+
+		while (attempts < max_attempts)
+		{
+			size_t current = m_offset.load(std::memory_order_relaxed);
+			const size_t aligned = (current + alignment - 1) & ~(alignment - 1);
+			const size_t newOff  = aligned + size;
+
+			if (newOff > m_capacity)
+				return nullptr;
+
+			if (m_offset.compare_exchange_weak(current, newOff,
+											   std::memory_order_acquire,
+											   std::memory_order_relaxed))
+			{
+				return m_start + aligned;
+			}
+
+			++attempts;
+		}
+
+		return nullptr;
 	}
-	catch (const std::exception& e)
+
+	void impl_deallocate(void*) {}
+
+	[[nodiscard]] size_t impl_get_used_bytes() const
 	{
-		std::cerr << "[Error] Fatal error: " << e.what() << std::endl;
-		return EXIT_FAILURE;
+		return m_offset.load(std::memory_order_relaxed);
 	}
-	catch (...)
-	{
-		std::cerr << "[Error] Unknown fatal error occurred." << std::endl;
-		return EXIT_FAILURE;
-	}
-	return EXIT_SUCCESS;
-}
+
+private:
+	uint8_t*                 m_start;
+	const size_t             m_capacity;
+	std::atomic_size_t       m_offset{0};
+};

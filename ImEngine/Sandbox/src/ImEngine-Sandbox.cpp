@@ -25,16 +25,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-//
-// Created by damma on 17/05/2025.
-//
+#include "Engine.h"
+#include <iostream>
 
-#ifndef VULKANCONTEXT_H
-#define VULKANCONTEXT_H
-
-class VulkanContextEditor
+int main(const int argc, char* const argv[])
 {
-
-};
-
-#endif //VULKANCONTEXT_H
+	try
+	{
+		std::cout << "Running Engine..." << std::endl;
+		Engine::Get().Run(argc, argv);
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << "[Error] Fatal error: " << e.what() << std::endl;
+		return EXIT_FAILURE;
+	}
+	catch (...)
+	{
+		std::cerr << "[Error] Unknown fatal error occurred." << std::endl;
+		return EXIT_FAILURE;
+	}
+	return EXIT_SUCCESS;
+}

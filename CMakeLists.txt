@@ -1,29 +1,41 @@
 cmake_minimum_required(VERSION 3.29)
-project(ImEngine)
+project(ImEngine LANGUAGES C CXX)
 
-# Main executable
-add_executable(ImEngine ImEngine/main.cpp)
+message(STATUS "[-----ImEngine-----]")
 
-# Always include ThirdParty
-add_subdirectory(ImEngine/ThirdParty)
-target_link_libraries(ImEngine PUBLIC ImEngine-ThirdParty)
+# ---- Global options (robust defaults) ---------------------------------------
+option(IMENGINE_BUILD_ENGINE  "Build ImEngine Engine"  ON)
+option(IMENGINE_BUILD_SANDBOX "Build ImEngine Sandbox" OFF)
+option(IMENGINE_BUILD_EDITOR  "Build ImEngine Editor"  OFF)
 
-# Optionally add Engine
-option(IMENGINE_BUILD_ENGINE "Build the Engine module" ON)
-if(IMENGINE_BUILD_ENGINE)
-    target_compile_definitions(ImEngine PUBLIC IMENGINE_ENGINE_BUILD)
+# ---- Compiler & CRT setup ----------------------------------------------------
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-    add_subdirectory(ImEngine/Engine)
-    target_link_libraries(ImEngine PUBLIC ImEngine-Engine)
-
-    # Optionally add Editor
-    option(IMENGINE_BUILD_EDITOR "Build the Editor module" OFF)
-    if(IMENGINE_BUILD_EDITOR)
-        add_subdirectory(ImEngine/Editor)
-        target_link_libraries(ImEngine PUBLIC ImEngine-Editor)
-    endif()
+if(MSVC)
+  # Use the dynamic runtime (/MD or /MDd)
+  set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
 endif()
 
-add_custom_command(TARGET ImEngine POST_BUILD
-        COMMAND ${CMAKE_COMMAND} --install ${CMAKE_BINARY_DIR} --config $<CONFIG>
-)
+# ---- Unified output directories per-config ----------------------------------
+# e.g. out/build/<preset>/<Config>/{runtime,library,archive,pdb}
+foreach(kind RUNTIME LIBRARY ARCHIVE PDB)
+  set(CMAKE_${kind}_OUTPUT_DIRECTORY
+      "${CMAKE_BINARY_DIR}/$<CONFIG>/${kind}" CACHE PATH "" FORCE)
+endforeach()
+
+# ---- Subdirectories ----------------------------------------------------------
+add_subdirectory(ImEngine/ThirdParty)
+
+if(IMENGINE_BUILD_ENGINE)
+  add_subdirectory(ImEngine/Engine)
+endif()
+
+if(IMENGINE_BUILD_SANDBOX)
+add_subdirectory(ImEngine/Sandbox)
+endif()
+
+if(IMENGINE_BUILD_EDITOR)
+add_subdirectory(ImEngine/Editor)
+endif()
