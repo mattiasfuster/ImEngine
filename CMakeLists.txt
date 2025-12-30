@@ -13,7 +13,6 @@ option(IMENGINE_BUILD_RUNTIME "Build ImEngine Runtime" ON)
 option(IMENGINE_BUILD_SANDBOX "Build ImEngine Sandbox" OFF)
 option(IMENGINE_BUILD_EDITOR  "Build ImEngine Editor"  OFF)
 
-# ---- Modern CMake Setup -----------------------------------------------------
 include(StandardSettings)
 include(Cache)
 include(CompilerWarnings)
