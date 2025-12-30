@@ -89,7 +89,7 @@ cmake-build-*/
 # IntelliJ
 out/
 
-docs/
+docs/plan-engineFoundations.prompt.md
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/
