@@ -4,7 +4,7 @@
 [![CMake](https://img.shields.io/badge/CMake-3.29+-green.svg)](https://cmake.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-> A modular game engine built with modern C++23 features, focused on security, performance, and learning.
+> A modular game engine built with modern C++23 features, focused on performance & security.
 
 ## 🚀 Quick Start
 
