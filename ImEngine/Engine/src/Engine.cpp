@@ -38,14 +38,14 @@ Engine& Engine::Get()
     return instance;
 }
 
-Engine::Engine() {}
+Engine::Engine() = default;
 
 Engine::~Engine()
 {
     Cleanup();
 }
 
-void Engine::Init(const int argc, char* const argv[])
+void Engine::Init([[maybe_unused]] const int argc,[[maybe_unused]] char* const argv[])
 {
     InitWindow();
     InitVulkan();

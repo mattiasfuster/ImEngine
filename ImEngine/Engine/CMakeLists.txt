@@ -21,17 +21,15 @@ set_project_warnings(ImEngine-Engine)
 enable_security_flags(ImEngine-Engine)
 
 include(GenerateExportHeader)
-if (NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/misc/EngineExport.h")
 generate_export_header(ImEngine-Engine
         EXPORT_FILE_NAME "${CMAKE_CURRENT_SOURCE_DIR}/misc/EngineExport.h"
         EXPORT_MACRO_NAME IMENGINE_ENGINE_API
 )
-endif()
 
 # --- Precompiled headers ---
 target_precompile_headers(ImEngine-Engine
         PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/misc/EngineExport.h"
-        PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/misc/ImEngine-Engine.pch"
+        PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/misc/ImEngine-Engine.pch.h"
 )
 
 # --- Public includes ---
@@ -43,10 +41,9 @@ target_include_directories(ImEngine-Engine
 )
 
 # --- Link dependencies ---
+# Note: glfw and vulkan are transitively available via ImEngine::Core (PUBLIC link)
 target_link_libraries(ImEngine-Engine
         PUBLIC ImEngine::Core
-        PUBLIC ImEngine-ThirdParty::glfw
-        PUBLIC ImEngine-ThirdParty::vulkan
 )
 
 target_compile_definitions(ImEngine-Engine

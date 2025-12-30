@@ -16,7 +16,7 @@ enable_security_flags(ImEngine-Runtime)
 
 target_link_libraries(ImEngine-Runtime
     PRIVATE ImEngine::Engine
-    PRIVATE ImEngine::Core
+    # Note: ImEngine::Core, glfw, vulkan are transitively available via Engine
 )
 
 install(TARGETS ImEngine-Runtime

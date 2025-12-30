@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.29)
-project(ImEngine-Sandbox)
 
 message(STATUS "[-----ImEngine-Sandbox-----]")
 
@@ -19,9 +18,7 @@ target_include_directories(ImEngine-Sandbox PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/
 
 target_link_libraries(ImEngine-Sandbox
     PRIVATE ImEngine::Engine
-    PRIVATE ImEngine::Core
-    PRIVATE ImEngine-ThirdParty::glfw
-    PRIVATE ImEngine-ThirdParty::vulkan
+    # Note: ImEngine::Core, glfw, vulkan are transitively available via Engine
 )
 
 install(TARGETS ImEngine-Sandbox

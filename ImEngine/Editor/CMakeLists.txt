@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 3.29)
 message(STATUS "[-----ImEngine-Editor-----]")
 
 set(EDITOR_HEADERS
-        include/ImEngine_Editor.h
 )
 
 set(EDITOR_SOURCES
@@ -24,17 +23,13 @@ target_include_directories(ImEngine-Editor
 )
 
 target_precompile_headers(ImEngine-Editor
-        PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/misc/EditorExport.h
-        PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/misc/pch.hpp
+        PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/misc/ImEngine-Editor.pch.h"
 )
 
 target_link_libraries(ImEngine-Editor
-        PRIVATE
-        ImEngine::Engine
-        ImEngine::Core
-        ImEngine-ThirdParty::imgui
-        ImEngine-ThirdParty::glfw
-        ImEngine-ThirdParty::vulkan
+        PRIVATE ImEngine::Engine
+        PRIVATE ImEngine-ThirdParty::imgui
+        # Note: ImEngine::Core, glfw, vulkan are transitively available via Engine
 )
 
 add_custom_command(TARGET ImEngine-Editor POST_BUILD

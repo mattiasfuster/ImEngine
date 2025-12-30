@@ -3,7 +3,7 @@ function(enable_ccache)
 
   # On Windows, if ccache is not found, try to download a portable version
   if(NOT CCACHE_PROGRAM AND WIN32)
-    set(CCACHE_VERSION "4.10.2")
+    set(CCACHE_VERSION "4.12.2")
     set(CCACHE_FILENAME "ccache-${CCACHE_VERSION}-windows-x86_64")
     set(CCACHE_URL "https://github.com/ccache/ccache/releases/download/v${CCACHE_VERSION}/${CCACHE_FILENAME}.zip")
 

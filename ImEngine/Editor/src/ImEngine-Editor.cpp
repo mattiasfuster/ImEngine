@@ -292,6 +292,8 @@ SetupVulkanWindow(ImGui_ImplVulkanH_Window* wd, VkSurfaceKHR surface, int width,
         g_PhysicalDevice, wd->Surface, &present_modes[0], IM_ARRAYSIZE(present_modes));
     // printf("[vulkan] Selected PresentMode = %d\n", wd->PresentMode);
 
+
+
     // Create SwapChain, RenderPass, Framebuffer, etc.
     IM_ASSERT(g_MinImageCount >= 2);
     ImGui_ImplVulkanH_CreateOrResizeWindow(g_Instance,
@@ -302,7 +304,8 @@ SetupVulkanWindow(ImGui_ImplVulkanH_Window* wd, VkSurfaceKHR surface, int width,
                                            g_Allocator,
                                            width,
                                            height,
-                                           g_MinImageCount);
+                                           g_MinImageCount,
+                                           VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT);
 }
 
 static void CleanupVulkan()
@@ -487,13 +490,12 @@ inline int RuntimeEditor(int argc, char* const argv[])
     init_info.Queue = g_Queue;
     init_info.PipelineCache = g_PipelineCache;
     init_info.DescriptorPool = g_DescriptorPool;
-    init_info.RenderPass = wd->RenderPass;
-    init_info.Subpass = 0;
     init_info.MinImageCount = g_MinImageCount;
     init_info.ImageCount = wd->ImageCount;
-    init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
     init_info.Allocator = g_Allocator;
     init_info.CheckVkResultFn = check_vk_result;
+    init_info.PipelineInfoMain.RenderPass = wd->RenderPass;
+    init_info.PipelineInfoMain.Subpass = 0;
     ImGui_ImplVulkan_Init(&init_info);
 
     // Load Fonts
@@ -554,7 +556,8 @@ inline int RuntimeEditor(int argc, char* const argv[])
                                                    g_Allocator,
                                                    fb_width,
                                                    fb_height,
-                                                   g_MinImageCount);
+                                                   g_MinImageCount,
+                                                   VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT);
             g_MainWindowData.FrameIndex = 0;
             g_SwapChainRebuild = false;
         }
@@ -655,4 +658,9 @@ inline int RuntimeEditor(int argc, char* const argv[])
     glfwTerminate();
 
     return 0;
+}
+
+int main(int argc, char* argv[])
+{
+    return RuntimeEditor(argc, argv);
 }

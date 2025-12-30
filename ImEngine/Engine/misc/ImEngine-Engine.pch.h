@@ -2,8 +2,7 @@
 //
 // Copyright (c) 2024 FUSTER Mattias
 //
-// This software utilizes code from the following GitHub repositories, which are also licensed under
-// the MIT License:
+// This software utilizes code from the following GitHub repositories, which are also licensed under the MIT License:
 //
 // - [ImGui](https://github.com/ocornut/imgui)
 // - [GLFW](https://github.com/glfw/glfw)
@@ -26,15 +25,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-//
-// Created by damma on 16/12/2025.
-//
+// ImEngine-Engine Precompiled Header
+// Add frequently used headers here to speed up compilation
 
-#ifndef IMENGINE_IMENGINE_EDITOR_H
-#define IMENGINE_IMENGINE_EDITOR_H
+#pragma once
 
-class ImEngine_Editor
-{
-};
+// Standard Library
+#include <cstdint>
+#include <cstddef>
+#include <memory>
+#include <string>
+#include <vector>
+#include <array>
+#include <unordered_map>
+#include <functional>
+#include <utility>
+#include <algorithm>
+#include <type_traits>
+#include <iostream>
+#include <stdexcept>
 
-#endif  // IMENGINE_IMENGINE_EDITOR_H
+// Core includes
+#include "CoreExport.h"
+

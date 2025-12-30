@@ -25,17 +25,15 @@ set_project_warnings(ImEngine-Core)
 enable_security_flags(ImEngine-Core)
 
 include(GenerateExportHeader)
-if (NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/misc/CoreExport.h")
 generate_export_header(ImEngine-Core
         EXPORT_FILE_NAME "${CMAKE_CURRENT_SOURCE_DIR}/misc/CoreExport.h"
         EXPORT_MACRO_NAME IMENGINE_API
 )
-endif()
 
 # --- Precompiled headers (kept private for better incremental build) ----------
 target_precompile_headers(ImEngine-Core
         PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/misc/CoreExport.h"
-        PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/misc/ImEngine-Core.pch"
+        PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/misc/ImEngine-Core.pch.h"
 )
 
 # --- Public includes ---
