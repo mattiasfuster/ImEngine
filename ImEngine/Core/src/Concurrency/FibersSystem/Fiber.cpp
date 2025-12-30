@@ -2,7 +2,8 @@
 //
 // Copyright (c) 2024 FUSTER Mattias
 //
-// This software utilizes code from the following GitHub repositories, which are also licensed under the MIT License:
+// This software utilizes code from the following GitHub repositories, which are also licensed under
+// the MIT License:
 //
 // - [ImGui](https://github.com/ocornut/imgui)
 // - [GLFW](https://github.com/glfw/glfw)

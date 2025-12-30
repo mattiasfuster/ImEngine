@@ -2,7 +2,8 @@
 //
 // Copyright (c) 2024 FUSTER Mattias
 //
-// This software utilizes code from the following GitHub repositories, which are also licensed under the MIT License:
+// This software utilizes code from the following GitHub repositories, which are also licensed under
+// the MIT License:
 //
 // - [ImGui](https://github.com/ocornut/imgui)
 // - [GLFW](https://github.com/glfw/glfw)
@@ -28,21 +29,17 @@
 #pragma once
 #include <cstddef>
 
-template <typename DerivedAllocator>
-struct MemoryAllocatorBase
+template <typename DerivedAllocator> struct MemoryAllocatorBase
 {
-	void* allocate(const size_t size, const size_t alignment = alignof(std::max_align_t))
-	{
-		return static_cast<DerivedAllocator*>(this)->impl_allocate(size, alignment);
-	}
+    void* allocate(const size_t size, const size_t alignment = alignof(std::max_align_t))
+    {
+        return static_cast<DerivedAllocator*>(this)->impl_allocate(size, alignment);
+    }
 
-	void deallocate(void* ptr)
-	{
-		static_cast<DerivedAllocator*>(this)->impl_deallocate(ptr);
-	}
+    void deallocate(void* ptr) { static_cast<DerivedAllocator*>(this)->impl_deallocate(ptr); }
 
-	[[nodiscard]] size_t get_used_bytes() const
-	{
-		return static_cast<const DerivedAllocator*>(this)->impl_get_used_bytes();
-	}
+    [[nodiscard]] size_t get_used_bytes() const
+    {
+        return static_cast<const DerivedAllocator*>(this)->impl_get_used_bytes();
+    }
 };

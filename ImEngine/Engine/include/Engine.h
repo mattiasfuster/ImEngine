@@ -2,7 +2,8 @@
 //
 // Copyright (c) 2024 FUSTER Mattias
 //
-// This software utilizes code from the following GitHub repositories, which are also licensed under the MIT License:
+// This software utilizes code from the following GitHub repositories, which are also licensed under
+// the MIT License:
 //
 // - [ImGui](https://github.com/ocornut/imgui)
 // - [GLFW](https://github.com/glfw/glfw)
@@ -31,36 +32,37 @@
 
 #pragma once
 
+#include "EngineExport.h"
+
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
-class IMENGINE_API Engine
+class IMENGINE_ENGINE_API Engine
 {
 public:
-	static Engine& Get();
-	~Engine();
+    static Engine& Get();
+    ~Engine();
 
-	Engine(const Engine&) = delete;
-	Engine& operator=(const Engine&) = delete;
+    Engine(const Engine&) = delete;
+    Engine& operator=(const Engine&) = delete;
 
-	void Run(int argc, char* const argv[]);
+    void Run(int argc, char* const argv[]);
 
-	// Getters
-	[[nodiscard]] GLFWwindow* GetWindow() const { return Window; }
-	[[nodiscard]] VkInstance GetVulkanInstance() const { return VulkanInstance; }
+    [[nodiscard]] GLFWwindow* GetWindow() const { return Window; }
+    [[nodiscard]] VkInstance GetVulkanInstance() const { return VulkanInstance; }
 
 private:
-	Engine();
-	void Init(int argc, char* const argv[]);
-	void InitWindow();
-	void InitVulkan();
-	void MainLoop() const;
-	void Cleanup() const;
+    Engine();
+    void Init(int argc, char* const argv[]);
+    void InitWindow();
+    void InitVulkan();
+    void MainLoop() const;
+    void Cleanup() const;
 
-	GLFWwindow* Window = nullptr;
-	const uint32_t Width = 1280;
-	const uint32_t Height = 720;
-	const char* WindowTitle = "ImEngine Runtime";
+    GLFWwindow* Window = nullptr;
+    const uint32_t Width = 1280;
+    const uint32_t Height = 720;
+    const char* WindowTitle = "ImEngine Runtime";
 
-	VkInstance VulkanInstance = VK_NULL_HANDLE;
+    VkInstance VulkanInstance = VK_NULL_HANDLE;
 };

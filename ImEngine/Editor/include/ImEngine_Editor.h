@@ -2,7 +2,8 @@
 //
 // Copyright (c) 2024 FUSTER Mattias
 //
-// This software utilizes code from the following GitHub repositories, which are also licensed under the MIT License:
+// This software utilizes code from the following GitHub repositories, which are also licensed under
+// the MIT License:
 //
 // - [ImGui](https://github.com/ocornut/imgui)
 // - [GLFW](https://github.com/glfw/glfw)
@@ -26,12 +27,14 @@
 // SOFTWARE.
 
 //
-// Created by damma on 22/08/2025.
+// Created by damma on 16/12/2025.
 //
 
-#pragma once
+#ifndef IMENGINE_IMENGINE_EDITOR_H
+#define IMENGINE_IMENGINE_EDITOR_H
 
-class IMENGINE_API Fiber
+class ImEngine_Editor
 {
-
 };
+
+#endif  // IMENGINE_IMENGINE_EDITOR_H

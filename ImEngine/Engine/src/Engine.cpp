@@ -2,7 +2,8 @@
 //
 // Copyright (c) 2024 FUSTER Mattias
 //
-// This software utilizes code from the following GitHub repositories, which are also licensed under the MIT License:
+// This software utilizes code from the following GitHub repositories, which are also licensed under
+// the MIT License:
 //
 // - [ImGui](https://github.com/ocornut/imgui)
 // - [GLFW](https://github.com/glfw/glfw)
@@ -33,90 +34,86 @@
 // Static accessor
 Engine& Engine::Get()
 {
-	static Engine instance;
-	return instance;
+    static Engine instance;
+    return instance;
 }
 
-Engine::Engine()
-{
-}
+Engine::Engine() {}
 
 Engine::~Engine()
 {
-	Cleanup();
+    Cleanup();
 }
 
 void Engine::Init(const int argc, char* const argv[])
 {
-	InitWindow();
-	InitVulkan();
+    InitWindow();
+    InitVulkan();
 }
 
 void Engine::InitWindow()
 {
-	if (!glfwInit())
-		std::cout << "Failed to initialize GLFW\n";
+    if (!glfwInit())
+        std::cout << "Failed to initialize GLFW\n";
 
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-
-	Window = glfwCreateWindow(static_cast<int>(Width), static_cast<int>(Height), WindowTitle, nullptr, nullptr);
-	if (!Window)
-		std::cout << "Failed to create GLFW window\n";
-
+    Window = glfwCreateWindow(
+        static_cast<int>(Width), static_cast<int>(Height), WindowTitle, nullptr, nullptr);
+    if (!Window)
+        std::cout << "Failed to create GLFW window\n";
 }
 
 void Engine::InitVulkan()
 {
-	// Get required extensions from GLFW
-	uint32_t extensionCount = 0;
-	const char** extensions = glfwGetRequiredInstanceExtensions(&extensionCount);
+    // Get required extensions from GLFW
+    uint32_t extensionCount = 0;
+    const char** extensions = glfwGetRequiredInstanceExtensions(&extensionCount);
 
-	VkApplicationInfo appInfo{};
-	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-	appInfo.pApplicationName = WindowTitle;
-	appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-	appInfo.pEngineName = "ImEngine";
-	appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-	appInfo.apiVersion = VK_API_VERSION_1_3;
+    VkApplicationInfo appInfo{};
+    appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+    appInfo.pApplicationName = WindowTitle;
+    appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
+    appInfo.pEngineName = "ImEngine";
+    appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
+    appInfo.apiVersion = VK_API_VERSION_1_3;
 
-	VkInstanceCreateInfo createInfo{};
-	createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-	createInfo.pApplicationInfo = &appInfo;
-	createInfo.enabledExtensionCount = extensionCount;
-	createInfo.ppEnabledExtensionNames = extensions;
+    VkInstanceCreateInfo createInfo{};
+    createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+    createInfo.pApplicationInfo = &appInfo;
+    createInfo.enabledExtensionCount = extensionCount;
+    createInfo.ppEnabledExtensionNames = extensions;
 
-	if (vkCreateInstance(&createInfo, nullptr, &VulkanInstance) != VK_SUCCESS)
-		std::cout << "Failed to create Vulkan instance\n";
+    if (vkCreateInstance(&createInfo, nullptr, &VulkanInstance) != VK_SUCCESS)
+        std::cout << "Failed to create Vulkan instance\n";
 }
 
 void Engine::Run(const int argc, char* const argv[])
 {
-	Init(argc, argv);
-	MainLoop();
+    Init(argc, argv);
+    MainLoop();
 }
 
 void Engine::MainLoop() const
 {
-	while (!glfwWindowShouldClose(Window))
-	{
-		glfwPollEvents();
-		// Future: update / render
-
-	}
+    while (!glfwWindowShouldClose(Window))
+    {
+        glfwPollEvents();
+        // Future: update / render
+    }
 }
 
 void Engine::Cleanup() const
 {
-	if (VulkanInstance != VK_NULL_HANDLE)
-	{
-		vkDestroyInstance(VulkanInstance, nullptr);
-	}
+    if (VulkanInstance != VK_NULL_HANDLE)
+    {
+        vkDestroyInstance(VulkanInstance, nullptr);
+    }
 
-	if (Window)
-	{
-		glfwDestroyWindow(Window);
-		glfwTerminate();
-	}
+    if (Window)
+    {
+        glfwDestroyWindow(Window);
+        glfwTerminate();
+    }
 }

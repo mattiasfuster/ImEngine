@@ -1,49 +1,39 @@
----
 Language: Cpp
 BasedOnStyle: LLVM
-IndentWidth: 4
+Standard: Latest          # Full support for C++17/20/23 features
+
+# --- Indentation & Alignment ---
+IndentWidth: 4            # Keep 4 (more readable for Allman than Google's 2)
 TabWidth: 4
-UseTab: ForIndentation
-AccessModifierOffset: -4
-AlignAfterOpenBracket: DontAlign
-AlignConsecutiveAssignments: false
-AlignConsecutiveDeclarations: true
-AlignEscapedNewlines: Left
-AlignOperands: false
-AlignTrailingComments: true
-AllowShortBlocksOnASingleLine: Empty
-AllowShortCaseLabelsOnASingleLine: false
-AllowShortFunctionsOnASingleLine: None
-AllowShortIfStatementsOnASingleLine: false
-AllowShortLoopsOnASingleLine: false
-AlwaysBreakAfterDefinitionReturnType: None
-AlwaysBreakBeforeMultilineStrings: false
-BreakTemplateDeclarations: Yes
-BinPackArguments: false
-BinPackParameters: false
+UseTab: Never             # RECOMMENDED: Spaces only, no tabs (\t)
+ColumnLimit: 100          # 100 is the modern standard (80 is considered a bit outdated)
+AccessModifierOffset: -4  # brings 'public:' back to level 0 (left aligned)
+
+# --- Allman Style ---
 BreakBeforeBraces: Allman
-BreakBeforeTernaryOperators: true
-ColumnLimit: 100
-ConstructorInitializerIndentWidth: 4
-ContinuationIndentWidth: 4
-Cpp11BracedListStyle: true
-DerivePointerAlignment: false
-IndentCaseLabels: false
-IndentPPDirectives: None
-KeepEmptyLinesAtTheStartOfBlocks: false
-NamespaceIndentation: All
-PointerAlignment: Left
-ReflowComments: true
+IndentCaseLabels: true    # Indents 'case' inside switch (aesthetic preference)
+
+# --- Vertical Alignment (Cleanliness) ---
+# I disabled consecutive alignment because it creates massive git diffs
+# whenever you rename a single variable.
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+AlignTrailingComments: true
+
+# --- Spacing ---
+PointerAlignment: Left          # int* ptr (Modern C++ Standard)
+DerivePointerAlignment: false   # Force left alignment
+SpaceAfterCStyleCast: false     # In modern C++, we avoid C-style casts (int), so this matters less
+SpacesBeforeTrailingComments: 2 # Google prefers 2 spaces before a // comment
+
+# --- Functions & Classes ---
+# Google allows very short functions on one line (getters), even with Allman
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortBlocksOnASingleLine: Empty
+BinPackArguments: false         # One argument per line if it exceeds the limit (more readable)
+BinPackParameters: false
+
+# --- Include Organization (Google Style) ---
 SortIncludes: CaseSensitive
-SpaceAfterCStyleCast: true
-SpaceBeforeAssignmentOperators: true
-SpaceBeforeParens: ControlStatements
-SpacesBeforeTrailingComments: 1
-SpacesInAngles: false
-SpacesInCStyleCastParentheses: false
-SpacesInConditionalStatement: false
-SpacesInContainerLiterals: false
-SpacesInParentheses: false
-SpacesInSquareBrackets: false
-Standard: Auto
----
+IncludeBlocks: Regroup     # Groups C++, C, and local headers separately
+FixNamespaceComments: true # Automatically adds '// namespace my_project' at the end of the file

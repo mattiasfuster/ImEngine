@@ -26,25 +26,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <iostream>
-#include "Engine.h"
+//
+// Created by damma on 22/08/2025.
+//
 
-int main(const int argc, char* const argv[])
-{
-    try
-    {
-        std::cout << "Running Engine..." << std::endl;
-        Engine::Get().Run(argc, argv);
-    }
-    catch (const std::exception& e)
-    {
-        std::cerr << "[Error] Fatal error: " << e.what() << std::endl;
-        return EXIT_FAILURE;
-    }
-    catch (...)
-    {
-        std::cerr << "[Error] Unknown fatal error occurred." << std::endl;
-        return EXIT_FAILURE;
-    }
-    return EXIT_SUCCESS;
-}
+#pragma once
+
+#include "CoreExport.h"
+
+class IMENGINE_API Fiber{
+
+};

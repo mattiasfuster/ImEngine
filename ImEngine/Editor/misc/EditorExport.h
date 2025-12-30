@@ -2,7 +2,8 @@
 //
 // Copyright (c) 2024 FUSTER Mattias
 //
-// This software utilizes code from the following GitHub repositories, which are also licensed under the MIT License:
+// This software utilizes code from the following GitHub repositories, which are also licensed under
+// the MIT License:
 //
 // - [ImGui](https://github.com/ocornut/imgui)
 // - [GLFW](https://github.com/glfw/glfw)
@@ -31,11 +32,11 @@
 #pragma once
 
 #ifdef _WIN32
-	#ifdef IMENGINE_EDITOR_EXPORTS
-		#define IMENGINE_CORE_API __declspec(dllexport)
-	#else
-		#define IMENGINE_CORE_API __declspec(dllimport)
-	#endif
+#ifdef IMENGINE_EDITOR_EXPORTS
+#define IMENGINE_CORE_API __declspec(dllexport)
 #else
-	#define IMENGINE_API
+#define IMENGINE_CORE_API __declspec(dllimport)
+#endif
+#else
+#define IMENGINE_API
 #endif

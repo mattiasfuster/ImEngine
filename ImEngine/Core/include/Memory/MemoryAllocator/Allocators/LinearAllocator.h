@@ -2,7 +2,8 @@
 //
 // Copyright (c) 2024 FUSTER Mattias
 //
-// This software utilizes code from the following GitHub repositories, which are also licensed under the MIT License:
+// This software utilizes code from the following GitHub repositories, which are also licensed under
+// the MIT License:
 //
 // - [ImGui](https://github.com/ocornut/imgui)
 // - [GLFW](https://github.com/glfw/glfw)
@@ -30,47 +31,48 @@
 
 struct LinearAllocator : MemoryAllocatorBase<LinearAllocator>
 {
-	LinearAllocator(void* memory, const size_t size)
-		: m_start(static_cast<uint8_t*>(memory)), m_capacity(size) {}
+    LinearAllocator(void* memory, const size_t size)
+        : m_start(static_cast<uint8_t*>(memory)), m_capacity(size)
+    {
+    }
 
-	void* impl_allocate(const size_t size, const size_t alignment = alignof(std::max_align_t))
-	{
-		assert((alignment & (alignment - 1)) == 0 && "Alignment must be a power of two");
+    void* impl_allocate(const size_t size, const size_t alignment = alignof(std::max_align_t))
+    {
+        assert((alignment & (alignment - 1)) == 0 && "Alignment must be a power of two");
 
-		constexpr int max_attempts = 1000;
-		int attempts = 0;
+        constexpr int max_attempts = 1000;
+        int attempts = 0;
 
-		while (attempts < max_attempts)
-		{
-			size_t current = m_offset.load(std::memory_order_relaxed);
-			const size_t aligned = (current + alignment - 1) & ~(alignment - 1);
-			const size_t newOff  = aligned + size;
+        while (attempts < max_attempts)
+        {
+            size_t current = m_offset.load(std::memory_order_relaxed);
+            const size_t aligned = (current + alignment - 1) & ~(alignment - 1);
+            const size_t newOff = aligned + size;
 
-			if (newOff > m_capacity)
-				return nullptr;
+            if (newOff > m_capacity)
+                return nullptr;
 
-			if (m_offset.compare_exchange_weak(current, newOff,
-											   std::memory_order_acquire,
-											   std::memory_order_relaxed))
-			{
-				return m_start + aligned;
-			}
+            if (m_offset.compare_exchange_weak(
+                    current, newOff, std::memory_order_acquire, std::memory_order_relaxed))
+            {
+                return m_start + aligned;
+            }
 
-			++attempts;
-		}
+            ++attempts;
+        }
 
-		return nullptr;
-	}
+        return nullptr;
+    }
 
-	void impl_deallocate(void*) {}
+    void impl_deallocate(void*) {}
 
-	[[nodiscard]] size_t impl_get_used_bytes() const
-	{
-		return m_offset.load(std::memory_order_relaxed);
-	}
+    [[nodiscard]] size_t impl_get_used_bytes() const
+    {
+        return m_offset.load(std::memory_order_relaxed);
+    }
 
 private:
-	uint8_t*                 m_start;
-	const size_t             m_capacity;
-	std::atomic_size_t       m_offset{0};
+    uint8_t* m_start;
+    const size_t m_capacity;
+    std::atomic_size_t m_offset{0};
 };
