@@ -4,73 +4,73 @@
 [![CMake](https://img.shields.io/badge/CMake-3.29+-green.svg)](https://cmake.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-> Un moteur de jeu modulaire construit avec les fonctionnalités modernes de C++23, axé sur la sécurité, la performance et l'apprentissage.
+> A modular game engine built with modern C++23 features, focused on security, performance, and learning.
 
-## 🚀 Démarrage Rapide
+## 🚀 Quick Start
 
-### Prérequis
+### Prerequisites
 
-| Outil | Version | Notes |
-|-------|---------|-------|
-| Windows | 10/11 | Seule plateforme supportée actuellement |
-| CMake | 3.29+ | [Télécharger](https://cmake.org/download/) |
-| Clang-CL | 19+ | [LLVM](https://releases.llvm.org/download.html) (recommandé) |
-| MSVC | 2022+ | [Visual Studio](https://visualstudio.microsoft.com/fr/) (alternatif) |
-| Ninja | Latest | [Télécharger](https://github.com/ninja-build/ninja/releases) |
-| Git | Latest | Pour cloner le repository |
+| Tool | Version | Notes |
+|------|---------|-------|
+| Windows | 10/11 | Only supported platform currently |
+| CMake | 3.29+ | [Download](https://cmake.org/download/) |
+| Clang-CL | 19+ | [LLVM](https://releases.llvm.org/download.html) (recommended) |
+| MSVC | 2022+ | [Visual Studio](https://visualstudio.microsoft.com/) (alternative) |
+| Ninja | Latest | [Download](https://github.com/ninja-build/ninja/releases) |
+| Git | Latest | To clone the repository |
 
-> **Note** : ccache et Vulkan SDK sont **optionnels** — ils seront téléchargés automatiquement si absents.
+> **Note**: ccache and Vulkan SDK are **optional** — they will be downloaded automatically if missing.
 
 ### Installation
 
 ```powershell
-# 1. Cloner le repository
-git clone https://github.com/votre-username/ImEngine.git
+# 1. Clone the repository
+git clone https://github.com/your-username/ImEngine.git
 cd ImEngine
 
-# 2. Configurer (choisir un preset)
+# 2. Configure (choose a preset)
 cmake --preset editor-app
 
-# 3. Compiler
+# 3. Build
 cmake --build --preset editor-Debug
 
-# 4. Exécuter (optionnel)
+# 4. Run (optional)
 ./out/build/editor-app/bin/Debug/RUNTIME/ImEngine-Editor.exe
 ```
 
-### Presets CMake
+### CMake Presets
 
 | Preset | Modules | Description |
 |--------|---------|-------------|
-| `engine-only` | Core + Engine + Runtime | Application standalone minimale |
-| `editor-app` | Core + Engine + Editor | Éditeur visuel avec ImGui |
-| `sandbox-app` | Core + Engine + Sandbox | Environnement de test/expérimentation |
+| `engine-only` | Core + Engine + Runtime | Minimal standalone application |
+| `editor-app` | Core + Engine + Editor | Visual editor with ImGui |
+| `sandbox-app` | Core + Engine + Sandbox | Test/experimentation environment |
 
 ## 🎯 Architecture
 
-### Structure du Projet
+### Project Structure
 
 ```
 ImEngine/
-├── cmake/                  # Modules CMake (warnings, sécurité, cache)
+├── cmake/                  # CMake modules (warnings, security, cache)
 ├── docs/                   # Documentation
 ├── ImEngine/
-│   ├── Core/              # 🔧 Bibliothèque fondamentale (DLL)
-│   │   ├── include/       #    Memory, Concurrency, (futur: Math, ECS)
+│   ├── Core/              # 🔧 Core library (DLL)
+│   │   ├── include/       #    Memory, Concurrency, (future: Math, ECS)
 │   │   ├── src/
 │   │   └── misc/          #    PCH, Export macros
-│   ├── Engine/            # 🎮 Moteur principal (DLL)
-│   │   ├── include/       #    Vulkan, GLFW, boucle de jeu
+│   ├── Engine/            # 🎮 Main engine (DLL)
+│   │   ├── include/       #    Vulkan, GLFW, game loop
 │   │   ├── src/
 │   │   └── misc/
-│   ├── Runtime/           # ▶️ Exécutable standalone
-│   ├── Editor/            # 🖥️ Éditeur ImGui
-│   ├── Sandbox/           # 🧪 Tests et expérimentations
-│   └── ThirdParty/        # 📦 Dépendances (GLFW, Vulkan, ImGui)
+│   ├── Runtime/           # ▶️ Standalone executable
+│   ├── Editor/            # 🖥️ ImGui editor
+│   ├── Sandbox/           # 🧪 Tests and experiments
+│   └── ThirdParty/        # 📦 Dependencies (GLFW, Vulkan, ImGui)
 └── out/                    # Build artifacts
 ```
 
-### Graphe des Dépendances
+### Dependency Graph
 
 ```
 ThirdParty (GLFW, Vulkan, ImGui)
@@ -91,107 +91,107 @@ ThirdParty (GLFW, Vulkan, ImGui)
 
 | Module | Type | Description |
 |--------|------|-------------|
-| **ImEngine::Core** | DLL | Allocateurs mémoire, Fibers, (prévu: Math, ECS) |
-| **ImEngine::Engine** | DLL | Fenêtre GLFW, Vulkan, boucle principale |
-| **ImEngine::Runtime** | EXE | Point d'entrée application standalone |
-| **ImEngine::Sandbox** | EXE | Environnement de test/expérimentation |
-| **ImEngine::Editor** | EXE | Éditeur visuel avec ImGui (docking) |
+| **ImEngine::Core** | DLL | Memory allocators, Fibers, (planned: Math, ECS) |
+| **ImEngine::Engine** | DLL | GLFW window, Vulkan, main loop |
+| **ImEngine::Runtime** | EXE | Standalone application entry point |
+| **ImEngine::Sandbox** | EXE | Test/experimentation environment |
+| **ImEngine::Editor** | EXE | Visual editor with ImGui (docking) |
 
-## 🔧 Fonctionnalités
+## 🔧 Features
 
-### Build System Moderne
-- ✅ CMake 3.29+ avec Modern CMake patterns
-- ✅ ccache automatique (téléchargement si absent)
-- ✅ Vulkan SDK automatique (headers + loader)
+### Modern Build System
+- ✅ CMake 3.29+ with Modern CMake patterns
+- ✅ Automatic ccache (downloaded if missing)
+- ✅ Automatic Vulkan SDK (headers + loader)
 - ✅ Precompiled headers
-- ✅ Generator expressions pour portabilité
-- ✅ Installation et packaging SDK
+- ✅ Generator expressions for portability
+- ✅ SDK installation and packaging
 
-### Sécurité
+### Security
 - Buffer overflow protection (`/GS`, `-fstack-protector-strong`)
 - Control Flow Guard (`/guard:cf`)
 - ASLR (`/DYNAMICBASE`, `-fPIE`)
 - DEP (`/NXCOMPAT`)
-- Warnings stricts (-Wall, -Wextra, /W4)
+- Strict warnings (-Wall, -Wextra, /W4)
 
 ### Performance
-- Compilation parallèle (Ninja Multi-Config)
-- Cache de compilation (ccache)
-- Builds incrémentaux < 30s
+- Parallel compilation (Ninja Multi-Config)
+- Compilation cache (ccache)
+- Incremental builds < 30s
 
-## 🛠️ Développement
+## 🛠️ Development
 
-### Ajouter un Nouveau Module
+### Adding a New Module
 
-1. Créer le dossier dans `ImEngine/NouveauModule`
-2. Créer `CMakeLists.txt` :
+1. Create folder in `ImEngine/NewModule`
+2. Create `CMakeLists.txt`:
 ```cmake
-add_library(ImEngine-NouveauModule SHARED
+add_library(ImEngine-NewModule SHARED
     src/main.cpp
 )
 
-set_project_warnings(ImEngine-NouveauModule)
-enable_security_flags(ImEngine-NouveauModule)
+set_project_warnings(ImEngine-NewModule)
+enable_security_flags(ImEngine-NewModule)
 
-target_link_libraries(ImEngine-NouveauModule
+target_link_libraries(ImEngine-NewModule
     PUBLIC ImEngine::Core
 )
 
-add_library(ImEngine::NouveauModule ALIAS ImEngine-NouveauModule)
+add_library(ImEngine::NewModule ALIAS ImEngine-NewModule)
 ```
 
-3. Ajouter au `CMakeLists.txt` racine :
+3. Add to root `CMakeLists.txt`:
 ```cmake
-option(IMENGINE_BUILD_NOUVEAUMODULE "Build NouveauModule" OFF)
+option(IMENGINE_BUILD_NEWMODULE "Build NewModule" OFF)
 
-if(IMENGINE_BUILD_NOUVEAUMODULE)
-    add_subdirectory(ImEngine/NouveauModule)
+if(IMENGINE_BUILD_NEWMODULE)
+    add_subdirectory(ImEngine/NewModule)
 endif()
 ```
 
-### Configurations de Build
+### Build Configurations
 
 ```powershell
-# Debug (optimisation off, symboles)
+# Debug (no optimization, symbols)
 cmake --build --preset editor-Debug
 
-# RelWithDebInfo (optimisé + symboles)
+# RelWithDebInfo (optimized + symbols)
 cmake --build --preset editor-RelWithDebInfo
 
-# Release (optimisation max)
+# Release (max optimization)
 cmake --build --preset editor-Release
 ```
 
 ## 📚 Documentation
 
-- [Architecture Détaillée](docs/ARCHITECTURE.md)
-- [Plan Engine Foundations](docs/plan-engineFoundations.prompt.md)
+- [Detailed Architecture](docs/ARCHITECTURE.md)
+- [Engine Foundations Plan](docs/plan-engineFoundations.prompt.md)
 
-## 🐛 Dépannage
+## 🐛 Troubleshooting
 
-### Erreur "ml64: CreateProcess failed"
-✅ **Résolu automatiquement** - Le support des fonctions inconnues Vulkan est désactivé par défaut.
+### Error "ml64: CreateProcess failed"
+✅ **Automatically resolved** - Vulkan unknown function support is disabled by default.
 
 ### ccache not found
-✅ **Résolu automatiquement** - ccache est téléchargé automatiquement sur Windows.
+✅ **Automatically resolved** - ccache is automatically downloaded on Windows.
 
 ### Vulkan SDK not found
-✅ **Résolu automatiquement** - Vulkan-Headers et Vulkan-Loader sont téléchargés et compilés automatiquement.
+✅ **Automatically resolved** - Vulkan-Headers and Vulkan-Loader are automatically downloaded and compiled.
 
-### Compilation lente
-- Vérifiez que ccache est activé (message "Using ccache" au configure)
-- Vérifiez que Ninja est utilisé (préféré à MSBuild)
-- Première compilation toujours plus longue (téléchargement + cache)
+### Slow compilation
+- Check that ccache is enabled ("Using ccache" message during configure)
+- Check that Ninja is being used (preferred over MSBuild)
+- First compilation is always slower (download + cache warmup)
 
-## 📝 Licence
+## 📝 License
 
-MIT License - Voir [LICENSE](LICENSE) pour plus de détails.
+MIT License - See [LICENSE](LICENSE) for more details.
 
-## 🤝 Contribution
+## 🤝 Contributing
 
-Les contributions sont les bienvenues ! Consultez [ARCHITECTURE.md](docs/ARCHITECTURE.md) pour comprendre la structure du projet.
+Contributions are welcome! Check [ARCHITECTURE.md](docs/ARCHITECTURE.md) to understand the project structure.
 
 ---
 
-**Développé avec** ❤️ **et Modern C++23**
+**Built with** ❤️ **and Modern C++23**
 
