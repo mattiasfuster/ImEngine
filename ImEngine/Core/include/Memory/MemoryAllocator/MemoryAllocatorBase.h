@@ -29,7 +29,8 @@
 #pragma once
 #include <cstddef>
 
-template <typename DerivedAllocator> struct MemoryAllocatorBase
+template <typename DerivedAllocator>
+struct MemoryAllocatorBase
 {
     void* allocate(const size_t size, const size_t alignment = alignof(std::max_align_t))
     {

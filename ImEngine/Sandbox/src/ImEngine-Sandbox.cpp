@@ -26,8 +26,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <iostream>
 #include "Engine.h"
+#include "Maths/Objects/Vector.h"
+#include "Maths/Objects/Matrice.h"
+#include <iostream>
+#include <array>
 
 int main(const int argc, char* const argv[])
 {

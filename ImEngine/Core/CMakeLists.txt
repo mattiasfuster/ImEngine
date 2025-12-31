@@ -3,15 +3,19 @@ cmake_minimum_required(VERSION 3.29)
 message(STATUS "[-----ImEngine-Core-----]")
 
 set(CORE_HEADERS
-    include/Concurrency/FibersSystem/Fiber.h
-    include/Memory/MemoryAllocator/MemoryAllocatorBase.h
-    include/Memory/MemoryAllocator/Allocators/LinearAllocator.h
-    include/Memory/MemoryAllocator/Allocators/MallocAllocator.h
-    include/Memory/MemoryAllocator/Allocators/PoolAllocator.h
+        include/Concurrency/FibersSystem/Fiber.h
+        include/Memory/MemoryAllocator/MemoryAllocatorBase.h
+        include/Memory/MemoryAllocator/Allocators/LinearAllocator.h
+        include/Memory/MemoryAllocator/Allocators/MallocAllocator.h
+        include/Memory/MemoryAllocator/Allocators/PoolAllocator.h
+        include/Maths/Objects/Vector.h
+        include/Maths/Objects/Matrice.h
+        include/Maths/Misc/Constants.h
+        include/Maths/Misc/Units.h
 )
 
 set(CORE_SOURCES
-    src/Concurrency/FibersSystem/Fiber.cpp
+        src/Concurrency/FibersSystem/Fiber.cpp
 )
 
 # --- Create the Core as a shared library (DLL) ---
