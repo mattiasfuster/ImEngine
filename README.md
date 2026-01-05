@@ -187,10 +187,6 @@ cmake --build --preset editor-Release
 
 MIT License - See [LICENSE](LICENSE) for more details.
 
-## 🤝 Contributing
-
-Contributions are welcome! Check [ARCHITECTURE.md](docs/ARCHITECTURE.md) to understand the project structure.
-
 ---
 
 **Built with** ❤️ **and Modern C++23**

@@ -34,6 +34,23 @@
 
 int main(const int argc, char* const argv[])
 {
+    Matrice<4, 3, double> Matrice1({
+        {1, 2, 3},
+        {4, 5, 6},
+        {7, 8, 9},
+        {7, 8, 9},
+    });
+
+    Matrice<3, 4, double> Matrice2({
+        {1, 2, 3, 8},
+        {4, 5, 6, 64},
+        {7, 8, 9, 10},
+    });
+
+    Matrice Matrice3 = Matrice1 * Matrice2;
+
+    std::cout << Matrice1.Print() << std::endl << Matrice2.Print() << std::endl << Matrice3.Print() << std::endl;
+
     try
     {
         std::cout << "Running Engine..." << std::endl;

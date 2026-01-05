@@ -7,24 +7,29 @@
 #include <sstream>
 #include <initializer_list>
 
-template<size_t M, size_t N, class T>
+// M Row N Col Ty Type
+template<size_t M, size_t N, class Ty>
 struct Matrice
 {
-    T Data[M][N]{};
+    Ty Data[M][N]{};
     static constexpr size_t Col = N;
     static constexpr size_t Row = M;
 
     //Constructors
     constexpr Matrice() noexcept = default;
 
-    constexpr Matrice(T Scalar) noexcept
+    explicit constexpr Matrice(Ty Scalar) noexcept
     {
         for (size_t i = 0; i < M; ++i)
+        {
             for (size_t j = 0; j < N; ++j)
+            {
                 Data[i][j] = Scalar;
+            }
+        }
     }
 
-    constexpr Matrice(std::initializer_list<std::initializer_list<T>> List) noexcept
+    constexpr Matrice(std::initializer_list<std::initializer_list<Ty>> List) noexcept
     {
         size_t i = 0;
         for (auto& RowList : List)
@@ -48,6 +53,103 @@ struct Matrice
 
     //Destructors
     constexpr ~Matrice() noexcept = default;
+
+    Matrice<M, N, Ty> operator+(const Matrice<M, N, Ty>& Other) const noexcept
+    {
+        Matrice<M, N, Ty> Result;
+        for (size_t i = 0; i < M; ++i)
+        {
+            for (size_t j = 0; j < N; ++j)
+            {
+                Result.Data[i][j] = Data[i][j] + Other.Data[i][j];
+            }
+        }
+        return Result;
+    }
+
+    Matrice<M, N, Ty> operator-(const Matrice<M, N, Ty>& Other) const noexcept
+    {
+        Matrice<M, N, Ty> Result;
+        for (size_t i = 0; i < M; ++i)
+        {
+            for (size_t j = 0; j < N; ++j)
+            {
+                Result.Data[i][j] = Data[i][j] - Other.Data[i][j];
+            }
+        }
+        return Result;
+    }
+
+    template <size_t O>
+    Matrice<M, O, Ty> operator*(const Matrice<N, O, Ty>& Other) const noexcept
+    {
+        Matrice<M, O, Ty> Result;
+        for (size_t i = 0; i < O; ++i)
+        {
+            for (size_t j = 0; j < M; ++j)
+            {
+                for (size_t k = 0; k < N; k++)
+                {
+                    Result.Data[j][i] += Data[j][k] * Other.Data[k][i];
+                }
+            }
+        }
+        return Result;
+    }
+
+    Matrice<M, N, Ty> operator*(const double Scalar) const noexcept
+    {
+        Matrice<M, N, Ty> Result;
+        for (size_t i = 0; i < M; ++i)
+        {
+            for (size_t j = 0; j < N; ++j)
+            {
+                Result.Data[i][j] = Data[i][j] * Scalar;
+            }
+        }
+        return Result;
+    }
+
+    constexpr Matrice<M, N, Ty> operator/(const double Scalar) const noexcept
+    {
+        if (Scalar == 0)
+        {
+            std::cerr << "Can't divide by 0" << std::endl;
+            return Matrice();
+        }
+        Matrice<M, N, Ty> Result;
+        for (size_t i = 0; i < M; ++i)
+        {
+            for (size_t j = 0; j < N; ++j)
+            {
+                Result.Data[i][j] = Data[i][j] / Scalar;
+            }
+        }
+        return Result;
+    }
+
+    constexpr Ty Determinant() const requires (M == N)
+    {
+        if constexpr (M == 1)
+        {
+            return Data[0][0];
+        }
+        else if constexpr (M == 2)
+        {
+            return Data[0][0] * Data[1][1] - Data[0][1] * Data[1][0];
+        }
+        else if constexpr (M == 3)
+        {
+            return Data[0][0] * (Data[1][1] * Data[2][2] - Data[1][2] * Data[2][1]) -
+                   Data[0][1] * (Data[1][0] * Data[2][2] - Data[1][2] * Data[2][0]) +
+                   Data[0][2] * (Data[1][0] * Data[2][1] - Data[1][1] * Data[2][0]);
+        }
+        else
+        {
+            // TODO : Pivot de Gauss
+            return Ty(); 
+        }
+    }
 
     std::string Print() const
     {
@@ -85,5 +187,8 @@ struct Matrice
         return ss.str();
     }
 };
+
+using Mat3 = Matrice<3, 3, float>;
+using Mat4 = Matrice<4, 4, float>;
 
 #endif  // IMENGINE_MATHS_OBJECTS_MATRICE_H
