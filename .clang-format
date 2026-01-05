@@ -1,39 +1,68 @@
+# ImEngine .clang-format
+# Based on Google C++ Style Guide
+# https://google.github.io/styleguide/cppguide.html
+
 Language: Cpp
-BasedOnStyle: LLVM
-Standard: Latest          # Full support for C++17/20/23 features
+BasedOnStyle: Google
+Standard: c++23
 
-# --- Indentation & Alignment ---
-IndentWidth: 4            # Keep 4 (more readable for Allman than Google's 2)
-TabWidth: 4
-UseTab: Never             # RECOMMENDED: Spaces only, no tabs (\t)
-ColumnLimit: 100          # 100 is the modern standard (80 is considered a bit outdated)
-AccessModifierOffset: -4  # brings 'public:' back to level 0 (left aligned)
+# --- Line Length ---
+ColumnLimit: 80  # Google standard
 
-# --- Allman Style ---
-BreakBeforeBraces: Allman
-IndentCaseLabels: true    # Indents 'case' inside switch (aesthetic preference)
+# --- Indentation ---
+IndentWidth: 2
+TabWidth: 2
+UseTab: Never
+AccessModifierOffset: -1  # 'public:' indented 1 space less than class body
+IndentCaseLabels: true
+NamespaceIndentation: None
 
-# --- Vertical Alignment (Cleanliness) ---
-# I disabled consecutive alignment because it creates massive git diffs
-# whenever you rename a single variable.
+# --- Braces ---
+BreakBeforeBraces: Attach  # Google style: opening brace on same line
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortBlocksOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+
+# --- Alignment ---
 AlignConsecutiveAssignments: false
 AlignConsecutiveDeclarations: false
 AlignTrailingComments: true
+AlignAfterOpenBracket: Align
 
 # --- Spacing ---
-PointerAlignment: Left          # int* ptr (Modern C++ Standard)
-DerivePointerAlignment: false   # Force left alignment
-SpaceAfterCStyleCast: false     # In modern C++, we avoid C-style casts (int), so this matters less
-SpacesBeforeTrailingComments: 2 # Google prefers 2 spaces before a // comment
+PointerAlignment: Left  # char* p (not char *p)
+DerivePointerAlignment: false
+SpaceAfterCStyleCast: false
+SpacesBeforeTrailingComments: 2
 
-# --- Functions & Classes ---
-# Google allows very short functions on one line (getters), even with Allman
-AllowShortFunctionsOnASingleLine: Inline
-AllowShortBlocksOnASingleLine: Empty
-BinPackArguments: false         # One argument per line if it exceeds the limit (more readable)
-BinPackParameters: false
+# --- Arguments & Parameters ---
+BinPackArguments: true
+BinPackParameters: true
+AllowAllParametersOfDeclarationOnNextLine: true
 
-# --- Include Organization (Google Style) ---
+# --- Includes ---
 SortIncludes: CaseSensitive
-IncludeBlocks: Regroup     # Groups C++, C, and local headers separately
-FixNamespaceComments: true # Automatically adds '// namespace my_project' at the end of the file
+IncludeBlocks: Regroup
+IncludeCategories:
+  # Related header (implicit - clang-format handles this)
+  # C system headers
+  - Regex: '^<.*\.h>'
+    Priority: 2
+  # C++ standard library
+  - Regex: '^<.*>'
+    Priority: 3
+  # Project headers
+  - Regex: '.*'
+    Priority: 4
+
+# --- Namespace ---
+FixNamespaceComments: true
+CompactNamespaces: false
+
+# --- Other ---
+BreakConstructorInitializers: BeforeColon
+ConstructorInitializerIndentWidth: 4
+Cpp11BracedListStyle: true
+SpaceBeforeParens: ControlStatements
+SpaceInEmptyBlock: false

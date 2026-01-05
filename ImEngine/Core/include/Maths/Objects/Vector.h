@@ -2,11 +2,6 @@
 //
 // Copyright (c) 2024 FUSTER Mattias
 //
-// This software utilizes code from the following GitHub repositories, which are also licensed under the MIT License:
-//
-// - [ImGui](https://github.com/ocornut/imgui)
-// - [GLFW](https://github.com/glfw/glfw)
-//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
@@ -14,8 +9,8 @@
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 //
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -25,245 +20,416 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef IMENGINE_MATHS_OBJECTS_VECTOR_H
-#define IMENGINE_MATHS_OBJECTS_VECTOR_H
+#ifndef IMENGINE_MATHS_OBJECTS_VECTOR_H_
+#define IMENGINE_MATHS_OBJECTS_VECTOR_H_
 
 #include "Maths/Misc/Constants.h"
 #include "Maths/Misc/Units.h"
 
-#include <type_traits>
-#include <iostream>
-#include <numbers>
 #include <cmath>
+#include <numbers>
+#include <type_traits>
 
 using namespace ImEngine::Core::Maths::Constants;
 using namespace ImEngine::Core::Maths::Units;
 
-namespace ImEngine::Core::Maths::Objects
-{
+namespace ImEngine::Core::Maths::Objects {
 
 template <typename T>
-concept AngleUnit = std::is_same_v<T, Degree> ||
-                    std::is_same_v<T, uDegree> ||
-                    std::is_same_v<T, Radian> ||
-                    std::is_same_v<T, uRadian>;
+concept AngleUnit = std::is_same_v<T, Degree> || std::is_same_v<T, uDegree> ||
+                    std::is_same_v<T, Radian> || std::is_same_v<T, uRadian>;
 
 template <class T>
 concept Arithmetic = std::is_arithmetic_v<T>;
 
+// 2D vector for geometric operations.
 template <Arithmetic T>
-struct Vector2
-{
-    T x{}, y{};
+struct Vector2 {
+  T x{};
+  T y{};
 
-    //Constructors
-    constexpr Vector2() noexcept = default;
-    constexpr Vector2(T x, T y) noexcept : x(x), y(y) {}
+  // Constructors
+  constexpr Vector2() noexcept = default;
+  constexpr Vector2(T x, T y) noexcept : x(x), y(y) {}
 
-    constexpr Vector2(const Vector2&) noexcept = default;
-    constexpr Vector2& operator=(const Vector2&) noexcept = default;
-    constexpr Vector2(Vector2&&) noexcept = default;
-    constexpr Vector2& operator=(Vector2&&) noexcept = default;
+  constexpr Vector2(const Vector2&) noexcept = default;
+  constexpr Vector2& operator=(const Vector2&) noexcept = default;
+  constexpr Vector2(Vector2&&) noexcept = default;
+  constexpr Vector2& operator=(Vector2&&) noexcept = default;
 
-    //Destructors
-    constexpr ~Vector2() noexcept = default;
+  constexpr ~Vector2() noexcept = default;
 
-    // Unary Operators
-    constexpr Vector2 operator-() const noexcept { return Vector2(-x, -y); }
+  // Unary Operators
+  [[nodiscard]] constexpr Vector2 operator-() const noexcept {
+    return Vector2(-x, -y);
+  }
 
-    // Binary Operators
-    constexpr Vector2 operator+(const Vector2& Other) const noexcept { return Vector2(x + Other.x, y + Other.y); }
-    constexpr Vector2 operator-(const Vector2& Other) const noexcept { return Vector2(x - Other.x, y - Other.y); }
-    constexpr Vector2 operator*(const Vector2& Other) const noexcept { return Vector2(x * Other.x, y * Other.y); }
-    constexpr Vector2 operator/(const Vector2& Other) const noexcept { return Vector2(x / Other.x, y / Other.y); }
-    
-    constexpr Vector2 operator*(const T Scalar) const noexcept { return Vector2(x * Scalar, y * Scalar); }
-    constexpr Vector2 operator/(const T Scalar) const noexcept { return Vector2(x / Scalar, y / Scalar); }
+  // Binary Operators
+  [[nodiscard]] constexpr Vector2 operator+(const Vector2& other) const
+      noexcept {
+    return Vector2(x + other.x, y + other.y);
+  }
+  [[nodiscard]] constexpr Vector2 operator-(const Vector2& other) const
+      noexcept {
+    return Vector2(x - other.x, y - other.y);
+  }
+  [[nodiscard]] constexpr Vector2 operator*(const Vector2& other) const
+      noexcept {
+    return Vector2(x * other.x, y * other.y);
+  }
+  [[nodiscard]] constexpr Vector2 operator/(const Vector2& other) const
+      noexcept {
+    return Vector2(x / other.x, y / other.y);
+  }
 
-    // Compound Assignment Operators
-    constexpr void operator+=(const Vector2& Other) noexcept { x += Other.x; y += Other.y; }
-    constexpr void operator-=(const Vector2& Other) noexcept { x -= Other.x; y -= Other.y; }
-    constexpr void operator*=(const Vector2& Other) noexcept { x *= Other.x; y *= Other.y; }
-    constexpr void operator/=(const Vector2& Other) noexcept { x /= Other.x; y /= Other.y; }
-    
-    constexpr void operator*=(const T Scalar) noexcept { x *= Scalar; y *= Scalar; }
-    constexpr void operator/=(const T Scalar) noexcept { x /= Scalar; y /= Scalar; }
+  [[nodiscard]] constexpr Vector2 operator*(T scalar) const noexcept {
+    return Vector2(x * scalar, y * scalar);
+  }
+  [[nodiscard]] constexpr Vector2 operator/(T scalar) const noexcept {
+    return Vector2(x / scalar, y / scalar);
+  }
 
-    // Math Functions
-    constexpr double CrossProduct(const Vector2& Other) const noexcept { return static_cast<double>(x * Other.y - y * Other.x); }
-    constexpr double DotProduct(const Vector2& Other) const noexcept { return static_cast<double>(x * Other.x + y * Other.y); }
+  // Compound Assignment Operators
+  constexpr void operator+=(const Vector2& other) noexcept {
+    x += other.x;
+    y += other.y;
+  }
+  constexpr void operator-=(const Vector2& other) noexcept {
+    x -= other.x;
+    y -= other.y;
+  }
+  constexpr void operator*=(const Vector2& other) noexcept {
+    x *= other.x;
+    y *= other.y;
+  }
+  constexpr void operator/=(const Vector2& other) noexcept {
+    x /= other.x;
+    y /= other.y;
+  }
 
-    constexpr double SquaredLength() const noexcept { return static_cast<double>(x * x + y * y); }
-    inline double Length() const noexcept { return std::sqrt(SquaredLength()); }
+  constexpr void operator*=(T scalar) noexcept {
+    x *= scalar;
+    y *= scalar;
+  }
+  constexpr void operator/=(T scalar) noexcept {
+    x /= scalar;
+    y /= scalar;
+  }
 
-    inline double Distance(const Vector2& Other) const noexcept { return (*this - Other).Length(); }
-    constexpr double SquaredDistance(const Vector2& Other) const noexcept { return (*this - Other).SquaredLength(); }
+  // Math Functions
+  [[nodiscard]] constexpr double CrossProduct(const Vector2& other) const
+      noexcept {
+    return static_cast<double>(x * other.y - y * other.x);
+  }
+  [[nodiscard]] constexpr double DotProduct(const Vector2& other) const
+      noexcept {
+    return static_cast<double>(x * other.x + y * other.y);
+  }
 
-    constexpr Vector2 Normal() const noexcept { return Vector2(-y, x); } // Perpendicular
+  [[nodiscard]] constexpr double SquaredLength() const noexcept {
+    return static_cast<double>(x * x + y * y);
+  }
+  [[nodiscard]] double Length() const noexcept {
+    return std::sqrt(SquaredLength());
+  }
 
-    inline void Normalize() noexcept { *this /= static_cast<T>(Length()); }
-    inline Vector2 Normalized() const noexcept { return *this / static_cast<T>(Length()); }
+  [[nodiscard]] double Distance(const Vector2& other) const noexcept {
+    return (*this - other).Length();
+  }
+  [[nodiscard]] constexpr double SquaredDistance(const Vector2& other) const
+      noexcept {
+    return (*this - other).SquaredLength();
+  }
 
-    template<AngleUnit AngleType = Degree>
-    double Angle(const Vector2& Other) const
-    {
-        double angle = std::atan2(CrossProduct(Other), DotProduct(Other));
+  [[nodiscard]] constexpr Vector2 Normal() const noexcept {
+    return Vector2(-y, x);  // Perpendicular
+  }
 
-        if constexpr (std::is_same_v<AngleType, Degree>)
-            return angle * RadToDeg<double>;
-        else if constexpr (std::is_same_v<AngleType, uDegree>)
-        {
-            angle *= RadToDeg<double>;
-            return (angle < 0) ? angle + 360.0 : angle;
-        }
-        else if constexpr (std::is_same_v<AngleType, uRadian>)
-            return (angle < 0) ? angle + (2.0 * std::numbers::pi) : angle;
-        else
-            return angle;
+  void Normalize() noexcept { *this /= static_cast<T>(Length()); }
+  [[nodiscard]] Vector2 Normalized() const noexcept {
+    return *this / static_cast<T>(Length());
+  }
+
+  template <AngleUnit AngleType = Degree>
+  [[nodiscard]] double Angle(const Vector2& other) const {
+    double angle = std::atan2(CrossProduct(other), DotProduct(other));
+
+    if constexpr (std::is_same_v<AngleType, Degree>) {
+      return angle * RadToDeg<double>;
+    } else if constexpr (std::is_same_v<AngleType, uDegree>) {
+      angle *= RadToDeg<double>;
+      return (angle < 0) ? angle + 360.0 : angle;
+    } else if constexpr (std::is_same_v<AngleType, uRadian>) {
+      return (angle < 0) ? angle + (2.0 * std::numbers::pi) : angle;
+    } else {
+      return angle;
     }
+  }
 };
 
+// 3D vector for geometric operations.
 template <Arithmetic T>
-struct Vector3
-{
-    T x{}, y{}, z{};
+struct Vector3 {
+  T x{};
+  T y{};
+  T z{};
 
-    //Constructors
-    constexpr Vector3() noexcept = default;
-    constexpr Vector3(T x, T y, T z) noexcept : x(x), y(y), z(z) {}
-    constexpr Vector3(const Vector2<T>& xy, T z) noexcept : x(xy.x), y(xy.y), z(z) {}
+  // Constructors
+  constexpr Vector3() noexcept = default;
+  constexpr Vector3(T x, T y, T z) noexcept : x(x), y(y), z(z) {}
+  constexpr Vector3(const Vector2<T>& xy, T z) noexcept
+      : x(xy.x), y(xy.y), z(z) {}
 
-    constexpr Vector3(const Vector3&) noexcept = default;
-    constexpr Vector3& operator=(const Vector3&) noexcept = default;
-    constexpr Vector3(Vector3&&) noexcept = default;
-    constexpr Vector3& operator=(Vector3&&) noexcept = default;
+  constexpr Vector3(const Vector3&) noexcept = default;
+  constexpr Vector3& operator=(const Vector3&) noexcept = default;
+  constexpr Vector3(Vector3&&) noexcept = default;
+  constexpr Vector3& operator=(Vector3&&) noexcept = default;
 
-    //Destructors
-    constexpr ~Vector3() noexcept = default;
+  constexpr ~Vector3() noexcept = default;
 
-    // Unary Operators
-    constexpr Vector3 operator-() const noexcept { return Vector3(-x, -y, -z); }
+  // Unary Operators
+  [[nodiscard]] constexpr Vector3 operator-() const noexcept {
+    return Vector3(-x, -y, -z);
+  }
 
-    // Binary Operators
-    constexpr Vector3 operator+(const Vector3& Other) const noexcept { return Vector3(x + Other.x, y + Other.y, z + Other.z); }
-    constexpr Vector3 operator-(const Vector3& Other) const noexcept { return Vector3(x - Other.x, y - Other.y, z - Other.z); }
-    constexpr Vector3 operator*(const Vector3& Other) const noexcept { return Vector3(x * Other.x, y * Other.y, z * Other.z); }
-    constexpr Vector3 operator/(const Vector3& Other) const noexcept { return Vector3(x / Other.x, y / Other.y, z / Other.z); }
-    
-    constexpr Vector3 operator*(const T Scalar) const noexcept { return Vector3(x * Scalar, y * Scalar, z * Scalar); }
-    constexpr Vector3 operator/(const T Scalar) const noexcept { return Vector3(x / Scalar, y / Scalar, z / Scalar); }
+  // Binary Operators
+  [[nodiscard]] constexpr Vector3 operator+(const Vector3& other) const
+      noexcept {
+    return Vector3(x + other.x, y + other.y, z + other.z);
+  }
+  [[nodiscard]] constexpr Vector3 operator-(const Vector3& other) const
+      noexcept {
+    return Vector3(x - other.x, y - other.y, z - other.z);
+  }
+  [[nodiscard]] constexpr Vector3 operator*(const Vector3& other) const
+      noexcept {
+    return Vector3(x * other.x, y * other.y, z * other.z);
+  }
+  [[nodiscard]] constexpr Vector3 operator/(const Vector3& other) const
+      noexcept {
+    return Vector3(x / other.x, y / other.y, z / other.z);
+  }
 
-    // Compound Assignment Operators
-    constexpr void operator+=(const Vector3& Other) noexcept { x += Other.x; y += Other.y; z += Other.z; }
-    constexpr void operator-=(const Vector3& Other) noexcept { x -= Other.x; y -= Other.y; z -= Other.z; }
-    constexpr void operator*=(const Vector3& Other) noexcept { x *= Other.x; y *= Other.y; z *= Other.z; }
-    constexpr void operator/=(const Vector3& Other) noexcept { x /= Other.x; y /= Other.y; z /= Other.z; }
-    
-    constexpr void operator*=(const T Scalar) noexcept { x *= Scalar; y *= Scalar; z *= Scalar; }
-    constexpr void operator/=(const T Scalar) noexcept { x /= Scalar; y /= Scalar; z /= Scalar; }
+  [[nodiscard]] constexpr Vector3 operator*(T scalar) const noexcept {
+    return Vector3(x * scalar, y * scalar, z * scalar);
+  }
+  [[nodiscard]] constexpr Vector3 operator/(T scalar) const noexcept {
+    return Vector3(x / scalar, y / scalar, z / scalar);
+  }
 
-    // Math Functions
-    constexpr Vector3 CrossProduct(const Vector3& Other) const noexcept 
-    { 
-        return Vector3(
-            y * Other.z - z * Other.y,
-            z * Other.x - x * Other.z,
-            x * Other.y - y * Other.x
-        ); 
+  // Compound Assignment Operators
+  constexpr void operator+=(const Vector3& other) noexcept {
+    x += other.x;
+    y += other.y;
+    z += other.z;
+  }
+  constexpr void operator-=(const Vector3& other) noexcept {
+    x -= other.x;
+    y -= other.y;
+    z -= other.z;
+  }
+  constexpr void operator*=(const Vector3& other) noexcept {
+    x *= other.x;
+    y *= other.y;
+    z *= other.z;
+  }
+  constexpr void operator/=(const Vector3& other) noexcept {
+    x /= other.x;
+    y /= other.y;
+    z /= other.z;
+  }
+
+  constexpr void operator*=(T scalar) noexcept {
+    x *= scalar;
+    y *= scalar;
+    z *= scalar;
+  }
+  constexpr void operator/=(T scalar) noexcept {
+    x /= scalar;
+    y /= scalar;
+    z /= scalar;
+  }
+
+  // Math Functions
+  [[nodiscard]] constexpr Vector3 CrossProduct(const Vector3& other) const
+      noexcept {
+    return Vector3(y * other.z - z * other.y, z * other.x - x * other.z,
+                   x * other.y - y * other.x);
+  }
+
+  [[nodiscard]] constexpr double DotProduct(const Vector3& other) const
+      noexcept {
+    return static_cast<double>(x * other.x + y * other.y + z * other.z);
+  }
+
+  [[nodiscard]] constexpr double SquaredLength() const noexcept {
+    return static_cast<double>(x * x + y * y + z * z);
+  }
+  [[nodiscard]] double Length() const noexcept {
+    return std::sqrt(SquaredLength());
+  }
+
+  [[nodiscard]] double Distance(const Vector3& other) const noexcept {
+    return (*this - other).Length();
+  }
+  [[nodiscard]] constexpr double SquaredDistance(const Vector3& other) const
+      noexcept {
+    return (*this - other).SquaredLength();
+  }
+
+  void Normalize() noexcept { *this /= static_cast<T>(Length()); }
+  [[nodiscard]] Vector3 Normalized() const noexcept {
+    return *this / static_cast<T>(Length());
+  }
+
+  // Angle between two vectors.
+  template <AngleUnit AngleType = Degree>
+  [[nodiscard]] double Angle(const Vector3& other) const {
+    double dot = DotProduct(other);
+    double len_sq1 = SquaredLength();
+    double len_sq2 = other.SquaredLength();
+    double angle = std::acos(dot / std::sqrt(len_sq1 * len_sq2));
+
+    if constexpr (std::is_same_v<AngleType, Degree>) {
+      return angle * RadToDeg<double>;
+    } else if constexpr (std::is_same_v<AngleType, uDegree>) {
+      return angle * RadToDeg<double>;
+    } else {
+      return angle;
     }
-    
-    constexpr double DotProduct(const Vector3& Other) const noexcept { return static_cast<double>(x * Other.x + y * Other.y + z * Other.z); }
-
-    constexpr double SquaredLength() const noexcept { return static_cast<double>(x * x + y * y + z * z); }
-    inline double Length() const noexcept { return std::sqrt(SquaredLength()); }
-
-    inline double Distance(const Vector3& Other) const noexcept { return (*this - Other).Length(); }
-    constexpr double SquaredDistance(const Vector3& Other) const noexcept { return (*this - Other).SquaredLength(); }
-
-    inline void Normalize() noexcept { *this /= static_cast<T>(Length()); }
-    inline Vector3 Normalized() const noexcept { return *this / static_cast<T>(Length()); }
-
-    // Angle between two vectors
-    template<AngleUnit AngleType = Degree>
-    double Angle(const Vector3& Other) const
-    {
-        double dot = DotProduct(Other);
-        double lenSq1 = SquaredLength();
-        double lenSq2 = Other.SquaredLength();
-        double angle = std::acos(dot / std::sqrt(lenSq1 * lenSq2));
-
-        if constexpr (std::is_same_v<AngleType, Degree>)
-            return angle * RadToDeg<double>;
-        else if constexpr (std::is_same_v<AngleType, uDegree>)
-            return angle * RadToDeg<double>;
-        else
-            return angle;
-    }
+  }
 };
 
+// 4D vector for homogeneous coordinates.
 template <Arithmetic T>
-struct Vector4
-{
-    T x{}, y{}, z{}, w{};
+struct Vector4 {
+  T x{};
+  T y{};
+  T z{};
+  T w{};
 
-    //Constructors
-    constexpr Vector4() noexcept = default;
-    constexpr Vector4(T x, T y, T z, T w) noexcept : x(x), y(y), z(z), w(w) {}
-    constexpr Vector4(const Vector3<T>& xyz, T w) noexcept : x(xyz.x), y(xyz.y), z(xyz.z), w(w) {}
-    constexpr Vector4(const Vector2<T>& xy, T z, T w) noexcept : x(xy.x), y(xy.y), z(z), w(w) {}
+  // Constructors
+  constexpr Vector4() noexcept = default;
+  constexpr Vector4(T x, T y, T z, T w) noexcept : x(x), y(y), z(z), w(w) {}
+  constexpr Vector4(const Vector3<T>& xyz, T w) noexcept
+      : x(xyz.x), y(xyz.y), z(xyz.z), w(w) {}
+  constexpr Vector4(const Vector2<T>& xy, T z, T w) noexcept
+      : x(xy.x), y(xy.y), z(z), w(w) {}
 
-    constexpr Vector4(const Vector4&) noexcept = default;
-    constexpr Vector4& operator=(const Vector4&) noexcept = default;
-    constexpr Vector4(Vector4&&) noexcept = default;
-    constexpr Vector4& operator=(Vector4&&) noexcept = default;
+  constexpr Vector4(const Vector4&) noexcept = default;
+  constexpr Vector4& operator=(const Vector4&) noexcept = default;
+  constexpr Vector4(Vector4&&) noexcept = default;
+  constexpr Vector4& operator=(Vector4&&) noexcept = default;
 
-    //Destructors
-    constexpr ~Vector4() noexcept = default;
+  constexpr ~Vector4() noexcept = default;
 
-    // Unary Operators
-    constexpr Vector4 operator-() const noexcept { return Vector4(-x, -y, -z, -w); }
+  // Unary Operators
+  [[nodiscard]] constexpr Vector4 operator-() const noexcept {
+    return Vector4(-x, -y, -z, -w);
+  }
 
-    // Binary Operators
-    constexpr Vector4 operator+(const Vector4& Other) const noexcept { return Vector4(x + Other.x, y + Other.y, z + Other.z, w + Other.w); }
-    constexpr Vector4 operator-(const Vector4& Other) const noexcept { return Vector4(x - Other.x, y - Other.y, z - Other.z, w - Other.w); }
-    constexpr Vector4 operator*(const Vector4& Other) const noexcept { return Vector4(x * Other.x, y * Other.y, z * Other.z, w * Other.w); }
-    constexpr Vector4 operator/(const Vector4& Other) const noexcept { return Vector4(x / Other.x, y / Other.y, z / Other.z, w / Other.w); }
-    
-    constexpr Vector4 operator*(const T Scalar) const noexcept { return Vector4(x * Scalar, y * Scalar, z * Scalar, w * Scalar); }
-    constexpr Vector4 operator/(const T Scalar) const noexcept { return Vector4(x / Scalar, y / Scalar, z / Scalar, w / Scalar); }
+  // Binary Operators
+  [[nodiscard]] constexpr Vector4 operator+(const Vector4& other) const
+      noexcept {
+    return Vector4(x + other.x, y + other.y, z + other.z, w + other.w);
+  }
+  [[nodiscard]] constexpr Vector4 operator-(const Vector4& other) const
+      noexcept {
+    return Vector4(x - other.x, y - other.y, z - other.z, w - other.w);
+  }
+  [[nodiscard]] constexpr Vector4 operator*(const Vector4& other) const
+      noexcept {
+    return Vector4(x * other.x, y * other.y, z * other.z, w * other.w);
+  }
+  [[nodiscard]] constexpr Vector4 operator/(const Vector4& other) const
+      noexcept {
+    return Vector4(x / other.x, y / other.y, z / other.z, w / other.w);
+  }
 
-    // Compound Assignment Operators
-    constexpr void operator+=(const Vector4& Other) noexcept { x += Other.x; y += Other.y; z += Other.z; w += Other.w; }
-    constexpr void operator-=(const Vector4& Other) noexcept { x -= Other.x; y -= Other.y; z -= Other.z; w -= Other.w; }
-    constexpr void operator*=(const Vector4& Other) noexcept { x *= Other.x; y *= Other.y; z *= Other.z; w *= Other.w; }
-    constexpr void operator/=(const Vector4& Other) noexcept { x /= Other.x; y /= Other.y; z /= Other.z; w /= Other.w; }
-    
-    constexpr void operator*=(const T Scalar) noexcept { x *= Scalar; y *= Scalar; z *= Scalar; w *= Scalar; }
-    constexpr void operator/=(const T Scalar) noexcept { x /= Scalar; y /= Scalar; z /= Scalar; w /= Scalar; }
+  [[nodiscard]] constexpr Vector4 operator*(T scalar) const noexcept {
+    return Vector4(x * scalar, y * scalar, z * scalar, w * scalar);
+  }
+  [[nodiscard]] constexpr Vector4 operator/(T scalar) const noexcept {
+    return Vector4(x / scalar, y / scalar, z / scalar, w / scalar);
+  }
 
-    // Math Functions
-    constexpr double DotProduct(const Vector4& Other) const noexcept { return static_cast<double>(x * Other.x + y * Other.y + z * Other.z + w * Other.w); }
+  // Compound Assignment Operators
+  constexpr void operator+=(const Vector4& other) noexcept {
+    x += other.x;
+    y += other.y;
+    z += other.z;
+    w += other.w;
+  }
+  constexpr void operator-=(const Vector4& other) noexcept {
+    x -= other.x;
+    y -= other.y;
+    z -= other.z;
+    w -= other.w;
+  }
+  constexpr void operator*=(const Vector4& other) noexcept {
+    x *= other.x;
+    y *= other.y;
+    z *= other.z;
+    w *= other.w;
+  }
+  constexpr void operator/=(const Vector4& other) noexcept {
+    x /= other.x;
+    y /= other.y;
+    z /= other.z;
+    w /= other.w;
+  }
 
-    constexpr double SquaredLength() const noexcept { return static_cast<double>(x * x + y * y + z * z + w * w); }
-    inline double Length() const noexcept { return std::sqrt(SquaredLength()); }
+  constexpr void operator*=(T scalar) noexcept {
+    x *= scalar;
+    y *= scalar;
+    z *= scalar;
+    w *= scalar;
+  }
+  constexpr void operator/=(T scalar) noexcept {
+    x /= scalar;
+    y /= scalar;
+    z /= scalar;
+    w /= scalar;
+  }
 
-    inline double Distance(const Vector4& Other) const noexcept { return (*this - Other).Length(); }
-    constexpr double SquaredDistance(const Vector4& Other) const noexcept { return (*this - Other).SquaredLength(); }
+  // Math Functions
+  [[nodiscard]] constexpr double DotProduct(const Vector4& other) const
+      noexcept {
+    return static_cast<double>(x * other.x + y * other.y + z * other.z +
+                               w * other.w);
+  }
 
-    inline void Normalize() noexcept { *this /= static_cast<T>(Length()); }
-    inline Vector4 Normalized() const noexcept { return *this / static_cast<T>(Length()); }
+  [[nodiscard]] constexpr double SquaredLength() const noexcept {
+    return static_cast<double>(x * x + y * y + z * z + w * w);
+  }
+  [[nodiscard]] double Length() const noexcept {
+    return std::sqrt(SquaredLength());
+  }
+
+  [[nodiscard]] double Distance(const Vector4& other) const noexcept {
+    return (*this - other).Length();
+  }
+  [[nodiscard]] constexpr double SquaredDistance(const Vector4& other) const
+      noexcept {
+    return (*this - other).SquaredLength();
+  }
+
+  void Normalize() noexcept { *this /= static_cast<T>(Length()); }
+  [[nodiscard]] Vector4 Normalized() const noexcept {
+    return *this / static_cast<T>(Length());
+  }
 };
 
-}
+}  // namespace ImEngine::Core::Maths::Objects
 
-//Type GLM style
-template <typename Ty = float>
-using Vec2 = ImEngine::Core::Maths::Objects::Vector2<Ty>;
+// Type aliases (GLM style).
+template <typename T = float>
+using Vec2 = ImEngine::Core::Maths::Objects::Vector2<T>;
 
-template <typename Ty = float>
-using Vec3 = ImEngine::Core::Maths::Objects::Vector3<Ty>;
+template <typename T = float>
+using Vec3 = ImEngine::Core::Maths::Objects::Vector3<T>;
 
-template <typename Ty = float>
-using Vec4 = ImEngine::Core::Maths::Objects::Vector4<Ty>;
+template <typename T = float>
+using Vec4 = ImEngine::Core::Maths::Objects::Vector4<T>;
 
-#endif  // IMENGINE_MATHS_OBJECTS_VECTOR_H
+#endif  // IMENGINE_MATHS_OBJECTS_VECTOR_H_

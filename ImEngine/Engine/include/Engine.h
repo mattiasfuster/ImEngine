@@ -37,32 +37,31 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
-class IMENGINE_ENGINE_API Engine
-{
-public:
-    static Engine& Get();
-    ~Engine();
+class IMENGINE_ENGINE_API Engine {
+ public:
+  static Engine& Get();
+  ~Engine();
 
-    Engine(const Engine&) = delete;
-    Engine& operator=(const Engine&) = delete;
+  Engine(const Engine&) = delete;
+  Engine& operator=(const Engine&) = delete;
 
-    void Run(int argc, char* const argv[]);
+  void Run(int argc, char* const argv[]);
 
-    [[nodiscard]] GLFWwindow* GetWindow() const { return Window; }
-    [[nodiscard]] VkInstance GetVulkanInstance() const { return VulkanInstance; }
+  [[nodiscard]] GLFWwindow* window() const { return window_; }
+  [[nodiscard]] VkInstance vulkan_instance() const { return vulkan_instance_; }
 
-private:
-    Engine();
-    void Init(int argc, char* const argv[]);
-    void InitWindow();
-    void InitVulkan();
-    void MainLoop() const;
-    void Cleanup() const;
+ private:
+  Engine();
+  void Init(int argc, char* const argv[]);
+  void InitWindow();
+  void InitVulkan();
+  void MainLoop() const;
+  void Cleanup() const;
 
-    GLFWwindow* Window = nullptr;
-    const uint32_t Width = 1280;
-    const uint32_t Height = 720;
-    const char* WindowTitle = "ImEngine Runtime";
+  GLFWwindow* window_ = nullptr;
+  uint32_t width_ = 1280;
+  uint32_t height_ = 720;
+  const char* window_title_ = "ImEngine Sandbox";
 
-    VkInstance VulkanInstance = VK_NULL_HANDLE;
+  VkInstance vulkan_instance_ = VK_NULL_HANDLE;
 };

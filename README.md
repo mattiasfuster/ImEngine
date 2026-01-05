@@ -160,9 +160,54 @@ cmake --build --preset editor-RelWithDebInfo
 cmake --build --preset editor-Release
 ```
 
+## � Coding Style
+
+ImEngine follows the **[Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html)** with adaptations for C++23.
+
+### Naming Conventions
+
+| Element | Convention | Example |
+|---------|------------|---------|
+| **Types** (classes, structs, enums) | `PascalCase` | `Vector3`, `LinearAllocator` |
+| **Functions** | `PascalCase` | `DotProduct()`, `InitWindow()` |
+| **Variables** | `snake_case` | `extension_count`, `app_info` |
+| **Class data members** | `snake_case_` (trailing underscore) | `window_`, `width_` |
+| **Struct data members** | `snake_case` (no trailing underscore) | `x`, `y`, `data` |
+| **Constants** | `kPascalCase` | `kRows`, `kMaxSize` |
+| **Template parameters** | Single uppercase or `PascalCase` | `T`, `AngleUnit` |
+| **Namespaces** | `snake_case` | `imengine::core` |
+| **Macros** | `UPPER_SNAKE_CASE` | `IMENGINE_API` |
+| **Accessors** | `snake_case()` | `window()`, `vulkan_instance()` |
+
+### Formatting (.clang-format)
+
+- **Indentation**: 2 spaces (no tabs)
+- **Line length**: 80 characters
+- **Braces**: Attached (`{` on same line)
+- **Pointers**: `char* p` (left-aligned)
+
+### C++23 Best Practices
+
+```cpp
+// Use [[nodiscard]] for functions returning values
+[[nodiscard]] constexpr double SquaredLength() const noexcept;
+
+// Use concepts for template constraints
+template <Arithmetic T>
+struct Vector3 { ... };
+
+// Prefer constexpr for compile-time evaluation
+constexpr Vector3 operator+(const Vector3& other) const noexcept;
+
+// Use explicit for single-argument constructors
+explicit constexpr Matrice(T scalar) noexcept;
+```
+
+For the complete coding guide, see [CODING_STYLE.md](docs/CODING_STYLE.md).
+
 ## 📚 Documentation
 
-- [Detailed Architecture](docs/ARCHITECTURE.md)
+- [Coding Style Guide](docs/CODING_STYLE.md)
 - [Engine Foundations Plan](docs/plan-engineFoundations.prompt.md)
 
 ## 🐛 Troubleshooting
