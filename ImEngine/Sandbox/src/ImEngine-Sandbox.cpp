@@ -30,8 +30,6 @@
 #include "Maths/Objects/Vector.h"
 #include "Maths/Objects/Matrice.h"
 #include "Debug/Logger.h"
-#include <iostream>
-#include <array>
 
 int main(const int argc, char* const argv[])
 {
@@ -42,7 +40,7 @@ int main(const int argc, char* const argv[])
     }
     catch (const std::exception& e)
     {
-        IM_ERROR("Fatal error: {}", e.what());
+        std::fprintf(stderr, "[ERROR] Fatal error: %s\n", e.what());
         return EXIT_FAILURE;
     }
     catch (...)

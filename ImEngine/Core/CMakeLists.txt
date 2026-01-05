@@ -14,6 +14,7 @@ set(CORE_HEADERS
 )
 
 set(CORE_SOURCES
+        src/Core.cpp
 )
 
 # --- Create the Core as a shared library (DLL) ---
