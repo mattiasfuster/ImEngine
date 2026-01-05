@@ -9,7 +9,6 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 # ---- Global options (robust defaults) ---------------------------------------
 option(IMENGINE_BUILD_CORE    "Build ImEngine Core"    ON)
 option(IMENGINE_BUILD_ENGINE  "Build ImEngine Engine"  ON)
-option(IMENGINE_BUILD_RUNTIME "Build ImEngine Runtime" ON)
 option(IMENGINE_BUILD_SANDBOX "Build ImEngine Sandbox" OFF)
 option(IMENGINE_BUILD_EDITOR  "Build ImEngine Editor"  OFF)
 
@@ -36,11 +35,6 @@ endif()
 if(IMENGINE_BUILD_ENGINE)
   add_subdirectory(ImEngine/Engine)
 endif()
-
-if(IMENGINE_BUILD_RUNTIME)
-  add_subdirectory(ImEngine/Runtime)
-endif()
-
 
 if(IMENGINE_BUILD_SANDBOX)
   add_subdirectory(ImEngine/Sandbox)

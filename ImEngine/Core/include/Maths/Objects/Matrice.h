@@ -7,6 +7,9 @@
 #include <sstream>
 #include <initializer_list>
 
+namespace ImEngine::Core::Maths::Objects
+{
+
 // M Row N Col Ty Type
 template<size_t M, size_t N, class Ty>
 struct Matrice
@@ -188,7 +191,12 @@ struct Matrice
     }
 };
 
-using Mat3 = Matrice<3, 3, float>;
-using Mat4 = Matrice<4, 4, float>;
+}
+
+template <typename Ty = float>
+using Mat3 = ImEngine::Core::Maths::Objects::Matrice<3, 3, Ty>;
+
+template <typename Ty = float>
+using Mat4 = ImEngine::Core::Maths::Objects::Matrice<4, 4, Ty>;
 
 #endif  // IMENGINE_MATHS_OBJECTS_MATRICE_H

@@ -42,9 +42,9 @@ cmake --build --preset editor-Debug
 
 | Preset | Modules | Description |
 |--------|---------|-------------|
-| `engine-only` | Core + Engine + Runtime | Minimal standalone application |
+| `engine-only` | Core + Engine | Libraries only (no executable) |
+| `sandbox-app` | Core + Engine + Sandbox | Development/testing environment |
 | `editor-app` | Core + Engine + Editor | Visual editor with ImGui |
-| `sandbox-app` | Core + Engine + Sandbox | Test/experimentation environment |
 
 ## 🎯 Architecture
 
@@ -63,9 +63,8 @@ ImEngine/
 │   │   ├── include/       #    Vulkan, GLFW, game loop
 │   │   ├── src/
 │   │   └── misc/
-│   ├── Runtime/           # ▶️ Standalone executable
+│   ├── Sandbox/           # 🧪 Development and experiments
 │   ├── Editor/            # 🖥️ ImGui editor
-│   ├── Sandbox/           # 🧪 Tests and experiments
 │   └── ThirdParty/        # 📦 Dependencies (GLFW, Vulkan, ImGui)
 └── out/                    # Build artifacts
 ```
@@ -81,10 +80,10 @@ ThirdParty (GLFW, Vulkan, ImGui)
          ▼                          │
    ImEngine-Engine                  │
          │ PRIVATE                  │
-    ┌────┴────┬──────────┐          │
-    ▼         ▼          ▼          │
- Runtime   Sandbox    Editor ◄──────┘
-  (EXE)     (EXE)     (EXE)      ImGui
+         ├──────────────┐           │
+         ▼              ▼           │
+      Sandbox        Editor ◄───────┘
+       (EXE)         (EXE)       ImGui
 ```
 
 ### Modules
@@ -93,8 +92,7 @@ ThirdParty (GLFW, Vulkan, ImGui)
 |--------|------|-------------|
 | **ImEngine::Core** | DLL | Memory allocators, Fibers, (planned: Math, ECS) |
 | **ImEngine::Engine** | DLL | GLFW window, Vulkan, main loop |
-| **ImEngine::Runtime** | EXE | Standalone application entry point |
-| **ImEngine::Sandbox** | EXE | Test/experimentation environment |
+| **ImEngine::Sandbox** | EXE | Development/testing environment |
 | **ImEngine::Editor** | EXE | Visual editor with ImGui (docking) |
 
 ## 🔧 Features
@@ -190,4 +188,3 @@ MIT License - See [LICENSE](LICENSE) for more details.
 ---
 
 **Built with** ❤️ **and Modern C++23**
-

@@ -30,7 +30,6 @@
       "cacheVariables": {
         "IMENGINE_BUILD_CORE": "ON",
         "IMENGINE_BUILD_ENGINE": "ON",
-        "IMENGINE_BUILD_RUNTIME": "ON",
         "IMENGINE_BUILD_SANDBOX": "OFF",
         "IMENGINE_BUILD_EDITOR": "OFF"
       }
@@ -41,7 +40,6 @@
       "cacheVariables": {
         "IMENGINE_BUILD_CORE": "ON",
         "IMENGINE_BUILD_ENGINE": "ON",
-        "IMENGINE_BUILD_RUNTIME": "OFF",
         "IMENGINE_BUILD_SANDBOX": "ON",
         "IMENGINE_BUILD_EDITOR": "OFF"
       }
@@ -52,7 +50,6 @@
       "cacheVariables": {
         "IMENGINE_BUILD_CORE": "ON",
         "IMENGINE_BUILD_ENGINE": "ON",
-        "IMENGINE_BUILD_RUNTIME": "OFF",
         "IMENGINE_BUILD_SANDBOX": "OFF",
         "IMENGINE_BUILD_EDITOR": "ON"
       }
@@ -63,7 +60,7 @@
     {
       "name": "engine-Debug",
       "configurePreset": "engine-only",
-      "targets": ["ImEngine-Core", "ImEngine-Engine", "ImEngine-Runtime"],
+      "targets": ["ImEngine-Core", "ImEngine-Engine"],
       "configuration": "Debug",
       "jobs": 12,
       "verbose": true
@@ -71,14 +68,14 @@
     {
       "name": "engine-RelWithDebInfo",
       "configurePreset": "engine-only",
-      "targets": ["ImEngine-Core", "ImEngine-Engine", "ImEngine-Runtime"],
+      "targets": ["ImEngine-Core", "ImEngine-Engine"],
       "configuration": "RelWithDebInfo",
       "jobs": 12
     },
     {
       "name": "engine-Release",
       "configurePreset": "engine-only",
-      "targets": ["ImEngine-Core", "ImEngine-Engine", "ImEngine-Runtime"],
+      "targets": ["ImEngine-Core", "ImEngine-Engine"],
       "configuration": "Release",
       "jobs": 12
     },

@@ -30,6 +30,7 @@
 // Created by damma on 17/05/2025.
 //
 #include "Engine.h"
+#include "Debug/Logger.h"
 
 // Static accessor
 Engine& Engine::Get()
@@ -53,8 +54,9 @@ void Engine::Init([[maybe_unused]] const int argc,[[maybe_unused]] char* const a
 
 void Engine::InitWindow()
 {
+    IM_INFO("Initializing Window...");
     if (!glfwInit())
-        std::cout << "Failed to initialize GLFW\n";
+        IM_ERROR("Failed to initialize GLFW");
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
@@ -62,11 +64,12 @@ void Engine::InitWindow()
     Window = glfwCreateWindow(
         static_cast<int>(Width), static_cast<int>(Height), WindowTitle, nullptr, nullptr);
     if (!Window)
-        std::cout << "Failed to create GLFW window\n";
+        IM_ERROR("Failed to create GLFW window");
 }
 
 void Engine::InitVulkan()
 {
+    IM_INFO("Initializing Vulkan...");
     // Get required extensions from GLFW
     uint32_t extensionCount = 0;
     const char** extensions = glfwGetRequiredInstanceExtensions(&extensionCount);
@@ -86,7 +89,7 @@ void Engine::InitVulkan()
     createInfo.ppEnabledExtensionNames = extensions;
 
     if (vkCreateInstance(&createInfo, nullptr, &VulkanInstance) != VK_SUCCESS)
-        std::cout << "Failed to create Vulkan instance\n";
+        IM_ERROR("Failed to create Vulkan instance");
 }
 
 void Engine::Run(const int argc, char* const argv[])
@@ -106,6 +109,7 @@ void Engine::MainLoop() const
 
 void Engine::Cleanup() const
 {
+    IM_INFO("Cleaning up Engine...");
     if (VulkanInstance != VK_NULL_HANDLE)
     {
         vkDestroyInstance(VulkanInstance, nullptr);

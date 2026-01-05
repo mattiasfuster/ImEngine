@@ -24,6 +24,8 @@
 #include <concepts>
 #include <optional>
 #include <variant>
+#include <format>
+#include <print>
 
 // Standard Library - Threading (for Core concurrency features)
 #include <thread>

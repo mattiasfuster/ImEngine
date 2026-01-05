@@ -110,10 +110,10 @@ struct Vector2
         double angle = std::atan2(CrossProduct(Other), DotProduct(Other));
 
         if constexpr (std::is_same_v<AngleType, Degree>)
-            return angle * RadToDeg;
+            return angle * RadToDeg<double>;
         else if constexpr (std::is_same_v<AngleType, uDegree>)
         {
-            angle *= RadToDeg;
+            angle *= RadToDeg<double>;
             return (angle < 0) ? angle + 360.0 : angle;
         }
         else if constexpr (std::is_same_v<AngleType, uRadian>)
@@ -193,9 +193,9 @@ struct Vector3
         double angle = std::acos(dot / std::sqrt(lenSq1 * lenSq2));
 
         if constexpr (std::is_same_v<AngleType, Degree>)
-            return angle * RadToDeg;
+            return angle * RadToDeg<double>;
         else if constexpr (std::is_same_v<AngleType, uDegree>)
-            return angle * RadToDeg;
+            return angle * RadToDeg<double>;
         else
             return angle;
     }
@@ -254,9 +254,16 @@ struct Vector4
     inline Vector4 Normalized() const noexcept { return *this / static_cast<T>(Length()); }
 };
 
-//Type GLM style
-using Vec2 = Vector2<float>;
-using Vec3 = Vector3<float>;
-using Vec4 = Vector4<float>;
 }
+
+//Type GLM style
+template <typename Ty = float>
+using Vec2 = ImEngine::Core::Maths::Objects::Vector2<Ty>;
+
+template <typename Ty = float>
+using Vec3 = ImEngine::Core::Maths::Objects::Vector3<Ty>;
+
+template <typename Ty = float>
+using Vec4 = ImEngine::Core::Maths::Objects::Vector4<Ty>;
+
 #endif  // IMENGINE_MATHS_OBJECTS_VECTOR_H
