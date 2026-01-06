@@ -42,7 +42,7 @@ cmake --build --preset editor-Debug
 
 | Preset | Modules | Description |
 |--------|---------|-------------|
-| `engine-only` | Core + Engine | Libraries only (no executable) |
+| `engine-dll` | Core + Engine | DLLs only (no executable) |
 | `sandbox-app` | Core + Engine + Sandbox | Development/testing environment |
 | `editor-app` | Core + Engine + Editor | Visual editor with ImGui |
 

@@ -1,37 +1,37 @@
 # ImEngine Coding Style Guide
 
-Ce document décrit les conventions de codage d'ImEngine, basées sur le **[Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html)** adapté pour C++23.
+This document describes ImEngine's coding conventions, based on the **[Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html)** adapted for C++23.
 
-## Table des matières
+## Table of Contents
 
-1. [Conventions de nommage](#conventions-de-nommage)
-2. [Formatage](#formatage)
-3. [Headers et includes](#headers-et-includes)
-4. [Classes et structs](#classes-et-structs)
-5. [Fonctions](#fonctions)
-6. [Constantes et constexpr](#constantes-et-constexpr)
-7. [Templates et concepts](#templates-et-concepts)
-8. [Commentaires](#commentaires)
-9. [Bonnes pratiques C++23](#bonnes-pratiques-c23)
+1. [Naming Conventions](#naming-conventions)
+2. [Formatting](#formatting)
+3. [Headers and Includes](#headers-and-includes)
+4. [Classes and Structs](#classes-and-structs)
+5. [Functions](#functions)
+6. [Constants and constexpr](#constants-and-constexpr)
+7. [Templates and Concepts](#templates-and-concepts)
+8. [Comments](#comments)
+9. [C++23 Best Practices](#c23-best-practices)
 
 ---
 
-## Conventions de nommage
+## Naming Conventions
 
-### Tableau récapitulatif
+### Summary Table
 
-| Élément | Convention | Exemple |
+| Element | Convention | Example |
 |---------|------------|---------|
 | **Types** (classes, structs, enums) | `PascalCase` | `Vector3`, `LinearAllocator` |
-| **Fonctions** | `PascalCase` | `DotProduct()`, `InitWindow()` |
-| **Variables locales** | `snake_case` | `extension_count`, `app_info` |
-| **Membres de classe** | `snake_case_` (underscore final) | `window_`, `width_` |
-| **Membres de struct** | `snake_case` (pas d'underscore) | `x`, `y`, `data` |
-| **Constantes** | `kPascalCase` | `kRows`, `kMaxSize` |
-| **Paramètres de template** | Majuscule ou `PascalCase` | `T`, `AngleUnit` |
+| **Functions** | `PascalCase` | `DotProduct()`, `InitWindow()` |
+| **Local variables** | `snake_case` | `extension_count`, `app_info` |
+| **Class members** | `snake_case_` (trailing underscore) | `window_`, `width_` |
+| **Struct members** | `snake_case` (no underscore) | `x`, `y`, `data` |
+| **Constants** | `kPascalCase` | `kRows`, `kMaxSize` |
+| **Template parameters** | Uppercase or `PascalCase` | `T`, `AngleUnit` |
 | **Namespaces** | `snake_case` | `imengine::core` |
 | **Macros** | `UPPER_SNAKE_CASE` | `IMENGINE_API`, `IM_INFO` |
-| **Accesseurs** | `snake_case()` | `window()`, `vulkan_instance()` |
+| **Accessors** | `snake_case()` | `window()`, `vulkan_instance()` |
 
 ### Types (Classes, Structs, Enums)
 
@@ -44,52 +44,52 @@ enum class UrlTableError { kOk, kNotFound };
 // ❌ Incorrect
 class engine { };
 struct vector_3 { };
-enum class URLTableError { };  // Pas d'acronymes en majuscules
+enum class URLTableError { };  // No uppercase acronyms
 ```
 
 ### Variables
 
 ```cpp
-// Variables locales : snake_case
+// Local variables: snake_case
 int extension_count = 0;
 std::string table_name;
 
-// Membres de classe : snake_case avec underscore final
+// Class members: snake_case with trailing underscore
 class MyClass {
  private:
   int count_;
   std::string name_;
 };
 
-// Membres de struct : snake_case sans underscore
+// Struct members: snake_case without underscore
 struct Point {
   float x;
   float y;
 };
 ```
 
-### Constantes
+### Constants
 
 ```cpp
-// Constantes avec 'k' préfixe
+// Constants with 'k' prefix
 constexpr int kDaysInAWeek = 7;
 constexpr size_t kMaxBufferSize = 1024;
 
-// Constantes statiques de classe
+// Static class constants
 class Matrice {
   static constexpr size_t kRows = 4;
   static constexpr size_t kCols = 4;
 };
 ```
 
-### Fonctions et méthodes
+### Functions and Methods
 
 ```cpp
-// Fonctions : PascalCase
+// Functions: PascalCase
 void InitWindow();
 double DotProduct(const Vector3& a, const Vector3& b);
 
-// Accesseurs : snake_case (style Google moderne)
+// Accessors: snake_case (modern Google style)
 class Engine {
  public:
   [[nodiscard]] GLFWwindow* window() const { return window_; }
@@ -99,9 +99,9 @@ class Engine {
 
 ---
 
-## Formatage
+## Formatting
 
-### Configuration .clang-format
+### .clang-format Configuration
 
 ```yaml
 BasedOnStyle: Google
@@ -115,23 +115,23 @@ PointerAlignment: Left
 
 ### Indentation
 
-- **2 espaces** pour l'indentation
-- **Pas de tabulations**
-- Modificateurs d'accès indentés d'**1 espace** par rapport à la classe
+- **2 spaces** for indentation
+- **No tabs**
+- Access modifiers indented by **1 space** relative to the class
 
 ```cpp
 class MyClass {
- public:  // 1 espace
-  void Foo();  // 2 espaces
+ public:  // 1 space
+  void Foo();  // 2 spaces
   
  private:
   int bar_;
 };
 ```
 
-### Accolades
+### Braces
 
-Style **Attached** (K&R) : l'accolade ouvrante est sur la même ligne.
+**Attached** style (K&R): the opening brace is on the same line.
 
 ```cpp
 // ✅ Correct
@@ -148,22 +148,22 @@ class MyClass {
   void Method();
 };
 
-// ❌ Incorrect (style Allman)
+// ❌ Incorrect (Allman style)
 if (condition)
 {
   DoSomething();
 }
 ```
 
-### Longueur de ligne
+### Line Length
 
-- Maximum **80 caractères** par ligne
-- Exceptions : URLs, chemins de fichiers, chaînes de caractères non découpables
+- Maximum **80 characters** per line
+- Exceptions: URLs, file paths, non-splittable strings
 
-### Pointeurs et références
+### Pointers and References
 
 ```cpp
-// ✅ Correct : aligné à gauche
+// ✅ Correct: left-aligned
 char* name;
 const std::string& ref;
 int* GetPointer();
@@ -175,19 +175,19 @@ char * name;
 
 ---
 
-## Headers et includes
+## Headers and Includes
 
-### Ordre des includes
+### Include Order
 
-1. Header associé (foo.h pour foo.cc)
-2. Ligne vide
-3. Headers système C (avec extension `.h`)
-4. Ligne vide
-5. Headers standard C++
-6. Ligne vide
-7. Headers de bibliothèques tierces
-8. Ligne vide
-9. Headers du projet
+1. Associated header (foo.h for foo.cc)
+2. Blank line
+3. C system headers (with `.h` extension)
+4. Blank line
+5. C++ standard library headers
+6. Blank line
+7. Third-party library headers
+8. Blank line
+9. Project headers
 
 ```cpp
 #include "Engine.h"
@@ -202,37 +202,37 @@ char * name;
 #include "Debug/Logger.h"
 ```
 
-### Include guards
+### Include Guards
 
-Format : `PROJECT_PATH_FILE_H_`
+Format: `PROJECT_PATH_FILE_H_`
 
 ```cpp
 #ifndef IMENGINE_MATHS_OBJECTS_VECTOR_H_
 #define IMENGINE_MATHS_OBJECTS_VECTOR_H_
 
-// contenu
+// content
 
 #endif  // IMENGINE_MATHS_OBJECTS_VECTOR_H_
 ```
 
 ---
 
-## Classes et structs
+## Classes and Structs
 
-### Quand utiliser struct vs class
+### When to Use struct vs class
 
-- **struct** : données passives sans invariants (POD-like)
-- **class** : avec invariants, encapsulation, méthodes non triviales
+- **struct**: passive data without invariants (POD-like)
+- **class**: with invariants, encapsulation, non-trivial methods
 
 ```cpp
-// struct : données simples
+// struct: simple data
 struct Vector3 {
   float x;
   float y;
   float z;
 };
 
-// class : avec invariants et encapsulation
+// class: with invariants and encapsulation
 class Engine {
  public:
   void Run();
@@ -242,41 +242,41 @@ class Engine {
 };
 ```
 
-### Ordre de déclaration
+### Declaration Order
 
 ```cpp
 class MyClass {
  public:
-  // 1. Types et aliases
+  // 1. Types and aliases
   using ValueType = int;
   
-  // 2. Constantes statiques
+  // 2. Static constants
   static constexpr int kMaxSize = 100;
   
-  // 3. Constructeurs et opérateur d'affectation
+  // 3. Constructors and assignment operators
   MyClass();
   MyClass(const MyClass&) = default;
   MyClass& operator=(const MyClass&) = default;
   
-  // 4. Destructeur
+  // 4. Destructor
   ~MyClass();
   
-  // 5. Méthodes
+  // 5. Methods
   void DoSomething();
   [[nodiscard]] int value() const { return value_; }
   
  protected:
-  // Membres protégés
+  // Protected members
   
  private:
-  // 6. Données membres
+  // 6. Data members
   int value_ = 0;
 };
 ```
 
-### Copie et déplacement
+### Copy and Move
 
-Déclarer explicitement les opérations de copie/déplacement :
+Explicitly declare copy/move operations:
 
 ```cpp
 class Copyable {
@@ -296,32 +296,32 @@ class MoveOnly {
 
 ---
 
-## Fonctions
+## Functions
 
-### Paramètres
+### Parameters
 
 ```cpp
-// Entrées : valeur ou const reference
+// Inputs: value or const reference
 void Process(int value);
 void Process(const std::string& name);
 
-// Sorties : retour par valeur préféré
+// Outputs: prefer return by value
 [[nodiscard]] std::string GetName() const;
 
-// Entrée/Sortie : référence non-const ou pointeur
+// Input/Output: non-const reference or pointer
 void Modify(std::string& name);
-void Modify(std::string* name);  // si peut être null
+void Modify(std::string* name);  // if can be null
 ```
 
-### Fonctions courtes
+### Short Functions
 
-- Garder les fonctions courtes et focalisées
-- Environ **40 lignes** maximum
-- Extraire les sous-tâches en fonctions séparées
+- Keep functions short and focused
+- Approximately **40 lines** maximum
+- Extract subtasks into separate functions
 
 ### [[nodiscard]]
 
-Utiliser `[[nodiscard]]` pour les fonctions dont la valeur de retour ne doit pas être ignorée :
+Use `[[nodiscard]]` for functions whose return value should not be ignored:
 
 ```cpp
 [[nodiscard]] constexpr double SquaredLength() const noexcept;
@@ -331,20 +331,20 @@ Utiliser `[[nodiscard]]` pour les fonctions dont la valeur de retour ne doit pas
 
 ---
 
-## Constantes et constexpr
+## Constants and constexpr
 
-### Préférer constexpr à const
+### Prefer constexpr over const
 
 ```cpp
-// ✅ Préféré pour les valeurs connues à la compilation
+// ✅ Preferred for compile-time known values
 constexpr int kMaxSize = 1024;
 constexpr double kPi = 3.14159265358979323846;
 
-// const pour les valeurs runtime
+// const for runtime values
 const int size = ComputeSize();
 ```
 
-### Fonctions constexpr
+### constexpr Functions
 
 ```cpp
 template <Arithmetic T>
@@ -364,46 +364,46 @@ struct Vector3 {
 
 ---
 
-## Templates et concepts
+## Templates and Concepts
 
 ### Concepts (C++20/23)
 
-Préférer les concepts aux SFINAE :
+Prefer concepts over SFINAE:
 
 ```cpp
-// ✅ Correct : utiliser concept
+// ✅ Correct: use concept
 template <class T>
 concept Arithmetic = std::is_arithmetic_v<T>;
 
 template <Arithmetic T>
 struct Vector3 { };
 
-// ❌ Éviter : SFINAE complexe
+// ❌ Avoid: complex SFINAE
 template <typename T, 
           typename = std::enable_if_t<std::is_arithmetic_v<T>>>
 struct Vector3 { };
 ```
 
-### Paramètres de template
+### Template Parameters
 
 ```cpp
-// Type unique : T
+// Single type: T
 template <typename T>
 class Container { };
 
-// Types multiples : noms descriptifs
+// Multiple types: descriptive names
 template <typename Key, typename Value>
 class Map { };
 
-// Concepts : nom du concept
+// Concepts: concept name
 template <Arithmetic T>
 struct Vector3 { };
 ```
 
-### Requires clause
+### Requires Clause
 
 ```cpp
-// Style préféré
+// Preferred style
 template <typename T>
 [[nodiscard]] constexpr T Determinant() const
   requires(M == N)
@@ -414,24 +414,24 @@ template <typename T>
 
 ---
 
-## Commentaires
+## Comments
 
-### Style de commentaire
+### Comment Style
 
-- Utiliser `//` pour les commentaires (préféré)
-- `/* */` acceptable pour les commentaires multi-lignes
+- Use `//` for comments (preferred)
+- `/* */` acceptable for multi-line comments
 
-### Commentaires de fichier
+### File Comments
 
 ```cpp
 // MIT License
 //
 // Copyright (c) 2024 FUSTER Mattias
 //
-// [texte de licence...]
+// [license text...]
 ```
 
-### Commentaires de classe
+### Class Comments
 
 ```cpp
 // Iterates over the contents of a GargantuanTable.
@@ -446,7 +446,7 @@ class GargantuanTableIterator {
 };
 ```
 
-### Commentaires TODO
+### TODO Comments
 
 ```cpp
 // TODO: bug 12345678 - Remove this after the 2047q4 compatibility window.
@@ -455,53 +455,53 @@ class GargantuanTableIterator {
 
 ---
 
-## Bonnes pratiques C++23
+## C++23 Best Practices
 
-### Utiliser les fonctionnalités modernes
+### Use Modern Features
 
 ```cpp
-// std::format au lieu de << pour le formatage
+// std::format instead of << for formatting
 std::string message = std::format("Value: {}", value);
 
-// std::expected pour la gestion d'erreurs
+// std::expected for error handling
 std::expected<int, Error> ParseInt(std::string_view str);
 
 // Structured bindings
 auto [iter, success] = map.insert({key, value});
 
-// Range-based for avec auto
+// Range-based for with auto
 for (const auto& item : container) {
   Process(item);
 }
 ```
 
-### Éviter
+### Avoid
 
 ```cpp
-// ❌ Éviter les using namespace dans les headers
+// ❌ Avoid using namespace in headers
 using namespace std;
 
-// ❌ Éviter les macros quand possible
+// ❌ Avoid macros when possible
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 
-// ✅ Préférer
+// ✅ Prefer
 template <typename T>
 constexpr T Max(T a, T b) { return (a > b) ? a : b; }
 
-// ❌ Éviter new/delete
+// ❌ Avoid new/delete
 int* ptr = new int[100];
 delete[] ptr;
 
-// ✅ Préférer smart pointers
+// ✅ Prefer smart pointers
 auto ptr = std::make_unique<int[]>(100);
 ```
 
 ### noexcept
 
-Utiliser `noexcept` pour les fonctions qui ne peuvent pas lancer d'exceptions :
+Use `noexcept` for functions that cannot throw exceptions:
 
 ```cpp
-// Opérations mathématiques constexpr
+// constexpr math operations
 [[nodiscard]] constexpr Vector3 operator+(const Vector3& other) const
     noexcept;
 
@@ -512,23 +512,23 @@ Vector3& operator=(Vector3&&) noexcept = default;
 
 ---
 
-## Outils
+## Tools
 
 ### clang-format
 
-Formater automatiquement le code :
+Automatically format code:
 
 ```bash
 clang-format -i --style=file src/MyFile.cpp
 ```
 
-### Vérification du style
+### Style Verification
 
-Le fichier `.clang-format` à la racine du projet assure la cohérence automatique.
+The `.clang-format` file at the project root ensures automatic consistency.
 
 ---
 
-## Ressources
+## Resources
 
 - [Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html)
 - [C++ Core Guidelines](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines)

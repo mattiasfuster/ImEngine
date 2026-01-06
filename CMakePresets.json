@@ -25,7 +25,7 @@
     },
 
     {
-      "name": "engine-only",
+      "name": "engine-dll",
       "inherits": "win64-base-mc",
       "cacheVariables": {
         "IMENGINE_BUILD_CORE": "ON",
@@ -59,7 +59,7 @@
   "buildPresets": [
     {
       "name": "engine-Debug",
-      "configurePreset": "engine-only",
+      "configurePreset": "engine-dll",
       "targets": ["ImEngine-Core", "ImEngine-Engine"],
       "configuration": "Debug",
       "jobs": 12,
@@ -67,14 +67,14 @@
     },
     {
       "name": "engine-RelWithDebInfo",
-      "configurePreset": "engine-only",
+      "configurePreset": "engine-dll",
       "targets": ["ImEngine-Core", "ImEngine-Engine"],
       "configuration": "RelWithDebInfo",
       "jobs": 12
     },
     {
       "name": "engine-Release",
-      "configurePreset": "engine-only",
+      "configurePreset": "engine-dll",
       "targets": ["ImEngine-Core", "ImEngine-Engine"],
       "configuration": "Release",
       "jobs": 12
@@ -126,7 +126,7 @@
 
     {
       "name": "install-engine-Debug",
-      "configurePreset": "engine-only",
+      "configurePreset": "engine-dll",
       "configuration": "Debug",
       "targets": ["install"],
       "jobs": 12

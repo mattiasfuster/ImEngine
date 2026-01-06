@@ -28,24 +28,72 @@ namespace ImEngine::Core::Maths::Objects {
 
 template<std::floating_point T = float>
 struct Quaternion {
+  T w{1};
   T x{};
   T y{};
   T z{};
-  T w{};
 
-  // Constructors
   constexpr Quaternion() noexcept = default;
-  constexpr Quaternion(T x, T y, T z, T w) noexcept
-    : x(x), y(y), z(z), w(w) {}
-  constexpr Quaternion(const Vector& vec) :
-
   constexpr Quaternion(const Quaternion&) noexcept = default;
   constexpr Quaternion& operator=(const Quaternion&) noexcept = default;
   constexpr Quaternion(Quaternion&&) noexcept = default;
   constexpr Quaternion& operator=(Quaternion&&) noexcept = default;
 
+  constexpr Quaternion(T w, T x, T y, T z) noexcept
+      : w(w), x(x), y(y), z(z) {}
+
+  // Explicit conversion from Vector4
+  explicit constexpr Quaternion(const Vector4<T>& vec) noexcept
+      : w(vec.w), x(vec.x), y(vec.y), z(vec.z) {}
+
   constexpr ~Quaternion() noexcept = default;
-}
+
+  // Static factory methods
+  [[nodiscard]] static constexpr Quaternion Identity() noexcept {
+    return Quaternion{};
+  }
+
+  [[nodiscard]] static constexpr Quaternion FromVector4(const Vector4<T>& vec)
+      noexcept {
+    return Quaternion{vec.w, vec.x, vec.y, vec.z};
+  }
+
+  // Explicit conversion to Vector4
+  [[nodiscard]] constexpr Vector4<T> ToVector4() const noexcept {
+    return Vector4<T>{w, x, y, z};
+  }
+
+  [[nodiscard]] constexpr Quaternion Conjugate() const noexcept {
+    return Quaternion{w, -x, -y, -z};
+  }
+
+  [[nodiscard]] constexpr double DotProduct(const Vector4& other) const
+    noexcept {
+    return static_cast<double>(
+    x * other.x +
+    y * other.y +
+    z * other.z +
+    w * other.w);
+  }
+
+  [[nodiscard]] constexpr double SquaredLength() const noexcept {
+    return static_cast<double>(x * x + y * y + z * z + w * w);
+  }
+
+  [[nodiscard]] double Length() const noexcept {
+    return std::sqrt(SquaredLength());
+  }
+
+  [[nodiscard]] double Distance(const Vector4& other) const noexcept {
+    return (*this - other).Length();
+  }
+
+  [[nodiscard]] constexpr double SquaredDistance(const Vector4& other) const
+      noexcept {
+    return (*this - other).SquaredLength();
+  }
+
+};
 
 }
 

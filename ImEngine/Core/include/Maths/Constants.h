@@ -1,5 +1,5 @@
-#ifndef IMENGINE_CORE_MATHS_MISC_CONSTANTS_H
-#define IMENGINE_CORE_MATHS_MISC_CONSTANTS_H
+#ifndef IMENGINE_CORE_MATHS_CONSTANTS_H
+#define IMENGINE_CORE_MATHS_CONSTANTS_H
 
 #include <numbers>
 #include <concepts>
@@ -16,4 +16,4 @@ namespace ImEngine::Core::Maths::Constants
     inline constexpr T DegToRad = PI<T> / static_cast<T>(180.0);
 }
 
-#endif  // IMENGINE_CORE_MATHS_MISC_CONSTANTS_H
+#endif  // IMENGINE_CORE_MATHS_CONSTANTS_H

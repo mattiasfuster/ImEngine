@@ -7,10 +7,11 @@ set(CORE_HEADERS
         include/Memory/MemoryAllocator/Allocators/LinearAllocator.h
         include/Memory/MemoryAllocator/Allocators/MallocAllocator.h
         include/Memory/MemoryAllocator/Allocators/PoolAllocator.h
+        include/Maths/Units.h
+        include/Maths/Constants.h
         include/Maths/Objects/Vector.h
         include/Maths/Objects/Matrice.h
-        include/Maths/Misc/Constants.h
-        include/Maths/Misc/Units.h
+        include/Maths/Objects/Quaternion.h
         include/Debug/Logger.h
 )
 

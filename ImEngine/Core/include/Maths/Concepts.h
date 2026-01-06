@@ -20,12 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef IMENGINE_MATHS_MISC_CONCEPTS_H_
-#define IMENGINE_MATHS_MISC_CONCEPTS_H_
+#ifndef IMENGINE_MATHS_CONCEPTS_H_
+#define IMENGINE_MATHS_CONCEPTS_H_
 
 #include <type_traits>
 
-#include "Maths/Misc/Units.h"
+#include "Maths/Units.h"
 
 namespace ImEngine::Core::Maths::Concepts {
 

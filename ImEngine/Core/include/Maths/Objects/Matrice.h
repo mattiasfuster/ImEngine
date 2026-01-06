@@ -28,7 +28,7 @@
 #include <sstream>
 #include <string>
 
-#include "Maths/Misc/Concepts.h"
+#include "Maths/Concepts.h"
 
 namespace ImEngine::Core::Maths::Objects {
 
@@ -243,9 +243,9 @@ template <size_t M, size_t N, typename T = float>
 using Mat = ImEngine::Core::Maths::Objects::Matrice<M, N, T>;
 
 template <typename T = float>
-using Mat3x3 = ImEngine::Core::Maths::Objects::Matrice<3, 3, T>;
+using Matrice3x3 = ImEngine::Core::Maths::Objects::Matrice<3, 3, T>;
 
 template <typename T = float>
-using Mat4x4 = ImEngine::Core::Maths::Objects::Matrice<4, 4, T>;
+using Matrice4x4 = ImEngine::Core::Maths::Objects::Matrice<4, 4, T>;
 
 #endif  // IMENGINE_MATHS_OBJECTS_MATRICE_H_

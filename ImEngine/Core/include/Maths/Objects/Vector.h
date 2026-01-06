@@ -23,8 +23,8 @@
 #ifndef IMENGINE_MATHS_OBJECTS_VECTOR_H_
 #define IMENGINE_MATHS_OBJECTS_VECTOR_H_
 
-#include "Maths/Misc/Concepts.h"
-#include "Maths/Misc/Constants.h"
+#include "Maths/Concepts.h"
+#include "Maths/Constants.h"
 #include "Maths/Objects/Matrice.h"
 
 #include <cmath>
@@ -302,20 +302,20 @@ struct Vector3 {
 // 4D vector for homogeneous coordinates.
 template <Arithmetic T>
 struct Vector4 {
+  T w{};
   T x{};
   T y{};
   T z{};
-  T w{};
 
   // Constructors
   constexpr Vector4() noexcept = default;
-  constexpr Vector4(T x, T y, T z, T w) noexcept : x(x), y(y), z(z), w(w) {}
-  constexpr Vector4(const Vector3<T>& xyz, T w) noexcept
-    : x(xyz.x), y(xyz.y), z(xyz.z), w(w) {}
-  constexpr Vector4(const Vector2<T>& xy, T z, T w) noexcept
-    : x(xy.x), y(xy.y), z(z), w(w) {}
+  constexpr Vector4(T w, T x, T y, T z) noexcept : w(w), x(x), y(y), z(z) {}
+  constexpr Vector4(T w, const Vector3<T>& xyz) noexcept
+      : w(w), x(xyz.x), y(xyz.y), z(xyz.z) {}
+  constexpr Vector4(T w, const Vector2<T>& xy, T z) noexcept
+      : w(w), x(xy.x), y(xy.y), z(z) {}
   constexpr Vector4(const Matrice<4, 1, T> mat) noexcept
-    : x(mat.data[0][0]), y(mat.data[0][1]), z(mat.data[0][2]), w(mat.data[0][3]) {}
+      : w(mat.data[3][0]), x(mat.data[0][0]), y(mat.data[1][0]), z(mat.data[2][0]) {}
 
   constexpr Vector4(const Vector4&) noexcept = default;
   constexpr Vector4& operator=(const Vector4&) noexcept = default;
@@ -326,32 +326,32 @@ struct Vector4 {
 
   // Unary Operators
   [[nodiscard]] constexpr Vector4 operator-() const noexcept {
-    return Vector4(-x, -y, -z, -w);
+    return Vector4(-w, -x, -y, -z);
   }
 
   // Binary Operators
   [[nodiscard]] constexpr Vector4 operator+(const Vector4& other) const
       noexcept {
-    return Vector4(x + other.x, y + other.y, z + other.z, w + other.w);
+    return Vector4(w + other.w, x + other.x, y + other.y, z + other.z);
   }
   [[nodiscard]] constexpr Vector4 operator-(const Vector4& other) const
       noexcept {
-    return Vector4(x - other.x, y - other.y, z - other.z, w - other.w);
+    return Vector4(w - other.w, x - other.x, y - other.y, z - other.z);
   }
   [[nodiscard]] constexpr Vector4 operator*(const Vector4& other) const
       noexcept {
-    return Vector4(x * other.x, y * other.y, z * other.z, w * other.w);
+    return Vector4(w * other.w, x * other.x, y * other.y, z * other.z);
   }
   [[nodiscard]] constexpr Vector4 operator/(const Vector4& other) const
       noexcept {
-    return Vector4(x / other.x, y / other.y, z / other.z, w / other.w);
+    return Vector4(w / other.w, x / other.x, y / other.y, z / other.z);
   }
 
   [[nodiscard]] constexpr Vector4 operator*(T scalar) const noexcept {
-    return Vector4(x * scalar, y * scalar, z * scalar, w * scalar);
+    return Vector4(w * scalar, x * scalar, y * scalar, z * scalar);
   }
   [[nodiscard]] constexpr Vector4 operator/(T scalar) const noexcept {
-    return Vector4(x / scalar, y / scalar, z / scalar, w / scalar);
+    return Vector4(w / scalar, x / scalar, y / scalar, z / scalar);
   }
 
   // Compound Assignment Operators
@@ -396,8 +396,11 @@ struct Vector4 {
   // Math Functions
   [[nodiscard]] constexpr double DotProduct(const Vector4& other) const
       noexcept {
-    return static_cast<double>(x * other.x + y * other.y + z * other.z +
-                               w * other.w);
+      return static_cast<double>(
+      x * other.x +
+      y * other.y +
+      z * other.z +
+      w * other.w);
   }
 
   [[nodiscard]] constexpr double SquaredLength() const noexcept {
@@ -425,12 +428,12 @@ struct Vector4 {
 
 // Type aliases (GLM style).
 template <typename T = float>
-using Vec2 = ImEngine::Core::Maths::Objects::Vector2<T>;
+using Vector2 = ImEngine::Core::Maths::Objects::Vector2<T>;
 
 template <typename T = float>
-using Vec3 = ImEngine::Core::Maths::Objects::Vector3<T>;
+using Vector3 = ImEngine::Core::Maths::Objects::Vector3<T>;
 
 template <typename T = float>
-using Vec4 = ImEngine::Core::Maths::Objects::Vector4<T>;
+using Vector4 = ImEngine::Core::Maths::Objects::Vector4<T>;
 
 #endif  // IMENGINE_MATHS_OBJECTS_VECTOR_H_
