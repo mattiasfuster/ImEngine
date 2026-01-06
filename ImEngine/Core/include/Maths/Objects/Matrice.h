@@ -28,7 +28,18 @@
 #include <sstream>
 #include <string>
 
+#include "Maths/Misc/Concepts.h"
+
 namespace ImEngine::Core::Maths::Objects {
+
+using ImEngine::Core::Maths::Concepts::Arithmetic;
+
+// Forward declarations
+template <Arithmetic T>
+struct Vector3;
+
+template <Arithmetic T>
+struct Vector4;
 
 // Generic matrix with M rows and N columns.
 template <size_t M, size_t N, class T>
@@ -61,6 +72,23 @@ struct Matrice {
       }
       ++i;
     }
+  }
+
+  constexpr Matrice(const Vector3<T>& vec) noexcept
+    requires(M >= 3 && N >= 1)
+  {
+    data[0][0] = vec.x;
+    data[1][0] = vec.y;
+    data[2][0] = vec.z;
+  }
+
+  constexpr Matrice(const Vector4<T>& vec) noexcept
+    requires(M >= 4 && N >= 1)
+  {
+    data[0][0] = vec.x;
+    data[1][0] = vec.y;
+    data[2][0] = vec.z;
+    data[3][0] = vec.w;
   }
 
   constexpr Matrice(const Matrice&) noexcept = default;
@@ -130,6 +158,29 @@ struct Matrice {
     return result;
   }
 
+  [[nodiscard]] constexpr Vector3<T> operator*(const Vector3<T>& vec) const
+  noexcept requires(M == 3 && N == 3) {
+    return Vector3<T>{
+        data[0][0] * vec.x + data[0][1] * vec.y + data[0][2] * vec.z,
+        data[1][0] * vec.x + data[1][1] * vec.y + data[1][2] * vec.z,
+        data[2][0] * vec.x + data[2][1] * vec.y + data[2][2] * vec.z};
+  }
+
+  [[nodiscard]] constexpr Vector4<T> operator*(const Vector4<T>& vec) const
+      noexcept
+    requires(M == 4 && N == 4)
+  {
+    return Vector4<T>{
+        data[0][0] * vec.x + data[0][1] * vec.y + data[0][2] * vec.z +
+            data[0][3] * vec.w,
+        data[1][0] * vec.x + data[1][1] * vec.y + data[1][2] * vec.z +
+            data[1][3] * vec.w,
+        data[2][0] * vec.x + data[2][1] * vec.y + data[2][2] * vec.z +
+            data[2][3] * vec.w,
+        data[3][0] * vec.x + data[3][1] * vec.y + data[3][2] * vec.z +
+            data[3][3] * vec.w};
+  }
+
   [[nodiscard]] constexpr T Determinant() const
     requires(M == N)
   {
@@ -149,6 +200,7 @@ struct Matrice {
 
   [[nodiscard]] std::string Print() const {
     std::stringstream ss;
+    ss << "\n";
     for (size_t i = 0; i < M; ++i) {
       if (M > 1) {
         if (i == 0) {
@@ -187,10 +239,13 @@ struct Matrice {
 }  // namespace ImEngine::Core::Maths::Objects
 
 // Type aliases (GLM style).
-template <typename T = float>
-using Mat3 = ImEngine::Core::Maths::Objects::Matrice<3, 3, T>;
+template <size_t M, size_t N, typename T = float>
+using Mat = ImEngine::Core::Maths::Objects::Matrice<M, N, T>;
 
 template <typename T = float>
-using Mat4 = ImEngine::Core::Maths::Objects::Matrice<4, 4, T>;
+using Mat3x3 = ImEngine::Core::Maths::Objects::Matrice<3, 3, T>;
+
+template <typename T = float>
+using Mat4x4 = ImEngine::Core::Maths::Objects::Matrice<4, 4, T>;
 
 #endif  // IMENGINE_MATHS_OBJECTS_MATRICE_H_

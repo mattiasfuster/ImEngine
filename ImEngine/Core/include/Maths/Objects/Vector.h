@@ -23,8 +23,9 @@
 #ifndef IMENGINE_MATHS_OBJECTS_VECTOR_H_
 #define IMENGINE_MATHS_OBJECTS_VECTOR_H_
 
+#include "Maths/Misc/Concepts.h"
 #include "Maths/Misc/Constants.h"
-#include "Maths/Misc/Units.h"
+#include "Maths/Objects/Matrice.h"
 
 #include <cmath>
 #include <numbers>
@@ -35,12 +36,8 @@ using namespace ImEngine::Core::Maths::Units;
 
 namespace ImEngine::Core::Maths::Objects {
 
-template <typename T>
-concept AngleUnit = std::is_same_v<T, Degree> || std::is_same_v<T, uDegree> ||
-                    std::is_same_v<T, Radian> || std::is_same_v<T, uRadian>;
-
-template <class T>
-concept Arithmetic = std::is_arithmetic_v<T>;
+using ImEngine::Core::Maths::Concepts::Arithmetic;
+using ImEngine::Core::Maths::Concepts::AngleUnit;
 
 // 2D vector for geometric operations.
 template <Arithmetic T>
@@ -178,7 +175,9 @@ struct Vector3 {
   constexpr Vector3() noexcept = default;
   constexpr Vector3(T x, T y, T z) noexcept : x(x), y(y), z(z) {}
   constexpr Vector3(const Vector2<T>& xy, T z) noexcept
-      : x(xy.x), y(xy.y), z(z) {}
+    : x(xy.x), y(xy.y), z(z) {}
+  constexpr Vector3(const Matrice<3, 1, T> mat) noexcept
+    : x(mat.data[0][0]), y(mat.data[0][1]), z(mat.data[0][2]) {}
 
   constexpr Vector3(const Vector3&) noexcept = default;
   constexpr Vector3& operator=(const Vector3&) noexcept = default;
@@ -312,9 +311,11 @@ struct Vector4 {
   constexpr Vector4() noexcept = default;
   constexpr Vector4(T x, T y, T z, T w) noexcept : x(x), y(y), z(z), w(w) {}
   constexpr Vector4(const Vector3<T>& xyz, T w) noexcept
-      : x(xyz.x), y(xyz.y), z(xyz.z), w(w) {}
+    : x(xyz.x), y(xyz.y), z(xyz.z), w(w) {}
   constexpr Vector4(const Vector2<T>& xy, T z, T w) noexcept
-      : x(xy.x), y(xy.y), z(z), w(w) {}
+    : x(xy.x), y(xy.y), z(z), w(w) {}
+  constexpr Vector4(const Matrice<4, 1, T> mat) noexcept
+    : x(mat.data[0][0]), y(mat.data[0][1]), z(mat.data[0][2]), w(mat.data[0][3]) {}
 
   constexpr Vector4(const Vector4&) noexcept = default;
   constexpr Vector4& operator=(const Vector4&) noexcept = default;

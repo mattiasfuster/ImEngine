@@ -187,6 +187,7 @@ mono_crash.*
 
 # Build results
 [Dd]ebug/
+!ImEngine/Core/include/Debug/
 [Dd]ebugPublic/
 [Rr]elease/
 [Rr]eleases/

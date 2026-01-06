@@ -1,6 +1,0 @@
-{
-  "cmake.sourceDirectory": "${workspaceFolder}",
-  "cmake.buildDirectory": "${workspaceFolder}/out/build/${presetName}",
-  "cmake.configureOnOpen": true,
-  "cmake.useCMakePresets": "always"
-}

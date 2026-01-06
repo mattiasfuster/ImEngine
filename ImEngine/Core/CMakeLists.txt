@@ -11,6 +11,7 @@ set(CORE_HEADERS
         include/Maths/Objects/Matrice.h
         include/Maths/Misc/Constants.h
         include/Maths/Misc/Units.h
+        include/Debug/Logger.h
 )
 
 set(CORE_SOURCES

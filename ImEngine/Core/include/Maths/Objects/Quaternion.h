@@ -2,12 +2,6 @@
 //
 // Copyright (c) 2024 FUSTER Mattias
 //
-// This software utilizes code from the following GitHub repositories, which are also licensed under
-// the MIT License:
-//
-// - [ImGui](https://github.com/ocornut/imgui)
-// - [GLFW](https://github.com/glfw/glfw)
-//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
@@ -15,8 +9,8 @@
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 //
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -26,28 +20,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "Engine.h"
-#include "Maths/Objects/Vector.h"
-#include "Maths/Objects/Matrice.h"
-#include "Debug/Logger.h"
+#ifndef IMENGINE_MATHS_OBJECTS_QUATERNION_H_
+#define IMENGINE_MATHS_OBJECTS_QUATERNION_H_
 
-int main(const int argc, char* const argv[])
-{
-    
-    try
-    {
-        IM_INFO("Running Engine...");
-        Engine::Get().Run(argc, argv);
-    }
-    catch (const std::exception& e)
-    {
-        std::fprintf(stderr, "[ERROR] Fatal error: %s\n", e.what());
-        return EXIT_FAILURE;
-    }
-    catch (...)
-    {
-        IM_ERROR("Unknown fatal error occurred.");
-        return EXIT_FAILURE;
-    }
-    return EXIT_SUCCESS;
+
+namespace ImEngine::Core::Maths::Objects {
+
+template<std::floating_point T = float>
+struct Quaternion {
+  T x{};
+  T y{};
+  T z{};
+  T w{};
+
+  // Constructors
+  constexpr Quaternion() noexcept = default;
+  constexpr Quaternion(T x, T y, T z, T w) noexcept
+    : x(x), y(y), z(z), w(w) {}
+  constexpr Quaternion(const Vector& vec) :
+
+  constexpr Quaternion(const Quaternion&) noexcept = default;
+  constexpr Quaternion& operator=(const Quaternion&) noexcept = default;
+  constexpr Quaternion(Quaternion&&) noexcept = default;
+  constexpr Quaternion& operator=(Quaternion&&) noexcept = default;
+
+  constexpr ~Quaternion() noexcept = default;
 }
+
+}
+
+#endif  // IMENGINE_MATHS_OBJECTS_QUATERNION_H_
