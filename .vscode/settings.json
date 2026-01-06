@@ -1,0 +1,6 @@
+{
+    "C_Cpp.default.compileCommands": "${workspaceFolder}/out/build/sandbox-app/compile_commands.json",
+    "C_Cpp.intelliSenseEngine": "default",
+    "C_Cpp.default.cppStandard": "c++23",
+    "C_Cpp.default.compilerPath": "C:/Program Files/LLVM/bin/clang-cl.exe"
+}

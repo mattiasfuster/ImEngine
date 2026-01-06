@@ -23,7 +23,6 @@
 #ifndef IMENGINE_MATHS_OBJECTS_QUATERNION_H_
 #define IMENGINE_MATHS_OBJECTS_QUATERNION_H_
 
-
 namespace ImEngine::Core::Maths::Objects {
 
 template<std::floating_point T = float>
@@ -58,9 +57,88 @@ struct Quaternion {
     return Quaternion{vec.w, vec.x, vec.y, vec.z};
   }
 
-  // Explicit conversion to Vector4
+  [[nodiscard]] static Quaternion FromRotationMatrix(
+      const Matrice<3, 3, T>& mat) noexcept {
+    T trace = mat.data[0][0] + mat.data[1][1] + mat.data[2][2];
+    
+    if (trace > T{0}) {
+      T s = std::sqrt(trace + T{1}) * T{2};
+      return Quaternion{
+        s / T{4},
+        (mat.data[2][1] - mat.data[1][2]) / s,
+        (mat.data[0][2] - mat.data[2][0]) / s,
+        (mat.data[1][0] - mat.data[0][1]) / s
+      };
+    } else if (mat.data[0][0] > mat.data[1][1] && 
+               mat.data[0][0] > mat.data[2][2]) {
+      T s = std::sqrt(T{1} + mat.data[0][0] - mat.data[1][1] - 
+                      mat.data[2][2]) * T{2};
+      return Quaternion{
+        (mat.data[2][1] - mat.data[1][2]) / s,
+        s / T{4},
+        (mat.data[0][1] + mat.data[1][0]) / s,
+        (mat.data[0][2] + mat.data[2][0]) / s
+      };
+    } else if (mat.data[1][1] > mat.data[2][2]) {
+      T s = std::sqrt(T{1} + mat.data[1][1] - mat.data[0][0] - 
+                      mat.data[2][2]) * T{2};
+      return Quaternion{
+        (mat.data[0][2] - mat.data[2][0]) / s,
+        (mat.data[0][1] + mat.data[1][0]) / s,
+        s / T{4},
+        (mat.data[1][2] + mat.data[2][1]) / s
+      };
+    } else {
+      T s = std::sqrt(T{1} + mat.data[2][2] - mat.data[0][0] - 
+                      mat.data[1][1]) * T{2};
+      return Quaternion{
+        (mat.data[1][0] - mat.data[0][1]) / s,
+        (mat.data[0][2] + mat.data[2][0]) / s,
+        (mat.data[1][2] + mat.data[2][1]) / s,
+        s / T{4}
+      };
+    }
+  }
+
+  // Conversion from rotation matrix (4x4) - extracts upper-left 3x3
+  [[nodiscard]] static Quaternion FromRotationMatrix(
+      const Matrice<4, 4, T>& mat) noexcept {
+    Matrice<3, 3, T> rot3x3;
+    for (size_t i = 0; i < 3; ++i) {
+      for (size_t j = 0; j < 3; ++j) {
+        rot3x3.data[i][j] = mat.data[i][j];
+      }
+    }
+    return FromRotationMatrix(rot3x3);
+  }
+
   [[nodiscard]] constexpr Vector4<T> ToVector4() const noexcept {
     return Vector4<T>{w, x, y, z};
+  }
+
+  [[nodiscard]] constexpr Matrice<3, 3, T> ToRotationMatrix3() const noexcept {
+    T xx = x * x, yy = y * y, zz = z * z;
+    T xy = x * y, xz = x * z, yz = y * z;
+    T wx = w * x, wy = w * y, wz = w * z;
+
+    return Matrice<3, 3, T>{
+      {T{1} - T{2} * (yy + zz), T{2} * (xy - wz),        T{2} * (xz + wy)},
+      {T{2} * (xy + wz),        T{1} - T{2} * (xx + zz), T{2} * (yz - wx)},
+      {T{2} * (xz - wy),        T{2} * (yz + wx),        T{1} - T{2} * (xx + yy)}
+    };
+  }
+
+  [[nodiscard]] constexpr Matrice<4, 4, T> ToRotationMatrix4() const noexcept {
+    T xx = x * x, yy = y * y, zz = z * z;
+    T xy = x * y, xz = x * z, yz = y * z;
+    T wx = w * x, wy = w * y, wz = w * z;
+
+    return Matrice<4, 4, T>{
+      {T{1} - T{2} * (yy + zz), T{2} * (xy - wz),        T{2} * (xz + wy),        T{0}},
+      {T{2} * (xy + wz),        T{1} - T{2} * (xx + zz), T{2} * (yz - wx),        T{0}},
+      {T{2} * (xz - wy),        T{2} * (yz + wx),        T{1} - T{2} * (xx + yy), T{0}},
+      {T{0},                    T{0},                    T{0},                    T{1}}
+    };
   }
 
   [[nodiscard]] constexpr Quaternion Conjugate() const noexcept {

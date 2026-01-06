@@ -33,7 +33,6 @@
 
 int main(const int argc, char* const argv[])
 {
-    
     try
     {
         IM_INFO("Running Engine...");
