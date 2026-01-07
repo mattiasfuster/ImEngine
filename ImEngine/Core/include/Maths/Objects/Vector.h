@@ -143,6 +143,7 @@ struct Vector2 {
   }
 
   void Normalize() noexcept { *this /= static_cast<T>(Length()); }
+  
   [[nodiscard]] Vector2 Normalized() const noexcept {
     return *this / static_cast<T>(Length());
   }

@@ -50,7 +50,6 @@ if (IMENGINE_BUILD_CORE OR IMENGINE_BUILD_ENGINE OR IMENGINE_BUILD_RUNTIME OR IM
 
     find_package(Vulkan QUIET)
     if (TARGET Vulkan::Vulkan)
-        # Promote to global so siblings can see it
         get_target_property(is_imported Vulkan::Vulkan IMPORTED)
         if(is_imported)
             set_target_properties(Vulkan::Vulkan PROPERTIES IMPORTED_GLOBAL TRUE)
@@ -59,7 +58,6 @@ if (IMENGINE_BUILD_CORE OR IMENGINE_BUILD_ENGINE OR IMENGINE_BUILD_RUNTIME OR IM
         message(STATUS "Vulkan::Vulkan target found (SDK installed).")
         add_library(ImEngine-ThirdParty::vulkan ALIAS Vulkan::Vulkan)
 
-        # Get Vulkan include directory for GLFW
         get_target_property(VULKAN_INCLUDE_DIRS Vulkan::Headers INTERFACE_INCLUDE_DIRECTORIES)
         if(NOT VULKAN_INCLUDE_DIRS)
             set(VULKAN_INCLUDE_DIRS "$ENV{VULKAN_SDK}/Include")
@@ -69,7 +67,6 @@ if (IMENGINE_BUILD_CORE OR IMENGINE_BUILD_ENGINE OR IMENGINE_BUILD_RUNTIME OR IM
 
         set(VULKAN_VERSION "v1.3.296")
 
-        # 1. Headers (fetch first, needed by GLFW and Loader)
         FetchContent_Declare(
             Vulkan-Headers
             GIT_REPOSITORY https://github.com/KhronosGroup/Vulkan-Headers.git
@@ -82,19 +79,16 @@ if (IMENGINE_BUILD_CORE OR IMENGINE_BUILD_ENGINE OR IMENGINE_BUILD_RUNTIME OR IM
         set(VULKAN_INCLUDE_DIRS "${vulkan-headers_SOURCE_DIR}/include")
         message(STATUS "Vulkan Headers: ${VULKAN_INCLUDE_DIRS}")
 
-        # 2. Loader
-        # Create a minimal VulkanHeadersConfig.cmake so Vulkan-Loader can find_package(VulkanHeaders)
-        # The Vulkan-Headers project only generates this file on install, but we're using FetchContent
         set(VULKAN_HEADERS_CONFIG_DIR "${vulkan-headers_BINARY_DIR}/VulkanHeadersConfig")
         file(MAKE_DIRECTORY "${VULKAN_HEADERS_CONFIG_DIR}")
         file(WRITE "${VULKAN_HEADERS_CONFIG_DIR}/VulkanHeadersConfig.cmake"
-"# Auto-generated VulkanHeadersConfig.cmake for FetchContent usage
-if(NOT TARGET Vulkan::Headers)
-    add_library(Vulkan::Headers ALIAS Vulkan-Headers)
-endif()
-set(VulkanHeaders_INCLUDE_DIRS \"${vulkan-headers_SOURCE_DIR}/include\")
-set(VulkanHeaders_FOUND TRUE)
-")
+                "# Auto-generated VulkanHeadersConfig.cmake for FetchContent usage
+                if(NOT TARGET Vulkan::Headers)
+                    add_library(Vulkan::Headers ALIAS Vulkan-Headers)
+                endif()
+                set(VulkanHeaders_INCLUDE_DIRS \"${vulkan-headers_SOURCE_DIR}/include\")
+                set(VulkanHeaders_FOUND TRUE)
+                ")
         set(VulkanHeaders_DIR "${VULKAN_HEADERS_CONFIG_DIR}" CACHE PATH "" FORCE)
         message(STATUS "Created VulkanHeadersConfig at: ${VULKAN_HEADERS_CONFIG_DIR}")
 
@@ -115,7 +109,6 @@ set(VulkanHeaders_FOUND TRUE)
         FetchContent_MakeAvailable(Vulkan-Loader)
 
         if(TARGET vulkan)
-            # Fix clang-cl /SDL issue in Vulkan-Loader
             if(MSVC AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
                 get_target_property(VULKAN_OPTS vulkan COMPILE_OPTIONS)
                 if(VULKAN_OPTS)
@@ -123,14 +116,10 @@ set(VulkanHeaders_FOUND TRUE)
                     set_target_properties(vulkan PROPERTIES COMPILE_OPTIONS "${VULKAN_OPTS}")
                 endif()
             endif()
-
-            # Fix CMake error: Vulkan-Loader sets INTERFACE_INCLUDE_DIRECTORIES with absolute paths
-            # We need to replace them with BUILD_INTERFACE generator expressions
             get_target_property(VULKAN_INC_DIRS vulkan INTERFACE_INCLUDE_DIRECTORIES)
             if(VULKAN_INC_DIRS)
                 set(FIXED_INC_DIRS "")
                 foreach(DIR ${VULKAN_INC_DIRS})
-                    # Wrap paths that are in build/source directory with BUILD_INTERFACE
                     if(DIR MATCHES "\\$<" OR DIR MATCHES "INSTALL_INTERFACE")
                         # Already a generator expression, keep as-is
                         list(APPEND FIXED_INC_DIRS "${DIR}")
