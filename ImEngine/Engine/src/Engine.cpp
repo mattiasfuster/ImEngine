@@ -96,7 +96,7 @@ void Engine::InitVulkan() {
     }
   }
 
-  if (!CheckRequiredExtensionsSupport()) {
+  if (!CheckRequiredInstanceExtensionsSupport()) {
     throw std::runtime_error("required Vulkan extensions not available!");
   }
 
@@ -118,7 +118,7 @@ void Engine::CreateInstance() {
       .apiVersion = VK_API_VERSION_1_3,
   };
 
-  auto extensions = GetRequiredExtensions();
+  auto extensions = GetRequiredInstanceExtensions();
 
   VkInstanceCreateInfo create_info{
       .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
@@ -231,37 +231,40 @@ void Engine::CreateLogicalDevice() {
       queueCreateInfos.push_back(queueCreateInfo);
   }
 
-    VkPhysicalDeviceFeatures deviceFeatures{};
+  VkPhysicalDeviceFeatures deviceFeatures{};
 
-    VkDeviceCreateInfo createInfo{};
-    createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+  VkDeviceCreateInfo createInfo{};
+  createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 
-    createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
-    createInfo.pQueueCreateInfos = queueCreateInfos.data();
+  createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
+  createInfo.pQueueCreateInfos = queueCreateInfos.data();
 
-    createInfo.pEnabledFeatures = &deviceFeatures;
+  createInfo.pEnabledFeatures = &deviceFeatures;
 
-    createInfo.enabledExtensionCount = 0;
+  createInfo.enabledExtensionCount = static_cast<uint32_t>(kDeviceExtensions.size());
+  createInfo.ppEnabledExtensionNames = kDeviceExtensions.data();
 
-    if (kEnableValidationLayers) {
-        createInfo.enabledLayerCount = static_cast<uint32_t>(kValidationLayers.size());
-        createInfo.ppEnabledLayerNames = kValidationLayers.data();
-    } else {
-        createInfo.enabledLayerCount = 0;
-    }
+  if (kEnableValidationLayers) {
+      createInfo.enabledLayerCount = static_cast<uint32_t>(kValidationLayers.size());
+      createInfo.ppEnabledLayerNames = kValidationLayers.data();
+  } else {
+      createInfo.enabledLayerCount = 0;
+  }
 
-    if (vkCreateDevice(physical_device_, &createInfo, nullptr, &logical_device_) != VK_SUCCESS) {
-        throw std::runtime_error("Failed to create logical device!");
-    }
+  if (vkCreateDevice(physical_device_, &createInfo, nullptr, &logical_device_) != VK_SUCCESS) {
+      throw std::runtime_error("Failed to create logical device!");
+  }
 
-    vkGetDeviceQueue(logical_device_, indices.graphics_family.value(), 0, &graphics_queue_);
-    vkGetDeviceQueue(logical_device_, indices.present_family.value(), 0, &present_queue_);
+  vkGetDeviceQueue(logical_device_, indices.graphics_family.value(), 0, &graphics_queue_);
+  vkGetDeviceQueue(logical_device_, indices.present_family.value(), 0, &present_queue_);
 }
 
 void Engine::MainLoop() {
   while (!glfwWindowShouldClose(window_)) {
     glfwPollEvents();
     // Future: update / render
+
+    ///////////////////////////////TFOFRécupérer des détails à propos du support de la swap chain/////////////////////////////////
   }
 }
 
@@ -326,18 +329,23 @@ bool Engine::CheckValidationLayerSupport() const {
   return true;
 }
 
-bool Engine::CheckRequiredExtensionsSupport() const {
-  auto required_extensions = GetRequiredExtensions();
+bool Engine::CheckRequiredInstanceExtensionsSupport() const {
+  auto required_extensions = GetRequiredInstanceExtensions();
 
-  uint32_t available_count = 0;
-  vkEnumerateInstanceExtensionProperties(nullptr, &available_count, nullptr);
-  std::vector<VkExtensionProperties> available(available_count);
-  vkEnumerateInstanceExtensionProperties(nullptr, &available_count, available.data());
+  uint32_t count = 0;
+  vkEnumerateInstanceExtensionProperties(nullptr, &count, nullptr);
 
-  for (const char* required : required_extensions) {
-    bool found = std::ranges::any_of(available, [&](const auto& ext) {
-      return strcmp(required, ext.extensionName) == 0;
+  std::vector<VkExtensionProperties> available(count);
+  vkEnumerateInstanceExtensionProperties(nullptr, &count, available.data());
+
+  for (const char* required_cstr : required_extensions) {
+    std::string_view required(required_cstr);
+
+    bool found = std::ranges::any_of( available,
+      [&](const VkExtensionProperties& ext) {
+      return required == std::string_view(ext.extensionName);
     });
+
     if (!found) {
       IM_ERROR("Missing Vulkan extension: {}", required);
       return false;
@@ -347,7 +355,21 @@ bool Engine::CheckRequiredExtensionsSupport() const {
   return true;
 }
 
-std::vector<const char*> Engine::GetRequiredExtensions() const {
+bool Engine::CheckRequiredDeviceExtensionsSupport(VkPhysicalDevice device) const {
+  uint32_t extensionCount;
+  vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
+
+  std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+  vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
+
+  return std::ranges::all_of(kDeviceExtensions, [&](std::string_view required) {
+      return std::ranges::any_of(availableExtensions, [&](const VkExtensionProperties& available) {
+          return required == available.extensionName; 
+      });
+  });
+}
+
+std::vector<const char*> Engine::GetRequiredInstanceExtensions() const {
   uint32_t glfw_ext_count = 0;
   const char** glfw_extensions = 
     glfwGetRequiredInstanceExtensions(&glfw_ext_count);
@@ -363,6 +385,8 @@ std::vector<const char*> Engine::GetRequiredExtensions() const {
 
 bool Engine::IsDeviceSuitable(const VkPhysicalDevice& device) const {
   QueueFamilyIndices indices = FindQueueFamilies(device);
+  bool extensionsSupported = CheckRequiredDeviceExtensionsSupport(device);
+
   VkPhysicalDeviceProperties deviceProperties;
   VkPhysicalDeviceFeatures deviceFeatures;
   vkGetPhysicalDeviceProperties(device, &deviceProperties);
@@ -370,8 +394,7 @@ bool Engine::IsDeviceSuitable(const VkPhysicalDevice& device) const {
 
   IM_INFO("PhysDevice : {}", static_cast<std::string>(deviceProperties.deviceName));
 
-  return deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU &&
-         deviceFeatures.geometryShader && indices.is_complete();
+  return indices.is_complete() && extensionsSupported;
 }
 
 QueueFamilyIndices Engine::FindQueueFamilies(VkPhysicalDevice device) const

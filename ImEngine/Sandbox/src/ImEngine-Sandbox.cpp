@@ -31,7 +31,7 @@
 #include "Maths/Objects/Matrice.h"
 #include "Debug/Logger.h"
 
-int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
+int main([[maybe_unused]] int argk, [[maybe_unused]] char* argv[]) {
   try {
     IM_INFO("Starting ImEngine Sandbox...");
 

@@ -16,7 +16,7 @@ inline constexpr std::string_view kRed    = "\033[31m";
 inline constexpr std::string_view kGreen  = "\033[32m";
 inline constexpr std::string_view kYellow = "\033[33m";
 inline constexpr std::string_view kBlue   = "\033[34m";
-}  // namespace Colors
+}
 
 template <typename... Args>
 void LogInfo(std::format_string<Args...> fmt, Args&&... args) {

@@ -59,6 +59,10 @@ public:
       "VK_LAYER_KHRONOS_validation"
   };
 
+  static constexpr std::array kDeviceExtensions = {
+      VK_KHR_SWAPCHAIN_EXTENSION_NAME
+  };
+
 #ifdef IMENGINE_DEBUG
   static constexpr bool kEnableValidationLayers = true;
 #else
@@ -109,9 +113,10 @@ private:
   void MainLoop();
   void Cleanup();
 
-  [[nodiscard]] std::vector<const char*> GetRequiredExtensions() const;
+  [[nodiscard]] std::vector<const char*> GetRequiredInstanceExtensions() const;
   [[nodiscard]] bool CheckValidationLayerSupport() const;
-  [[nodiscard]] bool CheckRequiredExtensionsSupport() const;
+  [[nodiscard]] bool CheckRequiredInstanceExtensionsSupport() const;
+  [[nodiscard]] bool CheckRequiredDeviceExtensionsSupport(VkPhysicalDevice device) const;
   [[nodiscard]] bool IsDeviceSuitable(const VkPhysicalDevice& device) const;
   [[nodiscard]] QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device) const;
 
