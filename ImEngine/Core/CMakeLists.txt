@@ -58,6 +58,9 @@ target_link_libraries(ImEngine-Core
 # --- Export/import macro for Windows DLL --------------------------------------
 target_compile_definitions(ImEngine-Core
         PRIVATE IMENGINE_CORE_EXPORTS
+        PRIVATE $<$<CONFIG:Debug>:IMENGINE_DEBUG>
+        PRIVATE $<$<CONFIG:Release>:IMENGINE_RELEASE>
+        PRIVATE $<$<CONFIG:RelWithDebInfo>:IMENGINE_RELWITHDEBINFO>
 )
 
 # --- Installation rules (SDK-like) --------------------------------------------

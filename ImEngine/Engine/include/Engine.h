@@ -26,10 +26,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-//
-// Created by damma on 17/05/2025.
-//
-
 #pragma once
 
 #include "EngineExport.h"
@@ -37,31 +33,103 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
+#include <array>
+#include <vector>
+#include <optional>
+
+struct EngineConfig {
+  const char* title = "ImEngine";
+  uint32_t width = 1280;
+  uint32_t height = 720;
+};
+
+struct QueueFamilyIndices {
+    std::optional<uint32_t> graphics_family;
+    std::optional<uint32_t> present_family;
+
+    bool is_complete() {
+        return graphics_family.has_value() && present_family.has_value();
+    }
+};
+
 class IMENGINE_ENGINE_API Engine {
- public:
-  static Engine& Get();
-  ~Engine();
+public:
+  // Static Data members
+  static constexpr std::array kValidationLayers = {
+      "VK_LAYER_KHRONOS_validation"
+  };
+
+#ifdef IMENGINE_DEBUG
+  static constexpr bool kEnableValidationLayers = true;
+#else
+  static constexpr bool kEnableValidationLayers = false;
+#endif
+
+  // Constructors and assignment operators
+  explicit Engine(const EngineConfig& config = {});
 
   Engine(const Engine&) = delete;
   Engine& operator=(const Engine&) = delete;
 
-  void Run(int argc, char* const argv[]);
+  Engine(Engine&& other) noexcept;
+  Engine& operator=(Engine&& other) noexcept;
+
+  // Destructor
+
+  ~Engine();
+
+  // Non-static member functions
+
+  void Run();
 
   [[nodiscard]] GLFWwindow* window() const { return window_; }
   [[nodiscard]] VkInstance vulkan_instance() const { return vulkan_instance_; }
 
- private:
-  Engine();
-  void Init(int argc, char* const argv[]);
+private:
+  // Static functions
+
+  static void PopulateDebugMessengerCreateInfo(
+      VkDebugUtilsMessengerCreateInfoEXT& create_info);
+
+  static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(
+      VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
+      VkDebugUtilsMessageTypeFlagsEXT message_type,
+      const VkDebugUtilsMessengerCallbackDataEXT* callback_data,
+      void* user_data);
+
+  // Non-static member functions
+
   void InitWindow();
   void InitVulkan();
-  void MainLoop() const;
-  void Cleanup() const;
+  void CreateInstance();
+  void SetupDebugMessenger();
+  void CreateSurface();
+  void PickPhysicalDevice();
+  void CreateLogicalDevice();
+  void MainLoop();
+  void Cleanup();
+
+  [[nodiscard]] std::vector<const char*> GetRequiredExtensions() const;
+  [[nodiscard]] bool CheckValidationLayerSupport() const;
+  [[nodiscard]] bool CheckRequiredExtensionsSupport() const;
+  [[nodiscard]] bool IsDeviceSuitable(const VkPhysicalDevice& device) const;
+  [[nodiscard]] QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device) const;
+
+  // Data members
 
   GLFWwindow* window_ = nullptr;
-  uint32_t width_ = 1280;
-  uint32_t height_ = 720;
-  const char* window_title_ = "ImEngine Sandbox";
 
   VkInstance vulkan_instance_ = VK_NULL_HANDLE;
+  VkDebugUtilsMessengerEXT debug_messenger_ = VK_NULL_HANDLE;
+  VkSurfaceKHR vulkan_surface_ = VK_NULL_HANDLE;
+
+  VkPhysicalDevice physical_device_ = VK_NULL_HANDLE;
+  VkDevice logical_device_ = VK_NULL_HANDLE;
+
+  VkQueue graphics_queue_ = VK_NULL_HANDLE;
+  VkQueue present_queue_ = VK_NULL_HANDLE;
+
+  const char* window_title_ = "ImEngine";
+  uint32_t width_ = 1280;
+  uint32_t height_ = 720;
 };

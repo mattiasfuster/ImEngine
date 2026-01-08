@@ -31,22 +31,22 @@
 #include "Maths/Objects/Matrice.h"
 #include "Debug/Logger.h"
 
-int main(const int argc, char* const argv[])
-{
-    try
-    {
-        IM_INFO("Running Engine...");
-        Engine::Get().Run(argc, argv);
-    }
-    catch (const std::exception& e)
-    {
-        std::fprintf(stderr, "[ERROR] Fatal error: %s\n", e.what());
-        return EXIT_FAILURE;
-    }
-    catch (...)
-    {
-        IM_ERROR("Unknown fatal error occurred.");
-        return EXIT_FAILURE;
-    }
+int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
+  try {
+    IM_INFO("Starting ImEngine Sandbox...");
+
+    EngineConfig config{
+        .title = "ImEngine Sandbox",
+        .width = 1280,
+        .height = 720,
+    };
+
+    Engine engine(config);
+    engine.Run();
+
     return EXIT_SUCCESS;
+  } catch (const std::exception& e) {
+    IM_ERROR("Fatal error: {}", e.what());
+    return EXIT_FAILURE;
+  }
 }

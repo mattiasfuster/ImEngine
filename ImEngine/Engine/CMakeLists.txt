@@ -48,6 +48,9 @@ target_link_libraries(ImEngine-Engine
 
 target_compile_definitions(ImEngine-Engine
         PRIVATE IMENGINE_ENGINE_EXPORTS
+        PRIVATE $<$<CONFIG:Debug>:IMENGINE_DEBUG>
+        PRIVATE $<$<CONFIG:Release>:IMENGINE_RELEASE>
+        PRIVATE $<$<CONFIG:RelWithDebInfo>:IMENGINE_RELWITHDEBINFO>
 )
 
 # --- Installation rules ---
