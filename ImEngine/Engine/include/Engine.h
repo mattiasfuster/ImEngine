@@ -52,6 +52,12 @@ struct QueueFamilyIndices {
     }
 };
 
+struct SwapChainSupportDetails {
+  VkSurfaceCapabilitiesKHR capabilities;
+  std::vector<VkSurfaceFormatKHR> formats;
+  std::vector<VkPresentModeKHR> presentModes;
+};
+
 class IMENGINE_ENGINE_API Engine {
 public:
   // Static Data members
@@ -119,6 +125,7 @@ private:
   [[nodiscard]] bool CheckRequiredDeviceExtensionsSupport(VkPhysicalDevice device) const;
   [[nodiscard]] bool IsDeviceSuitable(const VkPhysicalDevice& device) const;
   [[nodiscard]] QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device) const;
+  [[nodiscard]] SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device) const;
 
   // Data members
 

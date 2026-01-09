@@ -263,8 +263,6 @@ void Engine::MainLoop() {
   while (!glfwWindowShouldClose(window_)) {
     glfwPollEvents();
     // Future: update / render
-
-    ///////////////////////////////TFOFRécupérer des détails à propos du support de la swap chain/////////////////////////////////
   }
 }
 
@@ -386,15 +384,21 @@ std::vector<const char*> Engine::GetRequiredInstanceExtensions() const {
 bool Engine::IsDeviceSuitable(const VkPhysicalDevice& device) const {
   QueueFamilyIndices indices = FindQueueFamilies(device);
   bool extensionsSupported = CheckRequiredDeviceExtensionsSupport(device);
+  bool swapChainAdequate = false;
 
   VkPhysicalDeviceProperties deviceProperties;
   VkPhysicalDeviceFeatures deviceFeatures;
   vkGetPhysicalDeviceProperties(device, &deviceProperties);
   vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
 
+  if (extensionsSupported) {
+    SwapChainSupportDetails swapChainSupport = QuerySwapChainSupport(device);
+    swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
+  }
+
   IM_INFO("PhysDevice : {}", static_cast<std::string>(deviceProperties.deviceName));
 
-  return indices.is_complete() && extensionsSupported;
+  return indices.is_complete() && extensionsSupported && swapChainAdequate;
 }
 
 QueueFamilyIndices Engine::FindQueueFamilies(VkPhysicalDevice device) const
@@ -409,25 +413,53 @@ QueueFamilyIndices Engine::FindQueueFamilies(VkPhysicalDevice device) const
 
   int i = 0;
   for (const auto& queueFamily : queueFamilies) {
-      if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
-          indices.graphics_family = i;
-      }
+    if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+        indices.graphics_family = i;
+    }
 
-      VkBool32 presentSupport = false;
-      vkGetPhysicalDeviceSurfaceSupportKHR(device, i, vulkan_surface_, &presentSupport);
+    VkBool32 presentSupport = false;
+    vkGetPhysicalDeviceSurfaceSupportKHR(device, i, vulkan_surface_, &presentSupport);
 
-      if (presentSupport) {
-          indices.present_family = i;
-      }
+    if (presentSupport) {
+        indices.present_family = i;
+    }
 
-      if (indices.is_complete()) {
-          break;
-      }
+    if (indices.is_complete()) {
+        break;
+    }
 
-      i++;
+    i++;
   }
 
   return indices;
+}
+
+SwapChainSupportDetails Engine::QuerySwapChainSupport(VkPhysicalDevice device) const
+{
+  SwapChainSupportDetails details;
+
+  vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, vulkan_surface_, &details.capabilities);
+
+  uint32_t formatCount;
+  vkGetPhysicalDeviceSurfaceFormatsKHR(device, vulkan_surface_, &formatCount, nullptr);
+  if (formatCount != 0) {
+    details.formats.resize(formatCount);
+    vkGetPhysicalDeviceSurfaceFormatsKHR(device, vulkan_surface_, &formatCount, details.formats.data());
+  }
+
+  uint32_t presentModeCount;  
+  vkGetPhysicalDeviceSurfacePresentModesKHR(device, vulkan_surface_, &presentModeCount, nullptr);
+  if (presentModeCount != 0) {
+      details.presentModes.resize(presentModeCount);
+      vkGetPhysicalDeviceSurfacePresentModesKHR(device, vulkan_surface_, &presentModeCount, details.presentModes.data());
+  }
+
+  return details;
+}
+
+VkSurfaceFormatKHR Engine::ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) const
+{
+
 }
 
 VKAPI_ATTR VkBool32 VKAPI_CALL Engine::DebugCallback(
