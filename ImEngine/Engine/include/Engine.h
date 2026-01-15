@@ -116,6 +116,8 @@ private:
   void CreateSurface();
   void PickPhysicalDevice();
   void CreateLogicalDevice();
+  void CreateSwapChain();
+  void CreateImageViews();
   void MainLoop();
   void Cleanup();
 
@@ -124,9 +126,12 @@ private:
   [[nodiscard]] bool CheckRequiredInstanceExtensionsSupport() const;
   [[nodiscard]] bool CheckRequiredDeviceExtensionsSupport(VkPhysicalDevice device) const;
   [[nodiscard]] bool IsDeviceSuitable(const VkPhysicalDevice& device) const;
-  [[nodiscard]] QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device) const;
+  [[nodiscard]] QueueFamilyIndices FindQueueFamiliesIndices(VkPhysicalDevice device) const;
   [[nodiscard]] SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device) const;
-
+  [[nodiscard]] VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) const;
+  [[nodiscard]] VkPresentModeKHR ChooseSwapPrensentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) const;
+  [[nodiscard]] VkExtent2D ChooseSwapExtenT(const VkSurfaceCapabilitiesKHR& capabilities) const;
+  
   // Data members
 
   GLFWwindow* window_ = nullptr;
@@ -140,6 +145,11 @@ private:
 
   VkQueue graphics_queue_ = VK_NULL_HANDLE;
   VkQueue present_queue_ = VK_NULL_HANDLE;
+
+  VkSwapchainKHR swap_chain_ = VK_NULL_HANDLE;
+  std::vector<VkImage> swap_chain_images_ = {};
+  VkFormat swap_chain_image_format_ = VkFormat::VK_FORMAT_B8G8R8_SRGB;
+  VkExtent2D swap_chain_extent_ = {1280, 720};
 
   const char* window_title_ = "ImEngine";
   uint32_t width_ = 1280;
