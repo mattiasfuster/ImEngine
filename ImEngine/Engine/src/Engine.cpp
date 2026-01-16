@@ -108,6 +108,8 @@ void Engine::InitVulkan() {
   PickPhysicalDevice();
   CreateLogicalDevice();
   CreateSwapChain();
+  CreateImageViews();
+  CreateGraphicPipeline();
 }
 
 void Engine::CreateInstance() {
@@ -278,7 +280,7 @@ void Engine::CreateSwapChain()
 
   VkSurfaceFormatKHR surfaceFormat = ChooseSwapSurfaceFormat(swapChainSupport.formats);
   VkPresentModeKHR presentMode = ChooseSwapPrensentMode(swapChainSupport.presentModes);
-  VkExtent2D extent = ChooseSwapExtenT(swapChainSupport.capabilities);
+  VkExtent2D extent = ChooseSwapExtent(swapChainSupport.capabilities);
 
   uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
   
@@ -328,6 +330,31 @@ void Engine::CreateSwapChain()
 }
 
 void Engine::CreateImageViews() {
+  swap_chain_image_views_.resize(swap_chain_images_.size());
+  for (size_t i = 0; i< swap_chain_images_.size(); i++) {
+    VkImageViewCreateInfo createInfo{};
+    createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+    createInfo.image = swap_chain_images_[i];
+    createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+    createInfo.format = swap_chain_image_format_;
+    createInfo.components = {
+      .r = VK_COMPONENT_SWIZZLE_IDENTITY,
+      .g = VK_COMPONENT_SWIZZLE_IDENTITY,
+      .b = VK_COMPONENT_SWIZZLE_IDENTITY,
+      .a = VK_COMPONENT_SWIZZLE_IDENTITY
+    };
+    createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    createInfo.subresourceRange.baseMipLevel = 0;
+    createInfo.subresourceRange.levelCount = 1;
+    createInfo.subresourceRange.baseArrayLayer = 0;
+    createInfo.subresourceRange.layerCount = 1;
+    if (vkCreateImageView(logical_device_, &createInfo, nullptr, &swap_chain_image_views_[i]) != VK_SUCCESS) {
+      throw std::runtime_error("failed to create image views!");
+    }
+  }
+}
+
+void Engine::CreateGraphicPipeline() {
 }
 
 void Engine::MainLoop() {
@@ -353,6 +380,10 @@ void Engine::Cleanup() {
       }
       debug_messenger_ = VK_NULL_HANDLE;
     }
+  }
+
+  for (const auto& imageView : swap_chain_image_views_) {
+    vkDestroyImageView(logical_device_, imageView, nullptr);
   }
 
   if (swap_chain_ != VK_NULL_HANDLE) {
@@ -542,7 +573,7 @@ VkPresentModeKHR Engine::ChooseSwapPrensentMode(const std::vector<VkPresentModeK
   return VK_PRESENT_MODE_FIFO_KHR;
 }
 
-VkExtent2D Engine::ChooseSwapExtenT(const VkSurfaceCapabilitiesKHR& capabilities) const {
+VkExtent2D Engine::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const {
   if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
     return capabilities.currentExtent;
   } else {

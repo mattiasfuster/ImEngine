@@ -36,6 +36,7 @@
 #include <array>
 #include <vector>
 #include <optional>
+#include <shaderc/shaderc.hpp>
 
 struct EngineConfig {
   const char* title = "ImEngine";
@@ -111,6 +112,7 @@ private:
 
   void InitWindow();
   void InitVulkan();
+
   void CreateInstance();
   void SetupDebugMessenger();
   void CreateSurface();
@@ -118,6 +120,8 @@ private:
   void CreateLogicalDevice();
   void CreateSwapChain();
   void CreateImageViews();
+  void CreateGraphicPipeline();
+  
   void MainLoop();
   void Cleanup();
 
@@ -130,7 +134,7 @@ private:
   [[nodiscard]] SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device) const;
   [[nodiscard]] VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) const;
   [[nodiscard]] VkPresentModeKHR ChooseSwapPrensentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) const;
-  [[nodiscard]] VkExtent2D ChooseSwapExtenT(const VkSurfaceCapabilitiesKHR& capabilities) const;
+  [[nodiscard]] VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const;
   
   // Data members
 
@@ -148,6 +152,7 @@ private:
 
   VkSwapchainKHR swap_chain_ = VK_NULL_HANDLE;
   std::vector<VkImage> swap_chain_images_ = {};
+  std::vector<VkImageView> swap_chain_image_views_ = {};
   VkFormat swap_chain_image_format_ = VkFormat::VK_FORMAT_B8G8R8_SRGB;
   VkExtent2D swap_chain_extent_ = {1280, 720};
 
