@@ -5,6 +5,11 @@
 Language: Cpp
 BasedOnStyle: Google
 Standard: c++23
+ColumnLimit: 80
+IndentWidth: 2
+UseTab: Never
+BreakBeforeBraces: Attach
+PointerAlignment: Left
 
 # --- Line Length ---
 ColumnLimit: 80  # Google standard

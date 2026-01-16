@@ -121,6 +121,7 @@ private:
   void CreateSwapChain();
   void CreateImageViews();
   void CreateGraphicPipeline();
+  void LoadingCompiledShaders();
   
   void MainLoop();
   void Cleanup();
@@ -135,6 +136,7 @@ private:
   [[nodiscard]] VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) const;
   [[nodiscard]] VkPresentModeKHR ChooseSwapPrensentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) const;
   [[nodiscard]] VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const;
+  [[nodiscard]] std::vector<char> ReadShaderFile(const std::string_view& filename);
   
   // Data members
 

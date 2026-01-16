@@ -1,0 +1,31 @@
+CompileFlags:
+  Add: [
+    -std=c++23,
+    -IImEngine/Core/include,
+    -IImEngine/Engine/include,
+    -IImEngine/Editor/include,
+    -IImEngine/Sandbox/include,
+    -IThirdParty/include
+  ]
+  CompilationDatabase: out/build/sandbox-app/compile_commands.json
+
+Diagnostics:
+  ClangTidy:
+    Add: [*]
+
+Completion:
+  AllScopes: true
+  Dedupe: true
+  Filter: true
+  IncludeInsertion: true
+
+CrossFileRename:
+  Enable: true
+
+Index:
+  Background: true
+
+Style:
+  BasedOnStyle: Google
+  IndentWidth: 2
+  UseTab: Never

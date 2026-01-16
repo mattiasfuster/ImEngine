@@ -28,6 +28,7 @@
 #include <limits>
 #include <algorithm>
 
+
 Engine::Engine(const EngineConfig& config)
     : window_title_(config.title),
       width_(config.width),
@@ -357,6 +358,10 @@ void Engine::CreateImageViews() {
 void Engine::CreateGraphicPipeline() {
 }
 
+void Engine::LoadingCompiledShaders() {
+  
+}
+
 void Engine::MainLoop() {
   while (!glfwWindowShouldClose(window_)) {
     glfwPollEvents();
@@ -587,6 +592,8 @@ VkExtent2D Engine::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities
       return currentExtent;
   }
 }
+
+
 
 VKAPI_ATTR VkBool32 VKAPI_CALL Engine::DebugCallback(
     VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,

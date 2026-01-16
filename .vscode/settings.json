@@ -2,5 +2,29 @@
     "C_Cpp.default.compileCommands": "${workspaceFolder}/out/build/sandbox-app/compile_commands.json",
     "C_Cpp.intelliSenseEngine": "default",
     "C_Cpp.default.cppStandard": "c++23",
-    "C_Cpp.default.compilerPath": "C:/Program Files/LLVM/bin/clang-cl.exe"
+    "C_Cpp.default.compilerPath": "C:/Program Files/LLVM/bin/clang-cl.exe",
+    "C_Cpp.default.intelliSenseMode": "windows-clang-x64",
+    "C_Cpp.default.includePath": [
+        "${workspaceFolder}/ImEngine/Core/include",
+        "${workspaceFolder}/ImEngine/Engine/include",
+        "${workspaceFolder}/ImEngine/Editor/include",
+        "${workspaceFolder}/ImEngine/Sandbox/include",
+        "${workspaceFolder}/ThirdParty/include"
+    ],
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "cmake.configureOnOpen": true,
+    "cmake.generator": "Ninja Multi-Config",
+    "cmake.buildDirectory": "${workspaceFolder}/out/build/${preset:activeConfigurePreset}",
+    "cmake.sourceDirectory": "${workspaceFolder}",
+    "cmake.configurePreset": "sandbox-app",
+    "cmake.buildPreset": "sandbox-Debug",
+    "clangd.arguments": [
+        "--compile-commands-dir=out/build/sandbox-app",
+        "--header-insertion=never",
+        "--background-index",
+        "--clang-tidy",
+        "--all-scopes-completion",
+        "--cross-file-rename",
+        "--completion-style=detailed"
+    ]
 }
