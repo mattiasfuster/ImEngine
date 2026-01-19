@@ -207,8 +207,10 @@ For the complete coding guide, see [CODING_STYLE.md](docs/CODING_STYLE.md).
 
 ## 📚 Documentation
 
+- [AI Coding Guide](.claude/AI_CODING_GUIDE.md) - Complete guide for AI agents (architecture, patterns, workflows)
 - [Coding Style Guide](docs/CODING_STYLE.md)
 - [Engine Foundations Plan](docs/plan-engineFoundations.prompt.md)
+- [Claude Code Changes](.claude/CHANGELOG.md) - History of automated fixes and improvements
 
 ## 🐛 Troubleshooting
 
@@ -220,6 +222,28 @@ For the complete coding guide, see [CODING_STYLE.md](docs/CODING_STYLE.md).
 
 ### Vulkan SDK not found
 ✅ **Automatically resolved** - Vulkan-Headers and Vulkan-Loader are automatically downloaded and compiled.
+
+### PCH Version Mismatch Error (after deleting `out/`)
+**Error**: `Microsoft Visual C/C++ Version differs in precompiled file`
+
+✅ **Automatically resolved** - The build system now configures ccache to use content-based compiler checking, which prevents version mismatches.
+
+**If the error persists**, clean the build completely:
+
+```powershell
+# Option 1: Use the clean script (recommended)
+.\.claude\scripts\clean-build.ps1
+
+# Option 2: Manual cleanup
+out\build\sandbox-app\tools\ccache\ccache-4.12.2-windows-x86_64\ccache.exe -C
+Remove-Item -Recurse -Force out
+```
+
+Then reconfigure and rebuild:
+```powershell
+cmake --preset sandbox-app
+cmake --build --preset sandbox-Debug
+```
 
 ### Slow compilation
 - Check that ccache is enabled ("Using ccache" message during configure)

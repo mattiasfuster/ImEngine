@@ -27,18 +27,20 @@
 // SOFTWARE.
 
 #include "Engine.h"
-#include "Maths/Objects/Vector.h"
-#include "Maths/Objects/Matrice.h"
 #include "Debug/Logger.h"
+
+constexpr int kSANDBOX_WINDOW_WIDTH = 1280;
+constexpr int kSANDBOX_WINDOW_HEIGHT = 720;
 
 int main([[maybe_unused]] int argk, [[maybe_unused]] char* argv[]) {
   try {
     IM_INFO("Starting ImEngine Sandbox...");
 
+
     EngineConfig config{
         .title = "ImEngine Sandbox",
-        .width = 1280,
-        .height = 720,
+        .width = kSANDBOX_WINDOW_WIDTH,
+        .height = kSANDBOX_WINDOW_HEIGHT,
     };
 
     Engine engine(config);

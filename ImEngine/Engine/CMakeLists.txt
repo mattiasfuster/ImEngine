@@ -62,6 +62,12 @@ target_compile_definitions(ImEngine-Engine
 )
 
 # 3. INSTALLATION RULES
+install(TARGETS ImEngine-Engine
+    RUNTIME DESTINATION bin          # .dll on Windows
+    LIBRARY DESTINATION bin          # .so/.dylib
+    ARCHIVE DESTINATION lib          # .lib import/static
+)
+
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include/"
         DESTINATION "include/ImEngine")
 

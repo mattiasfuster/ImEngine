@@ -4,7 +4,7 @@ include(FetchContent)
 
 message(STATUS "[-----ImEngine-ThirdParty-----]")
 
-if (IMENGINE_BUILD_CORE OR IMENGINE_BUILD_ENGINE OR IMENGINE_BUILD_RUNTIME OR IMENGINE_BUILD_SANDBOX)
+if (IMENGINE_BUILD_CORE OR IMENGINE_BUILD_ENGINE OR IMENGINE_BUILD_SANDBOX)
 
     # =========================================================================
     # Vulkan (must be configured BEFORE GLFW so headers are available)

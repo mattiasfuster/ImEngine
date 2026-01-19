@@ -5,11 +5,6 @@
 Language: Cpp
 BasedOnStyle: Google
 Standard: c++23
-ColumnLimit: 80
-IndentWidth: 2
-UseTab: Never
-BreakBeforeBraces: Attach
-PointerAlignment: Left
 
 # --- Line Length ---
 ColumnLimit: 80  # Google standard
@@ -34,9 +29,9 @@ AlignConsecutiveAssignments: false
 AlignConsecutiveDeclarations: false
 AlignTrailingComments: true
 AlignAfterOpenBracket: Align
+PointerAlignment: Left  # char* p (not char *p)
 
 # --- Spacing ---
-PointerAlignment: Left  # char* p (not char *p)
 DerivePointerAlignment: false
 SpaceAfterCStyleCast: false
 SpacesBeforeTrailingComments: 2

@@ -1,11 +1,13 @@
+// ImEngine-Editor Precompiled Header
+// Minimal PCH - only the most frequently used headers
+
 #pragma once
-#include <algorithm>
-#include <functional>
-#include <iostream>
-#include <map>
+
+// Essential types
+#include <cstdint>
+#include <cstddef>
+
+// Most common containers
 #include <memory>
-#include <mutex>
 #include <string>
-#include <unordered_map>
-#include <utility>
 #include <vector>

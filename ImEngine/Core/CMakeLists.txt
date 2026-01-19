@@ -3,10 +3,6 @@ cmake_minimum_required(VERSION 3.29)
 message(STATUS "[-----ImEngine-Core-----]")
 
 set(CORE_HEADERS
-        include/Memory/MemoryAllocator/MemoryAllocatorBase.h
-        include/Memory/MemoryAllocator/Allocators/LinearAllocator.h
-        include/Memory/MemoryAllocator/Allocators/MallocAllocator.h
-        include/Memory/MemoryAllocator/Allocators/PoolAllocator.h
         include/Maths/Units.h
         include/Maths/Constants.h
         include/Maths/Objects/Vector.h
@@ -32,7 +28,7 @@ enable_security_flags(ImEngine-Core)
 include(GenerateExportHeader)
 generate_export_header(ImEngine-Core
         EXPORT_FILE_NAME "${CMAKE_CURRENT_SOURCE_DIR}/misc/CoreExport.h"
-        EXPORT_MACRO_NAME IMENGINE_API
+        EXPORT_MACRO_NAME IMENGINE_CORE_API
 )
 
 # --- Precompiled headers (kept private for better incremental build) ----------

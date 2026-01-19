@@ -26,25 +26,20 @@
 // SOFTWARE.
 
 // ImEngine-Engine Precompiled Header
-// Add frequently used headers here to speed up compilation
+// Minimal PCH - only the most frequently used headers
 
 #pragma once
 
-// Standard Library
+// Essential types
 #include <cstdint>
 #include <cstddef>
+
+// Most common containers
 #include <memory>
 #include <string>
 #include <vector>
-#include <array>
-#include <unordered_map>
-#include <functional>
-#include <utility>
-#include <algorithm>
-#include <type_traits>
-#include <iostream>
-#include <stdexcept>
 
-// Core includes
-#include "CoreExport.h"
+// Vulkan is used everywhere in Engine
+#define GLFW_INCLUDE_VULKAN
+#include <GLFW/glfw3.h>
 

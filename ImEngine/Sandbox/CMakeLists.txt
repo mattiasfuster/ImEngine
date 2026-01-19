@@ -4,6 +4,7 @@ message(STATUS "[-----ImEngine-Sandbox-----]")
 
 set(HEADER_FILES
 )
+
 set(SOURCE_FILES
     src/ImEngine-Sandbox.cpp
 )
@@ -18,7 +19,14 @@ target_include_directories(ImEngine-Sandbox PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/
 
 target_link_libraries(ImEngine-Sandbox
     PRIVATE ImEngine::Engine
-    # Note: ImEngine::Core, glfw, vulkan are transitively available via Engine
+)
+
+# Copy DLLs to executable directory (Core.dll, Engine.dll, etc.)
+add_custom_command(TARGET ImEngine-Sandbox POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_RUNTIME_DLLS:ImEngine-Sandbox>
+        $<TARGET_FILE_DIR:ImEngine-Sandbox>
+    COMMAND_EXPAND_LISTS
 )
 
 install(TARGETS ImEngine-Sandbox

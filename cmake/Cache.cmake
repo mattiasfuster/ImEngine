@@ -1,13 +1,11 @@
 function(enable_ccache)
   find_program(CCACHE_PROGRAM ccache)
 
-  # On Windows, if ccache is not found, try to download a portable version
   if(NOT CCACHE_PROGRAM AND WIN32)
     set(CCACHE_VERSION "4.12.2")
     set(CCACHE_FILENAME "ccache-${CCACHE_VERSION}-windows-x86_64")
     set(CCACHE_URL "https://github.com/ccache/ccache/releases/download/v${CCACHE_VERSION}/${CCACHE_FILENAME}.zip")
 
-    # Download location (inside build directory to avoid polluting source)
     set(CCACHE_DL_DIR "${CMAKE_BINARY_DIR}/tools/ccache")
     set(CCACHE_EXE "${CCACHE_DL_DIR}/${CCACHE_FILENAME}/ccache.exe")
 
@@ -35,6 +33,11 @@ function(enable_ccache)
     message(STATUS "Using ccache: ${CCACHE_PROGRAM}")
     set(CMAKE_C_COMPILER_LAUNCHER "${CCACHE_PROGRAM}" CACHE STRING "C compiler launcher" FORCE)
     set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_PROGRAM}" CACHE STRING "CXX compiler launcher" FORCE)
+
+    if(MSVC)
+      set(ENV{CCACHE_COMPILERCHECK} "content")
+      message(STATUS "ccache: Configured for MSVC with content-based compiler check")
+    endif()
   else()
     message(WARNING "ccache not found. Build performance might be affected.")
   endif()

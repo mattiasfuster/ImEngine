@@ -2,30 +2,41 @@ CompileFlags:
   Add: [
     -std=c++23,
     -IImEngine/Core/include,
+    -IImEngine/Core/misc,
     -IImEngine/Engine/include,
+    -IImEngine/Engine/misc,
     -IImEngine/Editor/include,
-    -IImEngine/Sandbox/include,
-    -IThirdParty/include
+    -IImEngine/Editor/misc,
+    -IImEngine/Sandbox/include
   ]
   CompilationDatabase: out/build/sandbox-app/compile_commands.json
 
 Diagnostics:
   ClangTidy:
-    Add: [*]
+    Add: [
+      bugprone-*,
+      modernize-*,
+      performance-*,
+      readability-*,
+      cppcoreguidelines-*
+    ]
+    Remove: [
+      llvmlibc-*,
+      fuchsia-*,
+      readability-implicit-bool-conversion,
+      readability-braces-around-statements,
+      cppcoreguidelines-pro-type-reinterpret-cast,
+      cppcoreguidelines-avoid-non-const-global-variables,
+      cppcoreguidelines-avoid-magic-numbers,
+      readability-magic-numbers,
+      hicpp-signed-bitwise,
+      google-readability-namespace-comments,
+      modernize-use-trailing-return-type,
+      readability-convert-member-functions-to-static
+    ]
 
 Completion:
   AllScopes: true
-  Dedupe: true
-  Filter: true
-  IncludeInsertion: true
-
-CrossFileRename:
-  Enable: true
 
 Index:
-  Background: true
-
-Style:
-  BasedOnStyle: Google
-  IndentWidth: 2
-  UseTab: Never
+  Background: Build

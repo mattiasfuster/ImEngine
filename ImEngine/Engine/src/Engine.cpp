@@ -22,11 +22,50 @@
 
 #include "Engine.h"
 
-#include "Debug/Logger.h" 
-#include <set>
-#include <cstdint>
-#include <limits>
+#include "Debug/Logger.h"
 #include <algorithm>
+#include <cstdint>
+#include <filesystem>
+#include <format>
+#include <fstream>
+#include <limits>
+#include <set>
+#include <string_view>
+
+namespace {
+constexpr size_t kMaxShaderSize = 10485760;
+
+std::vector<char> ReadFile(std::string_view filename) {
+  std::ifstream file(std::filesystem::path(filename), std::ios::binary);
+
+  if (!file) {
+    throw std::runtime_error(std::format("Failed to open file: {}", filename));
+  }
+
+  file.seekg(0, std::ios::end);
+  const auto file_size = static_cast<size_t>(file.tellg());
+  file.seekg(0, std::ios::beg);
+
+  if (file_size == 0) {
+    throw std::runtime_error(std::format("File is empty: {}", filename));
+  }
+
+  if (file_size > kMaxShaderSize) {
+    throw std::runtime_error(std::format(
+        "File too large ({} bytes, max {} bytes): {}",
+        file_size, kMaxShaderSize, filename));
+  }
+
+  std::vector<char> buffer;
+  buffer.resize(file_size);
+  
+  if (!file.read(buffer.data(), static_cast<std::streamsize>(file_size))) {
+    throw std::runtime_error(std::format("Failed to read file: {}", filename));
+  }
+
+  return buffer;
+}
+}
 
 
 Engine::Engine(const EngineConfig& config)
@@ -45,26 +84,72 @@ Engine::Engine(Engine&& other) noexcept
     : window_(other.window_),
       vulkan_instance_(other.vulkan_instance_),
       debug_messenger_(other.debug_messenger_),
-      window_title_(other.window_title_),
+      vulkan_surface_(other.vulkan_surface_),
+      physical_device_(other.physical_device_),
+      logical_device_(other.logical_device_),
+      graphics_queue_(other.graphics_queue_),
+      present_queue_(other.present_queue_),
+      swap_chain_(other.swap_chain_),
+      swap_chain_images_(std::move(other.swap_chain_images_)),
+      swap_chain_image_views_(std::move(other.swap_chain_image_views_)),
+      swap_chain_image_format_(other.swap_chain_image_format_),
+      swap_chain_extent_(other.swap_chain_extent_),
+      render_pass_(other.render_pass_),
+      pipeline_layout_(other.pipeline_layout_),
+      graphics_pipeline_(other.graphics_pipeline_),
+      window_title_(std::move(other.window_title_)),
       width_(other.width_),
       height_(other.height_) {
   other.window_ = nullptr;
   other.vulkan_instance_ = VK_NULL_HANDLE;
   other.debug_messenger_ = VK_NULL_HANDLE;
+  other.vulkan_surface_ = VK_NULL_HANDLE;
+  other.physical_device_ = VK_NULL_HANDLE;
+  other.logical_device_ = VK_NULL_HANDLE;
+  other.graphics_queue_ = VK_NULL_HANDLE;
+  other.present_queue_ = VK_NULL_HANDLE;
+  other.swap_chain_ = VK_NULL_HANDLE;
+  other.render_pass_ = VK_NULL_HANDLE;
+  other.pipeline_layout_ = VK_NULL_HANDLE;
+  other.graphics_pipeline_ = VK_NULL_HANDLE;
 }
 
 Engine& Engine::operator=(Engine&& other) noexcept {
   if (this != &other) {
     Cleanup();
+
     window_ = other.window_;
     vulkan_instance_ = other.vulkan_instance_;
     debug_messenger_ = other.debug_messenger_;
-    window_title_ = other.window_title_;
+    vulkan_surface_ = other.vulkan_surface_;
+    physical_device_ = other.physical_device_;
+    logical_device_ = other.logical_device_;
+    graphics_queue_ = other.graphics_queue_;
+    present_queue_ = other.present_queue_;
+    swap_chain_ = other.swap_chain_;
+    swap_chain_images_ = std::move(other.swap_chain_images_);
+    swap_chain_image_views_ = std::move(other.swap_chain_image_views_);
+    swap_chain_image_format_ = other.swap_chain_image_format_;
+    swap_chain_extent_ = other.swap_chain_extent_;
+    render_pass_ = other.render_pass_;
+    pipeline_layout_ = other.pipeline_layout_;
+    graphics_pipeline_ = other.graphics_pipeline_;
+    window_title_ = std::move(other.window_title_);
     width_ = other.width_;
     height_ = other.height_;
+
     other.window_ = nullptr;
     other.vulkan_instance_ = VK_NULL_HANDLE;
     other.debug_messenger_ = VK_NULL_HANDLE;
+    other.vulkan_surface_ = VK_NULL_HANDLE;
+    other.physical_device_ = VK_NULL_HANDLE;
+    other.logical_device_ = VK_NULL_HANDLE;
+    other.graphics_queue_ = VK_NULL_HANDLE;
+    other.present_queue_ = VK_NULL_HANDLE;
+    other.swap_chain_ = VK_NULL_HANDLE;
+    other.render_pass_ = VK_NULL_HANDLE;
+    other.pipeline_layout_ = VK_NULL_HANDLE;
+    other.graphics_pipeline_ = VK_NULL_HANDLE;
   }
   return *this;
 }
@@ -77,6 +162,7 @@ void Engine::InitWindow() {
   IM_INFO("Initializing window...");
   if (!glfwInit()) {
     IM_ERROR("Failed to initialize GLFW");
+    throw std::runtime_error("Failed to initialize GLFW");
   }
 
   glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -84,9 +170,11 @@ void Engine::InitWindow() {
 
   window_ = glfwCreateWindow(static_cast<int>(width_),
                              static_cast<int>(height_),
-                             window_title_, nullptr, nullptr);
+                             window_title_.c_str(), nullptr, nullptr);
   if (!window_) {
     IM_ERROR("Failed to create GLFW window");
+    glfwTerminate();
+    throw std::runtime_error("Failed to create GLFW window");
   }
 }
 
@@ -110,7 +198,8 @@ void Engine::InitVulkan() {
   CreateLogicalDevice();
   CreateSwapChain();
   CreateImageViews();
-  CreateGraphicPipeline();
+  CreateRenderPass();
+  CreateGraphicsPipeline();
 }
 
 void Engine::CreateInstance() {
@@ -118,7 +207,7 @@ void Engine::CreateInstance() {
   VkApplicationInfo app_info{
       .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
       .pNext = nullptr,
-      .pApplicationName = window_title_,
+      .pApplicationName = window_title_.c_str(),
       .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
       .pEngineName = "ImEngine",
       .engineVersion = VK_MAKE_VERSION(1, 0, 0),
@@ -235,7 +324,7 @@ void Engine::CreateLogicalDevice() {
       indices.present_family.value()
   };
 
-  float queuePriority = 1.0f;
+  float queuePriority = 1.0F;
   for (uint32_t queueFamily : uniqueQueueFamilies) {
       VkDeviceQueueCreateInfo queueCreateInfo{};
       queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
@@ -280,7 +369,7 @@ void Engine::CreateSwapChain()
   SwapChainSupportDetails swapChainSupport = QuerySwapChainSupport(physical_device_);
 
   VkSurfaceFormatKHR surfaceFormat = ChooseSwapSurfaceFormat(swapChainSupport.formats);
-  VkPresentModeKHR presentMode = ChooseSwapPrensentMode(swapChainSupport.presentModes);
+  VkPresentModeKHR presentMode = ChooseSwapPresentMode(swapChainSupport.presentModes);
   VkExtent2D extent = ChooseSwapExtent(swapChainSupport.capabilities);
 
   uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
@@ -349,17 +438,155 @@ void Engine::CreateImageViews() {
     createInfo.subresourceRange.levelCount = 1;
     createInfo.subresourceRange.baseArrayLayer = 0;
     createInfo.subresourceRange.layerCount = 1;
+
     if (vkCreateImageView(logical_device_, &createInfo, nullptr, &swap_chain_image_views_[i]) != VK_SUCCESS) {
       throw std::runtime_error("failed to create image views!");
     }
   }
 }
 
-void Engine::CreateGraphicPipeline() {
+void Engine::CreateRenderPass() {
+  IM_INFO("Creating render pass...");
+
+  VkAttachmentDescription colorAttachment{};
+  colorAttachment.format = swap_chain_image_format_;
+  colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+  colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+  colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+  colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+  colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+  colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+  colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+
+  VkAttachmentReference colorAttachmentRef{};
+  colorAttachmentRef.attachment = 0;
+  colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+  VkSubpassDescription subpass{};
+  subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+  subpass.colorAttachmentCount = 1;
+  subpass.pColorAttachments = &colorAttachmentRef;
+
+  VkRenderPassCreateInfo renderPassInfo{};
+  renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+  renderPassInfo.attachmentCount = 1;
+  renderPassInfo.pAttachments = &colorAttachment;
+  renderPassInfo.subpassCount = 1;
+  renderPassInfo.pSubpasses = &subpass;
+
+  if (vkCreateRenderPass(logical_device_, &renderPassInfo, nullptr, &render_pass_) != VK_SUCCESS) {
+      throw std::runtime_error("failed to create render pass!");
+  }
 }
 
-void Engine::LoadingCompiledShaders() {
-  
+void Engine::CreateGraphicsPipeline() {
+  IM_INFO("Creating graphics pipeline...");
+
+  auto vertShaderCode = ReadFile("shaders/shader.vert.spv");
+  auto fragShaderCode = ReadFile("shaders/shader.frag.spv");
+
+  VkShaderModule vertShaderModule = CreateShaderModule(vertShaderCode);
+  VkShaderModule fragShaderModule = CreateShaderModule(fragShaderCode);
+
+  VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
+  vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+  vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+  vertShaderStageInfo.module = vertShaderModule;
+  vertShaderStageInfo.pName = "main";
+
+  VkPipelineShaderStageCreateInfo fragShaderStageInfo{};
+  fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+  fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+  fragShaderStageInfo.module = fragShaderModule;
+  fragShaderStageInfo.pName = "main";
+
+  VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
+
+  VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
+  vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+  vertexInputInfo.vertexBindingDescriptionCount = 0;
+  vertexInputInfo.vertexAttributeDescriptionCount = 0;
+
+  VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
+  inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+  inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+  inputAssembly.primitiveRestartEnable = VK_FALSE;
+
+  VkPipelineViewportStateCreateInfo viewportState{};
+  viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+  viewportState.viewportCount = 1;
+  viewportState.scissorCount = 1;
+
+  VkPipelineRasterizationStateCreateInfo rasterizer{};
+  rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+  rasterizer.depthClampEnable = VK_FALSE;
+  rasterizer.rasterizerDiscardEnable = VK_FALSE;
+  rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
+  rasterizer.lineWidth = 1.0F;
+  rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
+  rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
+  rasterizer.depthBiasEnable = VK_FALSE;
+
+  VkPipelineMultisampleStateCreateInfo multisampling{};
+  multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+  multisampling.sampleShadingEnable = VK_FALSE;
+  multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+
+  VkPipelineColorBlendAttachmentState colorBlendAttachment{};
+  colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+  colorBlendAttachment.blendEnable = VK_FALSE;
+
+  VkPipelineColorBlendStateCreateInfo colorBlending{};
+  colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+  colorBlending.logicOpEnable = VK_FALSE;
+  colorBlending.logicOp = VK_LOGIC_OP_COPY;
+  colorBlending.attachmentCount = 1;
+  colorBlending.pAttachments = &colorBlendAttachment;
+  colorBlending.blendConstants[0] = 0.0F;
+  colorBlending.blendConstants[1] = 0.0F;
+  colorBlending.blendConstants[2] = 0.0F;
+  colorBlending.blendConstants[3] = 0.0F;
+
+  std::vector<VkDynamicState> dynamicStates = {
+      VK_DYNAMIC_STATE_VIEWPORT,
+      VK_DYNAMIC_STATE_SCISSOR
+  };
+  VkPipelineDynamicStateCreateInfo dynamicState{};
+  dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+  dynamicState.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
+  dynamicState.pDynamicStates = dynamicStates.data();
+
+  VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
+  pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+  pipelineLayoutInfo.setLayoutCount = 0;
+  pipelineLayoutInfo.pushConstantRangeCount = 0;
+
+  if (vkCreatePipelineLayout(logical_device_, &pipelineLayoutInfo, nullptr, &pipeline_layout_) != VK_SUCCESS) {
+      throw std::runtime_error("failed to create pipeline layout!");
+  }
+
+  VkGraphicsPipelineCreateInfo pipelineInfo{};
+  pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+  pipelineInfo.stageCount = 2;
+  pipelineInfo.pStages = shaderStages;
+  pipelineInfo.pVertexInputState = &vertexInputInfo;
+  pipelineInfo.pInputAssemblyState = &inputAssembly;
+  pipelineInfo.pViewportState = &viewportState;
+  pipelineInfo.pRasterizationState = &rasterizer;
+  pipelineInfo.pMultisampleState = &multisampling;
+  pipelineInfo.pColorBlendState = &colorBlending;
+  pipelineInfo.pDynamicState = &dynamicState;
+  pipelineInfo.layout = pipeline_layout_;
+  pipelineInfo.renderPass = render_pass_;
+  pipelineInfo.subpass = 0;
+  pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
+
+  if (vkCreateGraphicsPipelines(logical_device_, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphics_pipeline_) != VK_SUCCESS) {
+      throw std::runtime_error("failed to create graphics pipeline!");
+  }
+
+  vkDestroyShaderModule(logical_device_, fragShaderModule, nullptr);
+  vkDestroyShaderModule(logical_device_, vertShaderModule, nullptr);
 }
 
 void Engine::MainLoop() {
@@ -387,12 +614,28 @@ void Engine::Cleanup() {
     }
   }
 
+  if (graphics_pipeline_ != VK_NULL_HANDLE) {
+    vkDestroyPipeline(logical_device_, graphics_pipeline_, nullptr);
+    graphics_pipeline_ = VK_NULL_HANDLE;
+  }
+
+  if (pipeline_layout_ != VK_NULL_HANDLE) {
+    vkDestroyPipelineLayout(logical_device_, pipeline_layout_, nullptr);
+    pipeline_layout_ = VK_NULL_HANDLE;
+  }
+
+  if (render_pass_ != VK_NULL_HANDLE) {
+    vkDestroyRenderPass(logical_device_, render_pass_, nullptr);
+    render_pass_ = VK_NULL_HANDLE;
+  }
+
   for (const auto& imageView : swap_chain_image_views_) {
     vkDestroyImageView(logical_device_, imageView, nullptr);
   }
 
   if (swap_chain_ != VK_NULL_HANDLE) {
     vkDestroySwapchainKHR(logical_device_, swap_chain_, nullptr);
+    swap_chain_ = VK_NULL_HANDLE;
   }
 
   if (logical_device_ != VK_NULL_HANDLE) {
@@ -463,7 +706,7 @@ bool Engine::CheckRequiredInstanceExtensionsSupport() const {
 }
 
 bool Engine::CheckRequiredDeviceExtensionsSupport(VkPhysicalDevice device) const {
-  uint32_t extensionCount;
+  uint32_t extensionCount = {};
   vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
 
   std::vector<VkExtensionProperties> availableExtensions(extensionCount);
@@ -471,7 +714,7 @@ bool Engine::CheckRequiredDeviceExtensionsSupport(VkPhysicalDevice device) const
 
   return std::ranges::all_of(kDeviceExtensions, [&](std::string_view required) {
       return std::ranges::any_of(availableExtensions, [&](const VkExtensionProperties& available) {
-          return required == available.extensionName; 
+          return required == std::string_view(static_cast<const char*>(available.extensionName));
       });
   });
 }
@@ -569,7 +812,7 @@ VkSurfaceFormatKHR Engine::ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFo
   return availableFormats[0];
 }
 
-VkPresentModeKHR Engine::ChooseSwapPrensentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) const {
+VkPresentModeKHR Engine::ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) const {
   for (const auto& availablePresentMode : availablePresentModes) {
     if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
       return availablePresentMode;
@@ -581,19 +824,28 @@ VkPresentModeKHR Engine::ChooseSwapPrensentMode(const std::vector<VkPresentModeK
 VkExtent2D Engine::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const {
   if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
     return capabilities.currentExtent;
-  } else {
-    VkExtent2D currentExtent = {width_, height_};
-
-    currentExtent.width = std::clamp(currentExtent.width,
-      capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
-    currentExtent.height = std::clamp(currentExtent.height,
-      capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
-
-      return currentExtent;
   }
+
+  VkExtent2D currentExtent = {width_, height_};
+  currentExtent.width = std::clamp(currentExtent.width,
+    capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
+  currentExtent.height = std::clamp(currentExtent.height,
+    capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
+  return currentExtent;
 }
 
-
+[[nodiscard]] VkShaderModule Engine::CreateShaderModule(const std::vector<char> &code) const {
+  VkShaderModuleCreateInfo createInfo{};
+  createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+  createInfo.codeSize = code.size();
+  createInfo.pCode = reinterpret_cast<const uint32_t *>(code.data());
+  VkShaderModule shaderModule = {};
+  if (vkCreateShaderModule(logical_device_, &createInfo, nullptr,
+                           &shaderModule) != VK_SUCCESS) {
+    throw std::runtime_error("failed to create shader module!");
+  }
+  return shaderModule;
+}
 
 VKAPI_ATTR VkBool32 VKAPI_CALL Engine::DebugCallback(
     VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,

@@ -27,7 +27,6 @@
 // SOFTWARE.
 
 #pragma once
-
 #include "EngineExport.h"
 
 #define GLFW_INCLUDE_VULKAN
@@ -36,25 +35,26 @@
 #include <array>
 #include <vector>
 #include <optional>
-#include <shaderc/shaderc.hpp>
+#include <string>
+#include <string_view>
 
-struct EngineConfig {
-  const char* title = "ImEngine";
+struct IMENGINE_ENGINE_API EngineConfig {
+  std::string_view title = "ImEngine";
   uint32_t width = 1280;
   uint32_t height = 720;
 };
 
-struct QueueFamilyIndices {
+struct IMENGINE_ENGINE_API QueueFamilyIndices {
     std::optional<uint32_t> graphics_family;
     std::optional<uint32_t> present_family;
 
-    bool is_complete() {
+    [[nodiscard]] constexpr bool is_complete() const noexcept {
         return graphics_family.has_value() && present_family.has_value();
     }
 };
 
-struct SwapChainSupportDetails {
-  VkSurfaceCapabilitiesKHR capabilities;
+struct IMENGINE_ENGINE_API SwapChainSupportDetails {
+  VkSurfaceCapabilitiesKHR capabilities = {};
   std::vector<VkSurfaceFormatKHR> formats;
   std::vector<VkPresentModeKHR> presentModes;
 };
@@ -93,8 +93,8 @@ public:
 
   void Run();
 
-  [[nodiscard]] GLFWwindow* window() const { return window_; }
-  [[nodiscard]] VkInstance vulkan_instance() const { return vulkan_instance_; }
+  [[nodiscard]] GLFWwindow* window() const noexcept { return window_; }
+  [[nodiscard]] VkInstance vulkan_instance() const noexcept { return vulkan_instance_; }
 
 private:
   // Static functions
@@ -120,9 +120,10 @@ private:
   void CreateLogicalDevice();
   void CreateSwapChain();
   void CreateImageViews();
-  void CreateGraphicPipeline();
-  void LoadingCompiledShaders();
-  
+  void CreateRenderPass();
+  void CreateGraphicsPipeline();
+  void CreateFramebuffers();
+
   void MainLoop();
   void Cleanup();
 
@@ -134,10 +135,10 @@ private:
   [[nodiscard]] QueueFamilyIndices FindQueueFamiliesIndices(VkPhysicalDevice device) const;
   [[nodiscard]] SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device) const;
   [[nodiscard]] VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) const;
-  [[nodiscard]] VkPresentModeKHR ChooseSwapPrensentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) const;
+  [[nodiscard]] VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) const;
   [[nodiscard]] VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const;
-  [[nodiscard]] std::vector<char> ReadShaderFile(const std::string_view& filename);
-  
+  [[nodiscard]] VkShaderModule CreateShaderModule(const std::vector<char> &code) const;
+
   // Data members
 
   GLFWwindow* window_ = nullptr;
@@ -153,12 +154,18 @@ private:
   VkQueue present_queue_ = VK_NULL_HANDLE;
 
   VkSwapchainKHR swap_chain_ = VK_NULL_HANDLE;
-  std::vector<VkImage> swap_chain_images_ = {};
-  std::vector<VkImageView> swap_chain_image_views_ = {};
+  std::vector<VkImage> swap_chain_images_;
+  std::vector<VkImageView> swap_chain_image_views_;
   VkFormat swap_chain_image_format_ = VkFormat::VK_FORMAT_B8G8R8_SRGB;
   VkExtent2D swap_chain_extent_ = {1280, 720};
 
-  const char* window_title_ = "ImEngine";
+  VkRenderPass render_pass_ = VK_NULL_HANDLE;
+  VkPipelineLayout pipeline_layout_ = VK_NULL_HANDLE;
+  VkPipeline graphics_pipeline_ = VK_NULL_HANDLE;
+
+  std::vector<VkFramebuffer> swap_chain_framebuffers;
+
+  std::string window_title_ = "ImEngine";
   uint32_t width_ = 1280;
   uint32_t height_ = 720;
 };
