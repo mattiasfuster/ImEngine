@@ -92,6 +92,13 @@ Engine::Engine(Engine &&other) noexcept
       render_pass_(other.render_pass_),
       pipeline_layout_(other.pipeline_layout_),
       graphics_pipeline_(other.graphics_pipeline_),
+      swap_chain_framebuffers_(std::move(other.swap_chain_framebuffers_)),
+      command_pool_(other.command_pool_),
+      command_buffers_(std::move(other.command_buffers_)),
+      image_available_semaphores_(std::move(other.image_available_semaphores_)),
+      render_finished_semaphores_(std::move(other.render_finished_semaphores_)),
+      in_flight_fences_(std::move(other.in_flight_fences_)),
+      current_frame_(other.current_frame_),
       window_title_(std::move(other.window_title_)), width_(other.width_),
       height_(other.height_) {
   other.window_ = nullptr;
@@ -106,6 +113,8 @@ Engine::Engine(Engine &&other) noexcept
   other.render_pass_ = VK_NULL_HANDLE;
   other.pipeline_layout_ = VK_NULL_HANDLE;
   other.graphics_pipeline_ = VK_NULL_HANDLE;
+  other.command_pool_ = VK_NULL_HANDLE;
+  other.current_frame_ = 0;
 }
 
 Engine &Engine::operator=(Engine &&other) noexcept {
@@ -128,6 +137,13 @@ Engine &Engine::operator=(Engine &&other) noexcept {
     render_pass_ = other.render_pass_;
     pipeline_layout_ = other.pipeline_layout_;
     graphics_pipeline_ = other.graphics_pipeline_;
+    swap_chain_framebuffers_ = std::move(other.swap_chain_framebuffers_);
+    command_pool_ = other.command_pool_;
+    command_buffers_ = std::move(other.command_buffers_);
+    image_available_semaphores_ = std::move(other.image_available_semaphores_);
+    render_finished_semaphores_ = std::move(other.render_finished_semaphores_);
+    in_flight_fences_ = std::move(other.in_flight_fences_);
+    current_frame_ = other.current_frame_;
     window_title_ = std::move(other.window_title_);
     width_ = other.width_;
     height_ = other.height_;
@@ -144,6 +160,8 @@ Engine &Engine::operator=(Engine &&other) noexcept {
     other.render_pass_ = VK_NULL_HANDLE;
     other.pipeline_layout_ = VK_NULL_HANDLE;
     other.graphics_pipeline_ = VK_NULL_HANDLE;
+    other.command_pool_ = VK_NULL_HANDLE;
+    other.current_frame_ = 0;
   }
   return *this;
 }
@@ -194,6 +212,9 @@ void Engine::InitVulkan() {
   CreateRenderPass();
   CreateGraphicsPipeline();
   CreateFramebuffers();
+  CreateCommandPool();
+  CreateCommandBuffer();
+  CreateSyncObjects();
 }
 
 void Engine::CreateInstance() {
@@ -642,23 +663,106 @@ void Engine::CreateCommandPool() {
 }
 
 void Engine::CreateCommandBuffer() {
+  command_buffers_.resize(kMaxFramesInFlight);
+
   VkCommandBufferAllocateInfo allocInfo{};
   allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
   allocInfo.commandPool = command_pool_;
   allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-  allocInfo.commandBufferCount = 1;
+  allocInfo.commandBufferCount = static_cast<uint32_t>(command_buffers_.size());
 
-  if (vkAllocateCommandBuffers(logical_device_, &allocInfo, &command_buffer_) !=
-      VK_SUCCESS) {
+  if (vkAllocateCommandBuffers(logical_device_, &allocInfo,
+                                command_buffers_.data()) != VK_SUCCESS) {
     throw std::runtime_error("failed to allocate command buffers!");
+  }
+}
+
+void Engine::CreateSyncObjects() {
+  image_available_semaphores_.resize(kMaxFramesInFlight);
+  render_finished_semaphores_.resize(kMaxFramesInFlight);
+  in_flight_fences_.resize(kMaxFramesInFlight);
+
+  VkSemaphoreCreateInfo semaphoreInfo{};
+  semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+  VkFenceCreateInfo fenceInfo{};
+  fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+  fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+  for (size_t i = 0; i < kMaxFramesInFlight; i++) {
+    if (vkCreateSemaphore(logical_device_, &semaphoreInfo, nullptr,
+                          &image_available_semaphores_[i]) != VK_SUCCESS ||
+        vkCreateSemaphore(logical_device_, &semaphoreInfo, nullptr,
+                          &render_finished_semaphores_[i]) != VK_SUCCESS ||
+        vkCreateFence(logical_device_, &fenceInfo, nullptr,
+                      &in_flight_fences_[i]) != VK_SUCCESS) {
+      throw std::runtime_error(
+          "failed to create synchronization objects for a frame!");
+    }
   }
 }
 
 void Engine::MainLoop() {
   while (!glfwWindowShouldClose(window_)) {
     glfwPollEvents();
-    // Future: update / render
+    DrawFrame();
   }
+  vkDeviceWaitIdle(logical_device_);
+}
+
+void Engine::DrawFrame() {
+  vkWaitForFences(logical_device_, 1, &in_flight_fences_[current_frame_],
+                  VK_TRUE, UINT64_MAX);
+  vkResetFences(logical_device_, 1, &in_flight_fences_[current_frame_]);
+
+  uint32_t imageIndex = 0;
+  vkAcquireNextImageKHR(logical_device_, swap_chain_, UINT64_MAX,
+                        image_available_semaphores_[current_frame_],
+                        VK_NULL_HANDLE, &imageIndex);
+
+  vkResetCommandBuffer(command_buffers_[current_frame_],
+                       /*VkCommandBufferResetFlagBits*/ 0);
+  RecordCommandBuffer(command_buffers_[current_frame_], imageIndex);
+
+  VkSubmitInfo submitInfo{};
+  submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+  std::array<VkSemaphore, 1> waitSemaphores = {
+      image_available_semaphores_[current_frame_]};
+  std::array<VkPipelineStageFlags, 1> waitStages = {
+      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+  submitInfo.waitSemaphoreCount = 1;
+  submitInfo.pWaitSemaphores = waitSemaphores.data();
+  submitInfo.pWaitDstStageMask = waitStages.data();
+
+  submitInfo.commandBufferCount = 1;
+  submitInfo.pCommandBuffers = &command_buffers_[current_frame_];
+
+  std::array<VkSemaphore, 1> signalSemaphores = {
+      render_finished_semaphores_[current_frame_]};
+  submitInfo.signalSemaphoreCount = 1;
+  submitInfo.pSignalSemaphores = signalSemaphores.data();
+
+  if (vkQueueSubmit(graphics_queue_, 1, &submitInfo,
+                    in_flight_fences_[current_frame_]) != VK_SUCCESS) {
+    throw std::runtime_error("failed to submit draw command buffer!");
+  }
+
+  VkPresentInfoKHR presentInfo{};
+  presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+
+  presentInfo.waitSemaphoreCount = 1;
+  presentInfo.pWaitSemaphores = signalSemaphores.data();
+
+  std::array<VkSwapchainKHR, 1> swapChains = {swap_chain_};
+  presentInfo.swapchainCount = 1;
+  presentInfo.pSwapchains = swapChains.data();
+
+  presentInfo.pImageIndices = &imageIndex;
+
+  vkQueuePresentKHR(present_queue_, &presentInfo);
+
+  current_frame_ = (current_frame_ + 1) % kMaxFramesInFlight;
 }
 
 void Engine::Cleanup() {
@@ -667,6 +771,10 @@ void Engine::Cleanup() {
   }
 
   IM_INFO("Cleaning up Engine...");
+
+  if (logical_device_ != VK_NULL_HANDLE) {
+    vkDeviceWaitIdle(logical_device_);
+  }
 
   if constexpr (kEnableValidationLayers) {
     if (debug_messenger_ != VK_NULL_HANDLE) {
@@ -678,6 +786,14 @@ void Engine::Cleanup() {
       }
       debug_messenger_ = VK_NULL_HANDLE;
     }
+  }
+
+  for (size_t i = 0; i < kMaxFramesInFlight; i++) {
+    vkDestroySemaphore(logical_device_, image_available_semaphores_[i],
+                       nullptr);
+    vkDestroySemaphore(logical_device_, render_finished_semaphores_[i],
+                       nullptr);
+    vkDestroyFence(logical_device_, in_flight_fences_[i], nullptr);
   }
 
   if (command_pool_ != VK_NULL_HANDLE) {

@@ -62,6 +62,8 @@ struct IMENGINE_ENGINE_API SwapChainSupportDetails {
 class IMENGINE_ENGINE_API Engine {
 public:
   // Static Data members
+  static constexpr int kMaxFramesInFlight = 2;
+
   static constexpr std::array kValidationLayers = {
       "VK_LAYER_KHRONOS_validation"};
 
@@ -125,6 +127,7 @@ private:
   void CreateFramebuffers();
   void CreateCommandPool();
   void CreateCommandBuffer();
+  void CreateSyncObjects();
 
   void MainLoop();
   void DrawFrame();
@@ -185,7 +188,13 @@ private:
   std::vector<VkFramebuffer> swap_chain_framebuffers_;
 
   VkCommandPool command_pool_ = VK_NULL_HANDLE;
-  VkCommandBuffer command_buffer_ = VK_NULL_HANDLE;
+  std::vector<VkCommandBuffer> command_buffers_;
+
+  std::vector<VkSemaphore> image_available_semaphores_;
+  std::vector<VkSemaphore> render_finished_semaphores_;
+  std::vector<VkFence> in_flight_fences_;
+
+  uint32_t current_frame_ = 0;
 
   std::string window_title_ = "ImEngine";
   uint32_t width_ = 1280;
