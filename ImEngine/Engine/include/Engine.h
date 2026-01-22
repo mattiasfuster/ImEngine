@@ -2,8 +2,8 @@
 //
 // Copyright (c) 2024 FUSTER Mattias
 //
-// This software utilizes code from the following GitHub repositories, which are also licensed under
-// the MIT License:
+// This software utilizes code from the following GitHub repositories, which are
+// also licensed under the MIT License:
 //
 // - [ImGui](https://github.com/ocornut/imgui)
 // - [GLFW](https://github.com/glfw/glfw)
@@ -15,8 +15,8 @@
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 //
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -33,10 +33,10 @@
 #include <GLFW/glfw3.h>
 
 #include <array>
-#include <vector>
 #include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 
 struct IMENGINE_ENGINE_API EngineConfig {
   std::string_view title = "ImEngine";
@@ -45,12 +45,12 @@ struct IMENGINE_ENGINE_API EngineConfig {
 };
 
 struct IMENGINE_ENGINE_API QueueFamilyIndices {
-    std::optional<uint32_t> graphics_family;
-    std::optional<uint32_t> present_family;
+  std::optional<uint32_t> graphics_family;
+  std::optional<uint32_t> present_family;
 
-    [[nodiscard]] constexpr bool is_complete() const noexcept {
-        return graphics_family.has_value() && present_family.has_value();
-    }
+  [[nodiscard]] constexpr bool is_complete() const noexcept {
+    return graphics_family.has_value() && present_family.has_value();
+  }
 };
 
 struct IMENGINE_ENGINE_API SwapChainSupportDetails {
@@ -63,12 +63,10 @@ class IMENGINE_ENGINE_API Engine {
 public:
   // Static Data members
   static constexpr std::array kValidationLayers = {
-      "VK_LAYER_KHRONOS_validation"
-  };
+      "VK_LAYER_KHRONOS_validation"};
 
   static constexpr std::array kDeviceExtensions = {
-      VK_KHR_SWAPCHAIN_EXTENSION_NAME
-  };
+      VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 
 #ifdef IMENGINE_DEBUG
   static constexpr bool kEnableValidationLayers = true;
@@ -77,13 +75,13 @@ public:
 #endif
 
   // Constructors and assignment operators
-  explicit Engine(const EngineConfig& config = {});
+  explicit Engine(const EngineConfig &config = {});
 
-  Engine(const Engine&) = delete;
-  Engine& operator=(const Engine&) = delete;
+  Engine(const Engine &) = delete;
+  Engine &operator=(const Engine &) = delete;
 
-  Engine(Engine&& other) noexcept;
-  Engine& operator=(Engine&& other) noexcept;
+  Engine(Engine &&other) noexcept;
+  Engine &operator=(Engine &&other) noexcept;
 
   // Destructor
 
@@ -93,20 +91,22 @@ public:
 
   void Run();
 
-  [[nodiscard]] GLFWwindow* window() const noexcept { return window_; }
-  [[nodiscard]] VkInstance vulkan_instance() const noexcept { return vulkan_instance_; }
+  [[nodiscard]] GLFWwindow *window() const noexcept { return window_; }
+  [[nodiscard]] VkInstance vulkan_instance() const noexcept {
+    return vulkan_instance_;
+  }
 
 private:
   // Static functions
 
   static void PopulateDebugMessengerCreateInfo(
-      VkDebugUtilsMessengerCreateInfoEXT& create_info);
+      VkDebugUtilsMessengerCreateInfoEXT &create_info);
 
-  static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(
-      VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
-      VkDebugUtilsMessageTypeFlagsEXT message_type,
-      const VkDebugUtilsMessengerCallbackDataEXT* callback_data,
-      void* user_data);
+  static VKAPI_ATTR VkBool32 VKAPI_CALL
+  DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
+                VkDebugUtilsMessageTypeFlagsEXT message_type,
+                const VkDebugUtilsMessengerCallbackDataEXT *callback_data,
+                void *user_data);
 
   // Non-static member functions
 
@@ -123,25 +123,44 @@ private:
   void CreateRenderPass();
   void CreateGraphicsPipeline();
   void CreateFramebuffers();
+  void CreateCommandPool();
+  void CreateCommandBuffer();
 
   void MainLoop();
+  void DrawFrame();
   void Cleanup();
 
-  [[nodiscard]] std::vector<const char*> GetRequiredInstanceExtensions() const;
-  [[nodiscard]] bool CheckValidationLayerSupport() const;
-  [[nodiscard]] bool CheckRequiredInstanceExtensionsSupport() const;
-  [[nodiscard]] bool CheckRequiredDeviceExtensionsSupport(VkPhysicalDevice device) const;
-  [[nodiscard]] bool IsDeviceSuitable(const VkPhysicalDevice& device) const;
-  [[nodiscard]] QueueFamilyIndices FindQueueFamiliesIndices(VkPhysicalDevice device) const;
-  [[nodiscard]] SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device) const;
-  [[nodiscard]] VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) const;
-  [[nodiscard]] VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) const;
-  [[nodiscard]] VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const;
-  [[nodiscard]] VkShaderModule CreateShaderModule(const std::vector<char> &code) const;
+  void RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
+
+  [[nodiscard]]
+  std::vector<const char *> GetRequiredInstanceExtensions() const;
+  [[nodiscard]]
+  bool CheckValidationLayerSupport() const;
+  [[nodiscard]]
+  bool CheckRequiredInstanceExtensionsSupport() const;
+  [[nodiscard]]
+  bool CheckRequiredDeviceExtensionsSupport(VkPhysicalDevice device) const;
+  [[nodiscard]]
+  bool IsDeviceSuitable(const VkPhysicalDevice &device) const;
+  [[nodiscard]]
+  QueueFamilyIndices FindQueueFamiliesIndices(VkPhysicalDevice device) const;
+  [[nodiscard]]
+  SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device) const;
+  [[nodiscard]]
+  VkSurfaceFormatKHR ChooseSwapSurfaceFormat(
+      const std::vector<VkSurfaceFormatKHR> &availableFormats) const;
+  [[nodiscard]]
+  VkPresentModeKHR ChooseSwapPresentMode(
+      const std::vector<VkPresentModeKHR> &availablePresentModes) const;
+  [[nodiscard]]
+  VkExtent2D
+  ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities) const;
+  [[nodiscard]] VkShaderModule
+  CreateShaderModule(const std::vector<char> &code) const;
 
   // Data members
 
-  GLFWwindow* window_ = nullptr;
+  GLFWwindow *window_ = nullptr;
 
   VkInstance vulkan_instance_ = VK_NULL_HANDLE;
   VkDebugUtilsMessengerEXT debug_messenger_ = VK_NULL_HANDLE;
@@ -163,7 +182,10 @@ private:
   VkPipelineLayout pipeline_layout_ = VK_NULL_HANDLE;
   VkPipeline graphics_pipeline_ = VK_NULL_HANDLE;
 
-  std::vector<VkFramebuffer> swap_chain_framebuffers;
+  std::vector<VkFramebuffer> swap_chain_framebuffers_;
+
+  VkCommandPool command_pool_ = VK_NULL_HANDLE;
+  VkCommandBuffer command_buffer_ = VK_NULL_HANDLE;
 
   std::string window_title_ = "ImEngine";
   uint32_t width_ = 1280;
