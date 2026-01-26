@@ -28,21 +28,14 @@
 
 #pragma once
 #include "EngineExport.h"
+#include "Window/Window.h"
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
 #include <array>
 #include <optional>
-#include <string>
-#include <string_view>
 #include <vector>
-
-struct IMENGINE_ENGINE_API EngineConfig {
-  std::string_view title = "ImEngine";
-  uint32_t width = 1280;
-  uint32_t height = 720;
-};
 
 struct IMENGINE_ENGINE_API QueueFamilyIndices {
   std::optional<uint32_t> graphics_family;
@@ -77,7 +70,6 @@ public:
 #endif
 
   // Constructors and assignment operators
-  explicit Engine(const EngineConfig &config = {});
 
   Engine(const Engine &) = delete;
   Engine &operator=(const Engine &) = delete;
@@ -89,14 +81,7 @@ public:
 
   ~Engine();
 
-  // Non-static member functions
-
   void Run();
-
-  [[nodiscard]] GLFWwindow *window() const noexcept { return window_; }
-  [[nodiscard]] VkInstance vulkan_instance() const noexcept {
-    return vulkan_instance_;
-  }
 
 private:
   // Static functions
@@ -163,8 +148,6 @@ private:
 
   // Data members
 
-  GLFWwindow *window_ = nullptr;
-
   VkInstance vulkan_instance_ = VK_NULL_HANDLE;
   VkDebugUtilsMessengerEXT debug_messenger_ = VK_NULL_HANDLE;
   VkSurfaceKHR vulkan_surface_ = VK_NULL_HANDLE;
@@ -196,7 +179,5 @@ private:
 
   uint32_t current_frame_ = 0;
 
-  std::string window_title_ = "ImEngine";
-  uint32_t width_ = 1280;
-  uint32_t height_ = 720;
+  std::unique_ptr<ImEngine::Engine::Window> window_;
 };

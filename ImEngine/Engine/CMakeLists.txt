@@ -9,10 +9,12 @@ add_subdirectory(shaders)
 # 2. LIBRARY CONFIGURATION
 set(ENGINE_HEADERS
     include/Engine.h
+    include/Window/Window.h
 )
 
 set(ENGINE_SOURCES
     src/Engine.cpp
+    src/Window/Window.cpp
 )
 
 # --- Create the Engine as a shared library (DLL) ---
