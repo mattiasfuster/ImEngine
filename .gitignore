@@ -567,7 +567,3 @@ FodyWeavers.xsd
 # Additional files built by Visual Studio
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudio,c++,clion,cmake
-
-### Claude Code ###
-# Keep .claude directory structure and scripts, but ignore temporary work files
-.claude/*
