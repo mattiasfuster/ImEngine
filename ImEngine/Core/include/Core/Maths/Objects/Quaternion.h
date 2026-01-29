@@ -25,7 +25,7 @@
 
 namespace ImEngine::Core::Maths::Objects {
 
-template<std::floating_point T = float>
+template <std::floating_point T = float>
 struct Quaternion {
   T w{1};
   T x{};
@@ -38,8 +38,7 @@ struct Quaternion {
   constexpr Quaternion(Quaternion&&) noexcept = default;
   constexpr Quaternion& operator=(Quaternion&&) noexcept = default;
 
-  constexpr Quaternion(T w, T x, T y, T z) noexcept
-      : w(w), x(x), y(y), z(z) {}
+  constexpr Quaternion(T w, T x, T y, T z) noexcept : w(w), x(x), y(y), z(z) {}
 
   // Explicit conversion from Vector4
   explicit constexpr Quaternion(const Vector4<T>& vec) noexcept
@@ -52,51 +51,39 @@ struct Quaternion {
     return Quaternion{};
   }
 
-  [[nodiscard]] static constexpr Quaternion FromVector4(const Vector4<T>& vec)
-      noexcept {
+  [[nodiscard]] static constexpr Quaternion FromVector4(
+      const Vector4<T>& vec) noexcept {
     return Quaternion{vec.w, vec.x, vec.y, vec.z};
   }
 
   [[nodiscard]] static Quaternion FromRotationMatrix(
       const Matrice<3, 3, T>& mat) noexcept {
     T trace = mat.data[0][0] + mat.data[1][1] + mat.data[2][2];
-    
+
     if (trace > T{0}) {
       T s = std::sqrt(trace + T{1}) * T{2};
-      return Quaternion{
-        s / T{4},
-        (mat.data[2][1] - mat.data[1][2]) / s,
-        (mat.data[0][2] - mat.data[2][0]) / s,
-        (mat.data[1][0] - mat.data[0][1]) / s
-      };
-    } else if (mat.data[0][0] > mat.data[1][1] && 
+      return Quaternion{s / T{4}, (mat.data[2][1] - mat.data[1][2]) / s,
+                        (mat.data[0][2] - mat.data[2][0]) / s,
+                        (mat.data[1][0] - mat.data[0][1]) / s};
+    } else if (mat.data[0][0] > mat.data[1][1] &&
                mat.data[0][0] > mat.data[2][2]) {
-      T s = std::sqrt(T{1} + mat.data[0][0] - mat.data[1][1] - 
-                      mat.data[2][2]) * T{2};
-      return Quaternion{
-        (mat.data[2][1] - mat.data[1][2]) / s,
-        s / T{4},
-        (mat.data[0][1] + mat.data[1][0]) / s,
-        (mat.data[0][2] + mat.data[2][0]) / s
-      };
+      T s = std::sqrt(T{1} + mat.data[0][0] - mat.data[1][1] - mat.data[2][2]) *
+            T{2};
+      return Quaternion{(mat.data[2][1] - mat.data[1][2]) / s, s / T{4},
+                        (mat.data[0][1] + mat.data[1][0]) / s,
+                        (mat.data[0][2] + mat.data[2][0]) / s};
     } else if (mat.data[1][1] > mat.data[2][2]) {
-      T s = std::sqrt(T{1} + mat.data[1][1] - mat.data[0][0] - 
-                      mat.data[2][2]) * T{2};
-      return Quaternion{
-        (mat.data[0][2] - mat.data[2][0]) / s,
-        (mat.data[0][1] + mat.data[1][0]) / s,
-        s / T{4},
-        (mat.data[1][2] + mat.data[2][1]) / s
-      };
+      T s = std::sqrt(T{1} + mat.data[1][1] - mat.data[0][0] - mat.data[2][2]) *
+            T{2};
+      return Quaternion{(mat.data[0][2] - mat.data[2][0]) / s,
+                        (mat.data[0][1] + mat.data[1][0]) / s, s / T{4},
+                        (mat.data[1][2] + mat.data[2][1]) / s};
     } else {
-      T s = std::sqrt(T{1} + mat.data[2][2] - mat.data[0][0] - 
-                      mat.data[1][1]) * T{2};
-      return Quaternion{
-        (mat.data[1][0] - mat.data[0][1]) / s,
-        (mat.data[0][2] + mat.data[2][0]) / s,
-        (mat.data[1][2] + mat.data[2][1]) / s,
-        s / T{4}
-      };
+      T s = std::sqrt(T{1} + mat.data[2][2] - mat.data[0][0] - mat.data[1][1]) *
+            T{2};
+      return Quaternion{(mat.data[1][0] - mat.data[0][1]) / s,
+                        (mat.data[0][2] + mat.data[2][0]) / s,
+                        (mat.data[1][2] + mat.data[2][1]) / s, s / T{4}};
     }
   }
 
@@ -122,10 +109,9 @@ struct Quaternion {
     T wx = w * x, wy = w * y, wz = w * z;
 
     return Matrice<3, 3, T>{
-      {T{1} - T{2} * (yy + zz), T{2} * (xy - wz),        T{2} * (xz + wy)},
-      {T{2} * (xy + wz),        T{1} - T{2} * (xx + zz), T{2} * (yz - wx)},
-      {T{2} * (xz - wy),        T{2} * (yz + wx),        T{1} - T{2} * (xx + yy)}
-    };
+        {T{1} - T{2} * (yy + zz), T{2} * (xy - wz), T{2} * (xz + wy)},
+        {T{2} * (xy + wz), T{1} - T{2} * (xx + zz), T{2} * (yz - wx)},
+        {T{2} * (xz - wy), T{2} * (yz + wx), T{1} - T{2} * (xx + yy)}};
   }
 
   [[nodiscard]] constexpr Matrice<4, 4, T> ToRotationMatrix4() const noexcept {
@@ -134,24 +120,20 @@ struct Quaternion {
     T wx = w * x, wy = w * y, wz = w * z;
 
     return Matrice<4, 4, T>{
-      {T{1} - T{2} * (yy + zz), T{2} * (xy - wz),        T{2} * (xz + wy),        T{0}},
-      {T{2} * (xy + wz),        T{1} - T{2} * (xx + zz), T{2} * (yz - wx),        T{0}},
-      {T{2} * (xz - wy),        T{2} * (yz + wx),        T{1} - T{2} * (xx + yy), T{0}},
-      {T{0},                    T{0},                    T{0},                    T{1}}
-    };
+        {T{1} - T{2} * (yy + zz), T{2} * (xy - wz), T{2} * (xz + wy), T{0}},
+        {T{2} * (xy + wz), T{1} - T{2} * (xx + zz), T{2} * (yz - wx), T{0}},
+        {T{2} * (xz - wy), T{2} * (yz + wx), T{1} - T{2} * (xx + yy), T{0}},
+        {T{0}, T{0}, T{0}, T{1}}};
   }
 
   [[nodiscard]] constexpr Quaternion Conjugate() const noexcept {
     return Quaternion{w, -x, -y, -z};
   }
 
-  [[nodiscard]] constexpr double DotProduct(const Vector4& other) const
-    noexcept {
-    return static_cast<double>(
-    x * other.x +
-    y * other.y +
-    z * other.z +
-    w * other.w);
+  [[nodiscard]] constexpr double DotProduct(
+      const Vector4& other) const noexcept {
+    return static_cast<double>(x * other.x + y * other.y + z * other.z +
+                               w * other.w);
   }
 
   [[nodiscard]] constexpr double SquaredLength() const noexcept {
@@ -166,13 +148,12 @@ struct Quaternion {
     return (*this - other).Length();
   }
 
-  [[nodiscard]] constexpr double SquaredDistance(const Vector4& other) const
-      noexcept {
+  [[nodiscard]] constexpr double SquaredDistance(
+      const Vector4& other) const noexcept {
     return (*this - other).SquaredLength();
   }
-
 };
 
-}
+}  // namespace ImEngine::Core::Maths::Objects
 
 #endif  // IMENGINE_MATHS_OBJECTS_QUATERNION_H_

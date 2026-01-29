@@ -1,22 +1,21 @@
 #ifndef IMENGINE_CORE_DEBUG_LOGGER_H
 #define IMENGINE_CORE_DEBUG_LOGGER_H
 
-#include <print>
-#include <string_view>
+#include <chrono>
 #include <cstdio>
 #include <format>
-#include <chrono>
+#include <print>
+#include <string_view>
 #include <thread>
-
 
 namespace ImEngine::Core::Debug {
 namespace Colors {
-inline constexpr std::string_view kReset  = "\033[0m";
-inline constexpr std::string_view kRed    = "\033[31m";
-inline constexpr std::string_view kGreen  = "\033[32m";
+inline constexpr std::string_view kReset = "\033[0m";
+inline constexpr std::string_view kRed = "\033[31m";
+inline constexpr std::string_view kGreen = "\033[32m";
 inline constexpr std::string_view kYellow = "\033[33m";
-inline constexpr std::string_view kBlue   = "\033[34m";
-}
+inline constexpr std::string_view kBlue = "\033[34m";
+}  // namespace Colors
 
 template <typename... Args>
 void LogInfo(std::format_string<Args...> fmt, Args&&... args) {
@@ -60,11 +59,11 @@ void LogTrace([[maybe_unused]] std::format_string<Args...> fmt,
   std::println(stdout, "{}", Colors::kReset);
 #endif
 }
-}
+}  // namespace ImEngine::Core::Debug
 
-#define IM_INFO(...)  ::ImEngine::Core::Debug::LogInfo(__VA_ARGS__)
-#define IM_WARN(...)  ::ImEngine::Core::Debug::LogWarning(__VA_ARGS__)
+#define IM_INFO(...) ::ImEngine::Core::Debug::LogInfo(__VA_ARGS__)
+#define IM_WARN(...) ::ImEngine::Core::Debug::LogWarning(__VA_ARGS__)
 #define IM_ERROR(...) ::ImEngine::Core::Debug::LogError(__VA_ARGS__)
 #define IM_TRACE(...) ::ImEngine::Core::Debug::LogTrace(__VA_ARGS__)
 
-#endif // IMENGINE_CORE_DEBUG_LOGGER_H
+#endif  // IMENGINE_CORE_DEBUG_LOGGER_H

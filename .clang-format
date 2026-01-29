@@ -4,7 +4,7 @@
 
 Language: Cpp
 BasedOnStyle: Google
-Standard: c++23
+Standard: Latest
 
 # --- Line Length ---
 ColumnLimit: 80  # Google standard
@@ -30,6 +30,7 @@ AlignConsecutiveDeclarations: false
 AlignTrailingComments: true
 AlignAfterOpenBracket: Align
 PointerAlignment: Left  # char* p (not char *p)
+ReferenceAlignment: Left  # int& ref (not int &ref)
 
 # --- Spacing ---
 DerivePointerAlignment: false

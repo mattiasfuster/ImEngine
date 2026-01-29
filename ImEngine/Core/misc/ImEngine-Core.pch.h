@@ -4,11 +4,10 @@
 #pragma once
 
 // Essential types
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 
 // Most common containers
 #include <memory>
 #include <string>
 #include <vector>
-

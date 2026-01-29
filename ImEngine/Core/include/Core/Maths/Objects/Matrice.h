@@ -23,12 +23,12 @@
 #ifndef IMENGINE_MATHS_OBJECTS_MATRICE_H_
 #define IMENGINE_MATHS_OBJECTS_MATRICE_H_
 
-#include <iomanip>
 #include <initializer_list>
+#include <iomanip>
 #include <sstream>
 #include <string>
 
-#include "Maths/Concepts.h"
+#include "Core/Maths/Concepts.h"
 
 namespace ImEngine::Core::Maths::Objects {
 
@@ -59,14 +59,16 @@ struct Matrice {
     }
   }
 
-  constexpr Matrice(std::initializer_list<std::initializer_list<T>> list)
-      noexcept {
+  constexpr Matrice(
+      std::initializer_list<std::initializer_list<T>> list) noexcept {
     size_t i = 0;
     for (const auto& row_list : list) {
-      if (i >= M) break;
+      if (i >= M)
+        break;
       size_t j = 0;
       for (const auto& val : row_list) {
-        if (j >= N) break;
+        if (j >= N)
+          break;
         data[i][j] = val;
         ++j;
       }
@@ -98,8 +100,8 @@ struct Matrice {
 
   constexpr ~Matrice() noexcept = default;
 
-  [[nodiscard]] Matrice<M, N, T> operator+(const Matrice<M, N, T>& other) const
-      noexcept {
+  [[nodiscard]] Matrice<M, N, T> operator+(
+      const Matrice<M, N, T>& other) const noexcept {
     Matrice<M, N, T> result;
     for (size_t i = 0; i < M; ++i) {
       for (size_t j = 0; j < N; ++j) {
@@ -109,8 +111,8 @@ struct Matrice {
     return result;
   }
 
-  [[nodiscard]] Matrice<M, N, T> operator-(const Matrice<M, N, T>& other) const
-      noexcept {
+  [[nodiscard]] Matrice<M, N, T> operator-(
+      const Matrice<M, N, T>& other) const noexcept {
     Matrice<M, N, T> result;
     for (size_t i = 0; i < M; ++i) {
       for (size_t j = 0; j < N; ++j) {
@@ -121,8 +123,8 @@ struct Matrice {
   }
 
   template <size_t O>
-  [[nodiscard]] Matrice<M, O, T> operator*(const Matrice<N, O, T>& other) const
-      noexcept {
+  [[nodiscard]] Matrice<M, O, T> operator*(
+      const Matrice<N, O, T>& other) const noexcept {
     Matrice<M, O, T> result;
     for (size_t i = 0; i < O; ++i) {
       for (size_t j = 0; j < M; ++j) {
@@ -144,8 +146,8 @@ struct Matrice {
     return result;
   }
 
-  [[nodiscard]] constexpr Matrice<M, N, T> operator/(double scalar) const
-      noexcept {
+  [[nodiscard]] constexpr Matrice<M, N, T> operator/(
+      double scalar) const noexcept {
     if (scalar == 0) {
       return Matrice();
     }
@@ -158,27 +160,28 @@ struct Matrice {
     return result;
   }
 
-  [[nodiscard]] constexpr Vector3<T> operator*(const Vector3<T>& vec) const
-  noexcept requires(M == 3 && N == 3) {
+  [[nodiscard]] constexpr Vector3<T> operator*(
+      const Vector3<T>& vec) const noexcept
+    requires(M == 3 && N == 3)
+  {
     return Vector3<T>{
         data[0][0] * vec.x + data[0][1] * vec.y + data[0][2] * vec.z,
         data[1][0] * vec.x + data[1][1] * vec.y + data[1][2] * vec.z,
         data[2][0] * vec.x + data[2][1] * vec.y + data[2][2] * vec.z};
   }
 
-  [[nodiscard]] constexpr Vector4<T> operator*(const Vector4<T>& vec) const
-      noexcept
+  [[nodiscard]] constexpr Vector4<T> operator*(
+      const Vector4<T>& vec) const noexcept
     requires(M == 4 && N == 4)
   {
-    return Vector4<T>{
-        data[0][0] * vec.x + data[0][1] * vec.y + data[0][2] * vec.z +
-            data[0][3] * vec.w,
-        data[1][0] * vec.x + data[1][1] * vec.y + data[1][2] * vec.z +
-            data[1][3] * vec.w,
-        data[2][0] * vec.x + data[2][1] * vec.y + data[2][2] * vec.z +
-            data[2][3] * vec.w,
-        data[3][0] * vec.x + data[3][1] * vec.y + data[3][2] * vec.z +
-            data[3][3] * vec.w};
+    return Vector4<T>{data[0][0] * vec.x + data[0][1] * vec.y +
+                          data[0][2] * vec.z + data[0][3] * vec.w,
+                      data[1][0] * vec.x + data[1][1] * vec.y +
+                          data[1][2] * vec.z + data[1][3] * vec.w,
+                      data[2][0] * vec.x + data[2][1] * vec.y +
+                          data[2][2] * vec.z + data[2][3] * vec.w,
+                      data[3][0] * vec.x + data[3][1] * vec.y +
+                          data[3][2] * vec.z + data[3][3] * vec.w};
   }
 
   [[nodiscard]] constexpr T Determinant() const

@@ -25,7 +25,7 @@
 
 #include <type_traits>
 
-#include "Maths/Units.h"
+#include "Core/Maths/Units.h"
 
 namespace ImEngine::Core::Maths::Concepts {
 
@@ -39,7 +39,8 @@ concept AngleUnit = std::is_same_v<T, Degree> || std::is_same_v<T, uDegree> ||
                     std::is_same_v<T, Radian> || std::is_same_v<T, uRadian>;
 
 template <typename T>
-concept TransformType = std::is_same_v<T, Point> || std::is_same_v<T, Direction>;
+concept TransformType =
+    std::is_same_v<T, Point> || std::is_same_v<T, Direction>;
 
 }  // namespace ImEngine::Core::Maths::Concepts
 

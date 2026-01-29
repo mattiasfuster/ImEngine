@@ -23,21 +23,21 @@
 #ifndef IMENGINE_MATHS_OBJECTS_VECTOR_H_
 #define IMENGINE_MATHS_OBJECTS_VECTOR_H_
 
-#include "Maths/Concepts.h"
-#include "Maths/Constants.h"
-#include "Maths/Objects/Matrice.h"
-
 #include <cmath>
 #include <numbers>
 #include <type_traits>
+
+#include "Core/Maths/Concepts.h"
+#include "Core/Maths/Constants.h"
+#include "Core/Maths/Objects/Matrice.h"
 
 using namespace ImEngine::Core::Maths::Constants;
 using namespace ImEngine::Core::Maths::Units;
 
 namespace ImEngine::Core::Maths::Objects {
 
-using ImEngine::Core::Maths::Concepts::Arithmetic;
 using ImEngine::Core::Maths::Concepts::AngleUnit;
+using ImEngine::Core::Maths::Concepts::Arithmetic;
 
 // 2D vector for geometric operations.
 template <Arithmetic T>
@@ -62,20 +62,20 @@ struct Vector2 {
   }
 
   // Binary Operators
-  [[nodiscard]] constexpr Vector2 operator+(const Vector2& other) const
-      noexcept {
+  [[nodiscard]] constexpr Vector2 operator+(
+      const Vector2& other) const noexcept {
     return Vector2(x + other.x, y + other.y);
   }
-  [[nodiscard]] constexpr Vector2 operator-(const Vector2& other) const
-      noexcept {
+  [[nodiscard]] constexpr Vector2 operator-(
+      const Vector2& other) const noexcept {
     return Vector2(x - other.x, y - other.y);
   }
-  [[nodiscard]] constexpr Vector2 operator*(const Vector2& other) const
-      noexcept {
+  [[nodiscard]] constexpr Vector2 operator*(
+      const Vector2& other) const noexcept {
     return Vector2(x * other.x, y * other.y);
   }
-  [[nodiscard]] constexpr Vector2 operator/(const Vector2& other) const
-      noexcept {
+  [[nodiscard]] constexpr Vector2 operator/(
+      const Vector2& other) const noexcept {
     return Vector2(x / other.x, y / other.y);
   }
 
@@ -114,12 +114,12 @@ struct Vector2 {
   }
 
   // Math Functions
-  [[nodiscard]] constexpr double CrossProduct(const Vector2& other) const
-      noexcept {
+  [[nodiscard]] constexpr double CrossProduct(
+      const Vector2& other) const noexcept {
     return static_cast<double>(x * other.y - y * other.x);
   }
-  [[nodiscard]] constexpr double DotProduct(const Vector2& other) const
-      noexcept {
+  [[nodiscard]] constexpr double DotProduct(
+      const Vector2& other) const noexcept {
     return static_cast<double>(x * other.x + y * other.y);
   }
 
@@ -133,8 +133,8 @@ struct Vector2 {
   [[nodiscard]] double Distance(const Vector2& other) const noexcept {
     return (*this - other).Length();
   }
-  [[nodiscard]] constexpr double SquaredDistance(const Vector2& other) const
-      noexcept {
+  [[nodiscard]] constexpr double SquaredDistance(
+      const Vector2& other) const noexcept {
     return (*this - other).SquaredLength();
   }
 
@@ -143,7 +143,7 @@ struct Vector2 {
   }
 
   void Normalize() noexcept { *this /= static_cast<T>(Length()); }
-  
+
   [[nodiscard]] Vector2 Normalized() const noexcept {
     return *this / static_cast<T>(Length());
   }
@@ -176,9 +176,9 @@ struct Vector3 {
   constexpr Vector3() noexcept = default;
   constexpr Vector3(T x, T y, T z) noexcept : x(x), y(y), z(z) {}
   constexpr Vector3(const Vector2<T>& xy, T z) noexcept
-    : x(xy.x), y(xy.y), z(z) {}
+      : x(xy.x), y(xy.y), z(z) {}
   constexpr Vector3(const Matrice<3, 1, T> mat) noexcept
-    : x(mat.data[0][0]), y(mat.data[0][1]), z(mat.data[0][2]) {}
+      : x(mat.data[0][0]), y(mat.data[0][1]), z(mat.data[0][2]) {}
 
   constexpr Vector3(const Vector3&) noexcept = default;
   constexpr Vector3& operator=(const Vector3&) noexcept = default;
@@ -193,20 +193,20 @@ struct Vector3 {
   }
 
   // Binary Operators
-  [[nodiscard]] constexpr Vector3 operator+(const Vector3& other) const
-      noexcept {
+  [[nodiscard]] constexpr Vector3 operator+(
+      const Vector3& other) const noexcept {
     return Vector3(x + other.x, y + other.y, z + other.z);
   }
-  [[nodiscard]] constexpr Vector3 operator-(const Vector3& other) const
-      noexcept {
+  [[nodiscard]] constexpr Vector3 operator-(
+      const Vector3& other) const noexcept {
     return Vector3(x - other.x, y - other.y, z - other.z);
   }
-  [[nodiscard]] constexpr Vector3 operator*(const Vector3& other) const
-      noexcept {
+  [[nodiscard]] constexpr Vector3 operator*(
+      const Vector3& other) const noexcept {
     return Vector3(x * other.x, y * other.y, z * other.z);
   }
-  [[nodiscard]] constexpr Vector3 operator/(const Vector3& other) const
-      noexcept {
+  [[nodiscard]] constexpr Vector3 operator/(
+      const Vector3& other) const noexcept {
     return Vector3(x / other.x, y / other.y, z / other.z);
   }
 
@@ -251,14 +251,14 @@ struct Vector3 {
   }
 
   // Math Functions
-  [[nodiscard]] constexpr Vector3 CrossProduct(const Vector3& other) const
-      noexcept {
+  [[nodiscard]] constexpr Vector3 CrossProduct(
+      const Vector3& other) const noexcept {
     return Vector3(y * other.z - z * other.y, z * other.x - x * other.z,
                    x * other.y - y * other.x);
   }
 
-  [[nodiscard]] constexpr double DotProduct(const Vector3& other) const
-      noexcept {
+  [[nodiscard]] constexpr double DotProduct(
+      const Vector3& other) const noexcept {
     return static_cast<double>(x * other.x + y * other.y + z * other.z);
   }
 
@@ -272,8 +272,8 @@ struct Vector3 {
   [[nodiscard]] double Distance(const Vector3& other) const noexcept {
     return (*this - other).Length();
   }
-  [[nodiscard]] constexpr double SquaredDistance(const Vector3& other) const
-      noexcept {
+  [[nodiscard]] constexpr double SquaredDistance(
+      const Vector3& other) const noexcept {
     return (*this - other).SquaredLength();
   }
 
@@ -316,7 +316,10 @@ struct Vector4 {
   constexpr Vector4(T w, const Vector2<T>& xy, T z) noexcept
       : w(w), x(xy.x), y(xy.y), z(z) {}
   constexpr Vector4(const Matrice<4, 1, T> mat) noexcept
-      : w(mat.data[3][0]), x(mat.data[0][0]), y(mat.data[1][0]), z(mat.data[2][0]) {}
+      : w(mat.data[3][0]),
+        x(mat.data[0][0]),
+        y(mat.data[1][0]),
+        z(mat.data[2][0]) {}
 
   constexpr Vector4(const Vector4&) noexcept = default;
   constexpr Vector4& operator=(const Vector4&) noexcept = default;
@@ -331,20 +334,20 @@ struct Vector4 {
   }
 
   // Binary Operators
-  [[nodiscard]] constexpr Vector4 operator+(const Vector4& other) const
-      noexcept {
+  [[nodiscard]] constexpr Vector4 operator+(
+      const Vector4& other) const noexcept {
     return Vector4(w + other.w, x + other.x, y + other.y, z + other.z);
   }
-  [[nodiscard]] constexpr Vector4 operator-(const Vector4& other) const
-      noexcept {
+  [[nodiscard]] constexpr Vector4 operator-(
+      const Vector4& other) const noexcept {
     return Vector4(w - other.w, x - other.x, y - other.y, z - other.z);
   }
-  [[nodiscard]] constexpr Vector4 operator*(const Vector4& other) const
-      noexcept {
+  [[nodiscard]] constexpr Vector4 operator*(
+      const Vector4& other) const noexcept {
     return Vector4(w * other.w, x * other.x, y * other.y, z * other.z);
   }
-  [[nodiscard]] constexpr Vector4 operator/(const Vector4& other) const
-      noexcept {
+  [[nodiscard]] constexpr Vector4 operator/(
+      const Vector4& other) const noexcept {
     return Vector4(w / other.w, x / other.x, y / other.y, z / other.z);
   }
 
@@ -395,13 +398,10 @@ struct Vector4 {
   }
 
   // Math Functions
-  [[nodiscard]] constexpr double DotProduct(const Vector4& other) const
-      noexcept {
-      return static_cast<double>(
-      x * other.x +
-      y * other.y +
-      z * other.z +
-      w * other.w);
+  [[nodiscard]] constexpr double DotProduct(
+      const Vector4& other) const noexcept {
+    return static_cast<double>(x * other.x + y * other.y + z * other.z +
+                               w * other.w);
   }
 
   [[nodiscard]] constexpr double SquaredLength() const noexcept {
@@ -414,8 +414,8 @@ struct Vector4 {
   [[nodiscard]] double Distance(const Vector4& other) const noexcept {
     return (*this - other).Length();
   }
-  [[nodiscard]] constexpr double SquaredDistance(const Vector4& other) const
-      noexcept {
+  [[nodiscard]] constexpr double SquaredDistance(
+      const Vector4& other) const noexcept {
     return (*this - other).SquaredLength();
   }
 

@@ -3,12 +3,13 @@ cmake_minimum_required(VERSION 3.29)
 message(STATUS "[-----ImEngine-Core-----]")
 
 set(CORE_HEADERS
-        include/Maths/Units.h
-        include/Maths/Constants.h
-        include/Maths/Objects/Vector.h
-        include/Maths/Objects/Matrice.h
-        include/Maths/Objects/Quaternion.h
-        include/Debug/Logger.h
+        include/Core/Maths/Units.h
+        include/Core/Maths/Constants.h
+        include/Core/Maths/Concepts.h
+        include/Core/Maths/Objects/Vector.h
+        include/Core/Maths/Objects/Matrice.h
+        include/Core/Maths/Objects/Quaternion.h
+        include/Core/Debug/Logger.h
 )
 
 set(CORE_SOURCES
@@ -27,13 +28,13 @@ enable_security_flags(ImEngine-Core)
 
 include(GenerateExportHeader)
 generate_export_header(ImEngine-Core
-        EXPORT_FILE_NAME "${CMAKE_CURRENT_SOURCE_DIR}/misc/CoreExport.h"
+        EXPORT_FILE_NAME "${CMAKE_CURRENT_BINARY_DIR}/CoreExport.h"
         EXPORT_MACRO_NAME IMENGINE_CORE_API
 )
 
 # --- Precompiled headers (kept private for better incremental build) ----------
 target_precompile_headers(ImEngine-Core
-        PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/misc/CoreExport.h"
+        PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/CoreExport.h"
         PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/misc/ImEngine-Core.pch.h"
 )
 
@@ -42,6 +43,7 @@ target_include_directories(ImEngine-Core
         PUBLIC
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/misc>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
             $<INSTALL_INTERFACE:include/ImEngine>
 )
 
@@ -69,7 +71,7 @@ install(TARGETS ImEngine-Core
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include/"
         DESTINATION "include/ImEngine")
 
-install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/misc/CoreExport.h"
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/CoreExport.h"
         DESTINATION "include/ImEngine")
 
 # --- Modern CMake alias for consumers -----------------------------------------

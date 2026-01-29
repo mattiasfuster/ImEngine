@@ -8,13 +8,15 @@ add_subdirectory(shaders)
 
 # 2. LIBRARY CONFIGURATION
 set(ENGINE_HEADERS
-    include/Engine.h
-    include/Window/Window.h
+    include/Engine/Engine.h
+    include/Engine/Window/Window.h
+    include/Engine/Window/Contexts/GLFWWindow.h
 )
 
 set(ENGINE_SOURCES
     src/Engine.cpp
     src/Window/Window.cpp
+    src/Window/Contexts/GLFWWindow.cpp
 )
 
 # --- Create the Engine as a shared library (DLL) ---
@@ -32,13 +34,13 @@ enable_security_flags(ImEngine-Engine)
 
 include(GenerateExportHeader)
 generate_export_header(ImEngine-Engine
-        EXPORT_FILE_NAME "${CMAKE_CURRENT_SOURCE_DIR}/misc/EngineExport.h"
+        EXPORT_FILE_NAME "${CMAKE_CURRENT_BINARY_DIR}/EngineExport.h"
         EXPORT_MACRO_NAME IMENGINE_ENGINE_API
 )
 
 # --- Precompiled headers ---
 target_precompile_headers(ImEngine-Engine
-        PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/misc/EngineExport.h"
+        PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/EngineExport.h"
         PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/misc/ImEngine-Engine.pch.h"
 )
 
@@ -47,6 +49,7 @@ target_include_directories(ImEngine-Engine
         PUBLIC
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/misc>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
             $<INSTALL_INTERFACE:include/ImEngine>
 )
 
@@ -73,7 +76,7 @@ install(TARGETS ImEngine-Engine
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include/"
         DESTINATION "include/ImEngine")
 
-install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/misc/EngineExport.h"
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/EngineExport.h"
         DESTINATION "include/ImEngine")
 
 # Install compiled shaders (from shaders/CMakeLists.txt)

@@ -2,8 +2,8 @@
 //
 // Copyright (c) 2024 FUSTER Mattias
 //
-// This software utilizes code from the following GitHub repositories, which are also licensed under
-// the MIT License:
+// This software utilizes code from the following GitHub repositories, which are
+// also licensed under the MIT License:
 //
 // - [ImGui](https://github.com/ocornut/imgui)
 // - [GLFW](https://github.com/glfw/glfw)
@@ -15,8 +15,8 @@
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 //
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -26,22 +26,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "Engine.h"
-#include "Debug/Logger.h"
+#include <cstdint>
+#include <cstdlib>
+#include <exception>
 
-constexpr int kSANDBOX_WINDOW_WIDTH = 1280;
-constexpr int kSANDBOX_WINDOW_HEIGHT = 720;
+#include "Core/Debug/Logger.h"
+#include "Engine/Engine.h"
+
+constexpr uint32_t kSandboxWindowWidth = 1280;
+constexpr uint32_t kSandboxWindowHeight = 720;
+
+using namespace ime;
+using engine::platform::WindowConfig;
 
 int main([[maybe_unused]] int argk, [[maybe_unused]] char* argv[]) {
   try {
     IM_INFO("Starting ImEngine Sandbox...");
 
-
-    EngineConfig config{
-        .title = "ImEngine Sandbox",
-        .width = kSANDBOX_WINDOW_WIDTH,
-        .height = kSANDBOX_WINDOW_HEIGHT,
-    };
+    EngineConfig config{.window_config = WindowConfig{
+                            .window_title = "ImEngine Sandbox",
+                            .size = {.width = kSandboxWindowWidth,
+                                     .height = kSandboxWindowHeight}}};
 
     Engine engine(config);
     engine.Run();

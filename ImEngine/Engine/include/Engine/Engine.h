@@ -27,15 +27,19 @@
 // SOFTWARE.
 
 #pragma once
+#include "Engine/Window/Window.h"
 #include "EngineExport.h"
-#include "Window/Window.h"
+
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
 #include <array>
+#include <memory>
 #include <optional>
 #include <vector>
+
+namespace ime {
 
 struct IMENGINE_ENGINE_API QueueFamilyIndices {
   std::optional<uint32_t> graphics_family;
@@ -52,15 +56,19 @@ struct IMENGINE_ENGINE_API SwapChainSupportDetails {
   std::vector<VkPresentModeKHR> presentModes;
 };
 
+struct IMENGINE_ENGINE_API EngineConfig {
+  std::optional<ime::engine::platform::WindowConfig> window_config;
+};
+
 class IMENGINE_ENGINE_API Engine {
-public:
+ public:
   // Static Data members
   static constexpr int kMaxFramesInFlight = 2;
 
-  static constexpr std::array kValidationLayers = {
+  static constexpr std::array<const char*, 1> kValidationLayers = {
       "VK_LAYER_KHRONOS_validation"};
 
-  static constexpr std::array kDeviceExtensions = {
+  static constexpr std::array<const char*, 1> kDeviceExtensions = {
       VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 
 #ifdef IMENGINE_DEBUG
@@ -69,35 +77,28 @@ public:
   static constexpr bool kEnableValidationLayers = false;
 #endif
 
-  // Constructors and assignment operators
+  Engine(const Engine&) = delete;
+  Engine& operator=(const Engine&) = delete;
 
-  Engine(const Engine &) = delete;
-  Engine &operator=(const Engine &) = delete;
+  Engine(Engine&& other) noexcept;
+  Engine& operator=(Engine&& other) noexcept;
 
-  Engine(Engine &&other) noexcept;
-  Engine &operator=(Engine &&other) noexcept;
-
-  // Destructor
+  Engine(const EngineConfig& Config);
 
   ~Engine();
 
   void Run();
 
-private:
-  // Static functions
-
+ private:
   static void PopulateDebugMessengerCreateInfo(
-      VkDebugUtilsMessengerCreateInfoEXT &create_info);
+      VkDebugUtilsMessengerCreateInfoEXT& create_info);
 
   static VKAPI_ATTR VkBool32 VKAPI_CALL
   DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
                 VkDebugUtilsMessageTypeFlagsEXT message_type,
-                const VkDebugUtilsMessengerCallbackDataEXT *callback_data,
-                void *user_data);
+                const VkDebugUtilsMessengerCallbackDataEXT* callback_data,
+                void* user_data);
 
-  // Non-static member functions
-
-  void InitWindow();
   void InitVulkan();
 
   void CreateInstance();
@@ -121,7 +122,7 @@ private:
   void RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
 
   [[nodiscard]]
-  std::vector<const char *> GetRequiredInstanceExtensions() const;
+  std::vector<const char*> GetRequiredInstanceExtensions() const;
   [[nodiscard]]
   bool CheckValidationLayerSupport() const;
   [[nodiscard]]
@@ -129,27 +130,29 @@ private:
   [[nodiscard]]
   bool CheckRequiredDeviceExtensionsSupport(VkPhysicalDevice device) const;
   [[nodiscard]]
-  bool IsDeviceSuitable(const VkPhysicalDevice &device) const;
+  bool IsDeviceSuitable(const VkPhysicalDevice& device) const;
   [[nodiscard]]
   QueueFamilyIndices FindQueueFamiliesIndices(VkPhysicalDevice device) const;
   [[nodiscard]]
   SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device) const;
   [[nodiscard]]
   VkSurfaceFormatKHR ChooseSwapSurfaceFormat(
-      const std::vector<VkSurfaceFormatKHR> &availableFormats) const;
+      const std::vector<VkSurfaceFormatKHR>& availableFormats) const;
   [[nodiscard]]
   VkPresentModeKHR ChooseSwapPresentMode(
-      const std::vector<VkPresentModeKHR> &availablePresentModes) const;
+      const std::vector<VkPresentModeKHR>& availablePresentModes) const;
   [[nodiscard]]
-  VkExtent2D
-  ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities) const;
-  [[nodiscard]] VkShaderModule
-  CreateShaderModule(const std::vector<char> &code) const;
+  VkExtent2D ChooseSwapExtent(
+      const VkSurfaceCapabilitiesKHR& capabilities) const;
+  [[nodiscard]] VkShaderModule CreateShaderModule(
+      const std::vector<char>& code) const;
 
-  // Data members
+  std::shared_ptr<ime::engine::platform::IWindow> window_;
 
   VkInstance vulkan_instance_ = VK_NULL_HANDLE;
+
   VkDebugUtilsMessengerEXT debug_messenger_ = VK_NULL_HANDLE;
+
   VkSurfaceKHR vulkan_surface_ = VK_NULL_HANDLE;
 
   VkPhysicalDevice physical_device_ = VK_NULL_HANDLE;
@@ -178,6 +181,6 @@ private:
   std::vector<VkFence> in_flight_fences_;
 
   uint32_t current_frame_ = 0;
-
-  std::unique_ptr<ImEngine::Engine::Window> window_;
 };
+
+}  // namespace ime
