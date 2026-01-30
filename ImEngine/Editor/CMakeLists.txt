@@ -19,17 +19,22 @@ set_project_warnings(ImEngine-Editor)
 enable_security_flags(ImEngine-Editor)
 
 target_include_directories(ImEngine-Editor
-        PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
+        PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
 target_precompile_headers(ImEngine-Editor
-        PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/misc/ImEngine-Editor.pch.h"
+        PRIVATE
+            <cstddef>
+            <cstdint>
+            <memory>
+            <string>
+            <vector>
 )
 
 target_link_libraries(ImEngine-Editor
         PRIVATE ImEngine::Engine
         PRIVATE ImEngine-ThirdParty::imgui
-        # Note: ImEngine::Core, glfw, vulkan are transitively available via Engine
+        # Note: ImEngine::Core, Vulkan are transitively available via Engine
 )
 
 add_custom_command(TARGET ImEngine-Editor POST_BUILD

@@ -2,33 +2,31 @@ cmake_minimum_required(VERSION 3.29)
 
 message(STATUS "[-----ImEngine-Engine-----]")
 
-# 1. SHADER COMPILATION
 add_subdirectory(shaders)
 
-
-# 2. LIBRARY CONFIGURATION
 set(ENGINE_HEADERS
     include/Engine/Engine.h
     include/Engine/Window/Window.h
     include/Engine/Window/Contexts/GLFWWindow.h
+    include/Engine/Rendering/RHI.h
+    include/Engine/Rendering/Contexts/VulkanContext.h
 )
 
 set(ENGINE_SOURCES
     src/Engine.cpp
     src/Window/Window.cpp
     src/Window/Contexts/GLFWWindow.cpp
+    src/Rendering/RHI.cpp
+    src/Rendering/Contexts/VulkanContext.cpp
 )
 
-# --- Create the Engine as a shared library (DLL) ---
 add_library(ImEngine-Engine SHARED
         ${ENGINE_HEADERS}
         ${ENGINE_SOURCES}
 )
 
-# --- Ensure shaders are compiled before the library is linked/built
 add_dependencies(ImEngine-Engine ImEngine-Shaders)
 
-# --- Apply Modern Settings ---
 set_project_warnings(ImEngine-Engine)
 enable_security_flags(ImEngine-Engine)
 
@@ -38,13 +36,16 @@ generate_export_header(ImEngine-Engine
         EXPORT_MACRO_NAME IMENGINE_ENGINE_API
 )
 
-# --- Precompiled headers ---
 target_precompile_headers(ImEngine-Engine
-        PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/EngineExport.h"
-        PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/misc/ImEngine-Engine.pch.h"
+        PRIVATE
+            <cstddef>
+            <cstdint>
+            <memory>
+            <string>
+            <vector>
+            <vulkan/vulkan.h>
 )
 
-# --- Public includes ---
 target_include_directories(ImEngine-Engine
         PUBLIC
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -53,10 +54,10 @@ target_include_directories(ImEngine-Engine
             $<INSTALL_INTERFACE:include/ImEngine>
 )
 
-# --- Link dependencies ---
-# Note: glfw and vulkan are transitively available via ImEngine::Core (PUBLIC link)
 target_link_libraries(ImEngine-Engine
         PUBLIC ImEngine::Core
+        PUBLIC ImEngine-ThirdParty::vulkan   # PUBLIC: Vulkan types exposed in Engine.h
+        PRIVATE ImEngine-ThirdParty::glfw    # PRIVATE: GLFW is internal (Window abstraction)
 )
 
 target_compile_definitions(ImEngine-Engine
@@ -66,7 +67,6 @@ target_compile_definitions(ImEngine-Engine
         PRIVATE $<$<CONFIG:RelWithDebInfo>:IMENGINE_RELWITHDEBINFO>
 )
 
-# 3. INSTALLATION RULES
 install(TARGETS ImEngine-Engine
     RUNTIME DESTINATION bin          # .dll on Windows
     LIBRARY DESTINATION bin          # .so/.dylib

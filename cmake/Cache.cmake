@@ -14,7 +14,9 @@ function(enable_ccache)
       file(MAKE_DIRECTORY "${CCACHE_DL_DIR}")
 
       set(CCACHE_ZIP "${CCACHE_DL_DIR}/ccache.zip")
-      file(DOWNLOAD "${CCACHE_URL}" "${CCACHE_ZIP}" SHOW_PROGRESS)
+      file(DOWNLOAD "${CCACHE_URL}" "${CCACHE_ZIP}"
+           TLS_VERIFY ON
+      )
 
       message(STATUS "Extracting ccache...")
       file(ARCHIVE_EXTRACT INPUT "${CCACHE_ZIP}" DESTINATION "${CCACHE_DL_DIR}")
@@ -36,7 +38,9 @@ function(enable_ccache)
 
     if(MSVC)
       set(ENV{CCACHE_COMPILERCHECK} "content")
-      message(STATUS "ccache: Configured for MSVC with content-based compiler check")
+      # Ignore PCH timestamp changes - PCH are precompiled and rarely change
+      set(ENV{CCACHE_SLOPPINESS} "pch_defines,time_macros")
+      message(STATUS "ccache: Configured for MSVC with content-based compiler check and PCH tolerance")
     endif()
   else()
     message(WARNING "ccache not found. Build performance might be affected.")

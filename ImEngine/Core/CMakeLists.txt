@@ -16,13 +16,11 @@ set(CORE_SOURCES
         src/Core.cpp
 )
 
-# --- Create the Core as a shared library (DLL) ---
 add_library(ImEngine-Core SHARED
         ${CORE_HEADERS}
         ${CORE_SOURCES}
 )
 
-# --- Apply Modern Settings ---
 set_project_warnings(ImEngine-Core)
 enable_security_flags(ImEngine-Core)
 
@@ -32,13 +30,15 @@ generate_export_header(ImEngine-Core
         EXPORT_MACRO_NAME IMENGINE_CORE_API
 )
 
-# --- Precompiled headers (kept private for better incremental build) ----------
 target_precompile_headers(ImEngine-Core
-        PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/CoreExport.h"
-        PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/misc/ImEngine-Core.pch.h"
+        PRIVATE
+            <cstddef>
+            <cstdint>
+            <memory>
+            <string>
+            <vector>
 )
 
-# --- Public includes ---
 target_include_directories(ImEngine-Core
         PUBLIC
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -47,13 +47,9 @@ target_include_directories(ImEngine-Core
             $<INSTALL_INTERFACE:include/ImEngine>
 )
 
-# --- Link third-party dependencies --------------------------------------------
 target_link_libraries(ImEngine-Core
-        PUBLIC ImEngine-ThirdParty::glfw
-        PUBLIC ImEngine-ThirdParty::vulkan
-        # Add Core dependencies here (e.g. spdlog, fmt)
 )
-# --- Export/import macro for Windows DLL --------------------------------------
+
 target_compile_definitions(ImEngine-Core
         PRIVATE IMENGINE_CORE_EXPORTS
         PRIVATE $<$<CONFIG:Debug>:IMENGINE_DEBUG>
@@ -61,7 +57,6 @@ target_compile_definitions(ImEngine-Core
         PRIVATE $<$<CONFIG:RelWithDebInfo>:IMENGINE_RELWITHDEBINFO>
 )
 
-# --- Installation rules (SDK-like) --------------------------------------------
 install(TARGETS ImEngine-Core
         RUNTIME DESTINATION bin          # .dll on Windows
         LIBRARY DESTINATION bin          # .so/.dylib
@@ -74,5 +69,4 @@ install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include/"
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/CoreExport.h"
         DESTINATION "include/ImEngine")
 
-# --- Modern CMake alias for consumers -----------------------------------------
 add_library(ImEngine::Core ALIAS ImEngine-Core)

@@ -55,7 +55,7 @@ function(set_project_warnings project_name)
     set(PROJECT_WARNINGS ${CLANG_WARNINGS})
   endif()
 
-  target_compile_options(${project_name} INTERFACE ${PROJECT_WARNINGS})
+  target_compile_options(${project_name} PRIVATE ${PROJECT_WARNINGS})
 
 endfunction()
 

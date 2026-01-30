@@ -26,18 +26,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#pragma once
-#include "Engine/Window/Window.h"
-#include "EngineExport.h"
+#ifndef IMENGINE_ENGINE_H
+#define IMENGINE_ENGINE_H
 
-
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
+#include <vulkan/vulkan.h>
 
 #include <array>
 #include <memory>
 #include <optional>
 #include <vector>
+
+#include "Engine/Window/Window.h"
+#include "EngineExport.h"
 
 namespace ime {
 
@@ -184,3 +184,5 @@ class IMENGINE_ENGINE_API Engine {
 };
 
 }  // namespace ime
+
+#endif

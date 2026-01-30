@@ -11,7 +11,6 @@ set(SOURCE_FILES
 
 add_executable(ImEngine-Sandbox ${HEADER_FILES} ${SOURCE_FILES})
 
-# --- Apply Modern Settings ---
 set_project_warnings(ImEngine-Sandbox)
 enable_security_flags(ImEngine-Sandbox)
 
@@ -19,9 +18,9 @@ target_include_directories(ImEngine-Sandbox PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/
 
 target_link_libraries(ImEngine-Sandbox
     PRIVATE ImEngine::Engine
+    # Vulkan is now transitive via Engine PUBLIC
 )
 
-# Copy DLLs to executable directory (Core.dll, Engine.dll, etc.)
 add_custom_command(TARGET ImEngine-Sandbox POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         $<TARGET_RUNTIME_DLLS:ImEngine-Sandbox>

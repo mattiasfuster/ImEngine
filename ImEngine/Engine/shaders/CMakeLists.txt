@@ -16,7 +16,7 @@ file(GLOB SHADER_SOURCES
 
 # Compile to intermediate directory
 set(SHADER_INTERMEDIATE_DIR "${CMAKE_CURRENT_BINARY_DIR}/compiled")
-file(MAKE_DIRECTORY ${SHADER_INTERMEDIATE_DIR})
+file(MAKE_DIRECTORY "${SHADER_INTERMEDIATE_DIR}")
 
 set(COMPILED_SHADERS)
 set(ALL_SHADER_OUTPUTS)
@@ -26,13 +26,18 @@ foreach(SHADER_FILE ${SHADER_SOURCES})
     get_filename_component(SHADER_NAME ${SHADER_FILE} NAME)
     set(SPIRV_FILE "${SHADER_INTERMEDIATE_DIR}/${SHADER_NAME}.spv")
 
-    # Compile shader to intermediate directory
+    # Compile shader to intermediate directory with validation
     add_custom_command(
-        OUTPUT ${SPIRV_FILE}
-        COMMAND ${CMAKE_COMMAND} -E make_directory ${SHADER_INTERMEDIATE_DIR}
-        COMMAND ${Vulkan_GLSLC_EXECUTABLE} -o ${SPIRV_FILE} ${SHADER_FILE}
-        DEPENDS ${SHADER_FILE}
-        COMMENT "Compiling shader: ${SHADER_NAME}"
+        OUTPUT "${SPIRV_FILE}"
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${SHADER_INTERMEDIATE_DIR}"
+        COMMAND "${Vulkan_GLSLC_EXECUTABLE}"
+            --target-env=vulkan1.3
+            -Werror
+            -o "${SPIRV_FILE}"
+            "${SHADER_FILE}"
+        DEPENDS "${SHADER_FILE}"
+        COMMENT "Compiling shader: ${SHADER_NAME} (Vulkan 1.3, warnings as errors)"
+        VERBATIM
     )
 
     list(APPEND COMPILED_SHADERS ${SPIRV_FILE})
@@ -43,11 +48,12 @@ foreach(SHADER_FILE ${SHADER_SOURCES})
         set(OUTPUT_SHADER "${RUNTIME_SHADER_DIR}/${SHADER_NAME}.spv")
 
         add_custom_command(
-            OUTPUT ${OUTPUT_SHADER}
-            COMMAND ${CMAKE_COMMAND} -E make_directory ${RUNTIME_SHADER_DIR}
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SPIRV_FILE} ${OUTPUT_SHADER}
-            DEPENDS ${SPIRV_FILE}
+            OUTPUT "${OUTPUT_SHADER}"
+            COMMAND ${CMAKE_COMMAND} -E make_directory "${RUNTIME_SHADER_DIR}"
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SPIRV_FILE}" "${OUTPUT_SHADER}"
+            DEPENDS "${SPIRV_FILE}"
             COMMENT "Copying ${SHADER_NAME} to ${CONFIG} runtime directory"
+            VERBATIM
         )
 
         list(APPEND ALL_SHADER_OUTPUTS ${OUTPUT_SHADER})

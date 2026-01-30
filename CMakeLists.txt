@@ -1,12 +1,18 @@
 cmake_minimum_required(VERSION 3.29)
-project(ImEngine LANGUAGES C CXX)
+project(ImEngine
+    VERSION 0.1.0
+    DESCRIPTION "Modern C++23 game engine with Vulkan rendering"
+    HOMEPAGE_URL "https://github.com/mattiasfuster/ImEngine"
+    LANGUAGES C CXX
+)
 
 message(STATUS "[-----ImEngine-----]")
 
-# ---- Module Path ------------------------------------------------------------
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-# ---- Global options (robust defaults) ---------------------------------------
+set(IMENGINE_VULKAN_VERSION "1.3.296" CACHE STRING "Vulkan API version")
+set(IMENGINE_VULKAN_TAG "v${IMENGINE_VULKAN_VERSION}" CACHE STRING "Vulkan SDK tag")
+
 option(IMENGINE_BUILD_CORE    "Build ImEngine Core"    ON)
 option(IMENGINE_BUILD_ENGINE  "Build ImEngine Engine"  ON)
 option(IMENGINE_BUILD_SANDBOX "Build ImEngine Sandbox" OFF)
@@ -20,12 +26,10 @@ include(Security)
 enable_ccache()
 
 if(MSVC)
-  # Use the dynamic runtime (/MD or /MDd)
   set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
 endif()
 
 
-# ---- Subdirectories ----------------------------------------------------------
 add_subdirectory(ImEngine/ThirdParty)
 
 if(IMENGINE_BUILD_CORE)

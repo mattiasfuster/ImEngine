@@ -30,6 +30,7 @@
 
 #include "Core/Debug/Logger.h"
 
+
 using namespace ime::engine::platform;
 
 namespace {
