@@ -1,0 +1,74 @@
+# ImEngine .clang-format
+# Based on Google C++ Style Guide
+# https://google.github.io/styleguide/cppguide.html
+
+Language: Cpp
+BasedOnStyle: Google
+Standard: Latest
+
+# --- Line Length ---
+ColumnLimit: 80  # Google standard
+
+# --- Indentation ---
+IndentWidth: 2
+TabWidth: 2
+UseTab: Never
+AccessModifierOffset: -1  # 'public:' indented 1 space less than class body
+IndentCaseLabels: true
+NamespaceIndentation: None
+
+# --- Braces ---
+BreakBeforeBraces: Attach  # Google style: opening brace on same line
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortBlocksOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+
+# --- Alignment ---
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+AlignTrailingComments: true
+AlignAfterOpenBracket: Align
+PointerAlignment: Left  # char* p (not char *p)
+ReferenceAlignment: Left  # int& ref (not int &ref)
+
+# --- Spacing ---
+DerivePointerAlignment: false
+SpaceAfterCStyleCast: false
+SpacesBeforeTrailingComments: 2
+
+# --- Arguments & Parameters ---
+BinPackArguments: true
+BinPackParameters: true
+AllowAllParametersOfDeclarationOnNextLine: true
+
+# --- Includes ---
+SortIncludes: CaseSensitive
+IncludeBlocks: Regroup
+IncludeCategories:
+  # Related header (implicit - clang-format handles this)
+  # C system headers
+  - Regex: '^<.*\.h>'
+    Priority: 2
+  # C++ standard library
+  - Regex: '^<.*>'
+    Priority: 3
+  # Project headers
+  - Regex: '.*'
+    Priority: 4
+
+# --- Namespace ---
+FixNamespaceComments: true
+CompactNamespaces: false
+
+# --- Other ---
+BreakConstructorInitializers: BeforeColon
+ConstructorInitializerIndentWidth: 4
+Cpp11BracedListStyle: true
+SpaceBeforeParens: ControlStatements
+SpaceInEmptyBlock: false
+
+---
+Language: Json
+IndentWidth: 2
+ColumnLimit: 0

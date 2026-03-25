@@ -1,0 +1,259 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 29
+  },
+  "configurePresets": [
+    {
+      "name": "win64-base-mc",
+      "displayName": "Windows x64 (Ninja Multi-Config)",
+      "hidden": true,
+      "generator": "Ninja Multi-Config",
+      "binaryDir": "${sourceDir}/out/build/${presetName}",
+      "installDir": "${sourceDir}/out/install/${presetName}",
+      "cacheVariables": {
+        "CMAKE_CONFIGURATION_TYPES": "Debug;RelWithDebInfo;Release",
+        "CMAKE_C_COMPILER": "C:/Program Files/LLVM/bin/clang-cl.exe",
+        "CMAKE_CXX_COMPILER": "C:/Program Files/LLVM/bin/clang-cl.exe",
+        "CMAKE_CXX_STANDARD": "23",
+        "CMAKE_CXX_STANDARD_REQUIRED": "ON",
+        "CMAKE_MESSAGE_LOG_LEVEL": "VERBOSE",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      },
+      "toolset": {
+        "value": "ClangCL",
+        "strategy": "external"
+      },
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "core-dll",
+      "inherits": "win64-base-mc",
+      "cacheVariables": {
+        "IMENGINE_BUILD_CORE": "ON",
+        "IMENGINE_BUILD_ENGINE": "OFF",
+        "IMENGINE_BUILD_SANDBOX": "OFF",
+        "IMENGINE_BUILD_EDITOR": "OFF"
+      }
+    },
+    {
+      "name": "engine-dll",
+      "inherits": "win64-base-mc",
+      "cacheVariables": {
+        "IMENGINE_BUILD_CORE": "ON",
+        "IMENGINE_BUILD_ENGINE": "ON",
+        "IMENGINE_BUILD_SANDBOX": "OFF",
+        "IMENGINE_BUILD_EDITOR": "OFF"
+      }
+    },
+    {
+      "name": "sandbox-app",
+      "inherits": "win64-base-mc",
+      "cacheVariables": {
+        "IMENGINE_BUILD_CORE": "ON",
+        "IMENGINE_BUILD_ENGINE": "ON",
+        "IMENGINE_BUILD_SANDBOX": "ON",
+        "IMENGINE_BUILD_EDITOR": "OFF"
+      }
+    },
+    {
+      "name": "editor-app",
+      "inherits": "win64-base-mc",
+      "cacheVariables": {
+        "IMENGINE_BUILD_CORE": "ON",
+        "IMENGINE_BUILD_ENGINE": "ON",
+        "IMENGINE_BUILD_SANDBOX": "OFF",
+        "IMENGINE_BUILD_EDITOR": "ON"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "base-build",
+      "hidden": true,
+      "jobs": 12
+    },
+    {
+      "name": "base-Debug",
+      "hidden": true,
+      "inherits": "base-build",
+      "configuration": "Debug",
+      "verbose": true
+    },
+    {
+      "name": "base-RelWithDebInfo",
+      "hidden": true,
+      "inherits": "base-build",
+      "configuration": "RelWithDebInfo"
+    },
+    {
+      "name": "base-Release",
+      "hidden": true,
+      "inherits": "base-build",
+      "configuration": "Release"
+    },
+    {
+      "name": "core-Debug",
+      "inherits": "base-Debug",
+      "configurePreset": "core-dll",
+      "targets": [
+        "ImEngine-Core"
+      ]
+    },
+    {
+      "name": "core-RelWithDebInfo",
+      "inherits": "base-RelWithDebInfo",
+      "configurePreset": "core-dll",
+      "targets": [
+        "ImEngine-Core"
+      ]
+    },
+    {
+      "name": "core-Release",
+      "inherits": "base-Release",
+      "configurePreset": "core-dll",
+      "targets": [
+        "ImEngine-Core"
+      ]
+    },
+    {
+      "name": "engine-Debug",
+      "inherits": "base-Debug",
+      "configurePreset": "engine-dll",
+      "targets": [
+        "ImEngine-Core",
+        "ImEngine-Engine"
+      ]
+    },
+    {
+      "name": "engine-RelWithDebInfo",
+      "inherits": "base-RelWithDebInfo",
+      "configurePreset": "engine-dll",
+      "targets": [
+        "ImEngine-Core",
+        "ImEngine-Engine"
+      ]
+    },
+    {
+      "name": "engine-Release",
+      "inherits": "base-Release",
+      "configurePreset": "engine-dll",
+      "targets": [
+        "ImEngine-Core",
+        "ImEngine-Engine"
+      ]
+    },
+    {
+      "name": "sandbox-Debug",
+      "inherits": "base-Debug",
+      "configurePreset": "sandbox-app",
+      "targets": [
+        "ImEngine-Sandbox"
+      ]
+    },
+    {
+      "name": "sandbox-RelWithDebInfo",
+      "inherits": "base-RelWithDebInfo",
+      "configurePreset": "sandbox-app",
+      "targets": [
+        "ImEngine-Sandbox"
+      ]
+    },
+    {
+      "name": "sandbox-Release",
+      "inherits": "base-Release",
+      "configurePreset": "sandbox-app",
+      "targets": [
+        "ImEngine-Sandbox"
+      ]
+    },
+    {
+      "name": "editor-Debug",
+      "inherits": "base-Debug",
+      "configurePreset": "editor-app",
+      "targets": [
+        "ImEngine-Editor"
+      ]
+    },
+    {
+      "name": "editor-RelWithDebInfo",
+      "inherits": "base-RelWithDebInfo",
+      "configurePreset": "editor-app",
+      "targets": [
+        "ImEngine-Editor"
+      ]
+    },
+    {
+      "name": "editor-Release",
+      "inherits": "base-Release",
+      "configurePreset": "editor-app",
+      "targets": [
+        "ImEngine-Editor"
+      ]
+    },
+    {
+      "name": "install-core-Debug",
+      "inherits": "base-Debug",
+      "configurePreset": "core-dll",
+      "targets": [
+        "install"
+      ]
+    },
+    {
+      "name": "install-core-Release",
+      "inherits": "base-Release",
+      "configurePreset": "core-dll",
+      "targets": [
+        "install"
+      ]
+    },
+    {
+      "name": "install-engine-Debug",
+      "inherits": "base-Debug",
+      "configurePreset": "engine-dll",
+      "targets": [
+        "install"
+      ]
+    },
+    {
+      "name": "install-engine-Release",
+      "inherits": "base-Release",
+      "configurePreset": "engine-dll",
+      "targets": [
+        "install"
+      ]
+    },
+    {
+      "name": "install-sandbox-Release",
+      "inherits": "base-Release",
+      "configurePreset": "sandbox-app",
+      "targets": [
+        "install"
+      ]
+    },
+    {
+      "name": "install-editor-Release",
+      "inherits": "base-Release",
+      "configurePreset": "editor-app",
+      "targets": [
+        "install"
+      ]
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "ctest-sandbox-Debug",
+      "configurePreset": "sandbox-app",
+      "configuration": "Debug"
+    }
+  ]
+}
