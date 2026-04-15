@@ -29,8 +29,10 @@
 #include <cstdint>
 #include <cstdlib>
 #include <exception>
-
+#include "Logger/Logger.h"
 
 int main([[maybe_unused]] int argk, [[maybe_unused]] char* argv[]) {
-
+  [[maybe_unused]] ime::core::Logger logger;
+  
+  return 0;
 }

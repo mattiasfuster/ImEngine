@@ -8,6 +8,7 @@ set(ENGINE_HEADERS
 )
 
 set(ENGINE_SOURCES
+        src/ImEngine_Engine.cpp
 )
 
 add_library(ImEngine-Engine SHARED
@@ -29,7 +30,6 @@ generate_export_header(ImEngine-Engine
 target_include_directories(ImEngine-Engine
         PUBLIC
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/misc>
             $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
             $<INSTALL_INTERFACE:include/ImEngine>
 )

@@ -2,7 +2,8 @@
 //
 // Copyright (c) 2024 FUSTER Mattias
 //
-// This software utilizes code from the following GitHub repositories, which are also licensed under the MIT License:
+// This software utilizes code from the following GitHub repositories,
+// which are also licensed under the MIT License:
 //
 // - [ImGui](https://github.com/ocornut/imgui)
 // - [GLFW](https://github.com/glfw/glfw)
@@ -25,17 +26,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-//
-// Created by damma on 24/03/2026.
-//
-
 #ifndef IMENGINE_LOGGER_H
 #define IMENGINE_LOGGER_H
 
 namespace ime::core {
-
+  class Logger {
+    public:
+    void PrintInfo(const char* format, ...);
+    void PrintWarning(const char* format, ...);
+    void PrintError(const char* format, ...);
+  };
 }  // namespace ime::core
 
 #define IME_INFO(...)
+#define IME_WARN(...)
+#define IME_ERROR(...)
 
 #endif  // IMENGINE_LOGGER_H

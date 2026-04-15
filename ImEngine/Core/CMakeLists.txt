@@ -3,10 +3,12 @@ cmake_minimum_required(VERSION 3.29)
 message(STATUS "[-----ImEngine-Core-----]")
 
 set(CORE_HEADERS
+        include/Logger/Logger.h
 )
 
 set(CORE_SOURCES
-        src/Core.cpp
+        src/ImEngine_Core.cpp
+        src/Logger/Logger.cpp
 )
 
 add_library(ImEngine-Core SHARED
@@ -26,7 +28,6 @@ generate_export_header(ImEngine-Core
 target_include_directories(ImEngine-Core
         PUBLIC
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/misc>
             $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
             $<INSTALL_INTERFACE:include/ImEngine>
 )
