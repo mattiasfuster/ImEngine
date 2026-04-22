@@ -25,12 +25,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-//
-// Created by damma on 24/03/2026.
-//
-
 #include "Logger/Logger.h"
 
-namespace ime {
-namespace core {}  // namespace core
-}  // namespace ime
+#include <cstdarg>
+#include <cstdio>
+
+namespace ime::core {
+
+}  // namespace ime::core

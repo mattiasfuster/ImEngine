@@ -29,17 +29,28 @@
 #ifndef IMENGINE_LOGGER_H
 #define IMENGINE_LOGGER_H
 
+#include <format>
+#include <iostream>
+#include <ostream>
+
 namespace ime::core {
   class Logger {
-    public:
-    void PrintInfo(const char* format, ...);
-    void PrintWarning(const char* format, ...);
-    void PrintError(const char* format, ...);
+  public:
+    template<typename... Args>
+    static void Info(std::format_string<Args...> message, Args&&... args) {
+      std::cerr << std::format(message, std::forward<Args>(args)...) << std::endl;
+    };
+    
+    template<typename... Args>
+    static void Warn(Args&&... args);
+    
+    template<typename... Args>
+    static void Error(Args&&... args);
   };
 }  // namespace ime::core
 
-#define IME_INFO(...)
-#define IME_WARN(...)
-#define IME_ERROR(...)
+#define IME_INFO(...)  ime::core::Logger::Info(__VA_ARGS__)
+#define IME_WARN(...)  ime::core::Logger::Warn(__VA_ARGS__)
+#define IME_ERROR(...) ime::core::Logger::Error(__VA_ARGS__)
 
 #endif  // IMENGINE_LOGGER_H

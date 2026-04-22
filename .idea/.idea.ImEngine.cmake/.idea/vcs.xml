@@ -3,5 +3,10 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/out/build/core-dll/_deps/glfw_external-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/out/build/editor-app/_deps/glfw_external-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/out/build/editor-app/_deps/imgui_external-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/out/build/engine-dll/_deps/glfw_external-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/out/build/sandbox-app/_deps/glfw_external-src" vcs="Git" />
   </component>
 </project>

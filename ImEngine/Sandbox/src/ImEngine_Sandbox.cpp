@@ -29,10 +29,14 @@
 #include <cstdint>
 #include <cstdlib>
 #include <exception>
-#include "Logger/Logger.h"
+
+#include <Logger/Logger.h>
 
 int main([[maybe_unused]] int argk, [[maybe_unused]] char* argv[]) {
-  [[maybe_unused]] ime::core::Logger logger;
+  int* test;
+  int t = 5;
+  test = &t;
   
+  ime::core::Logger::Info("ceci est un {}", &test);
   return 0;
 }
