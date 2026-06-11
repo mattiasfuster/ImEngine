@@ -2,5 +2,5 @@ import ImEngine.Core;
 import std;
 
 int main() {
-  ime::core::Formatter formatter("{} {}", "Hello", "World");
+  ime::log::Info("{} {} test", 6, 7);
 }

@@ -12,17 +12,6 @@ enum class Level : unsigned char {
   Fatal = 5,
 };
 
-template <typename... Args>
-struct Formatter {
-  std::format_string<Args...> fmt;
-  std::source_location src;
-
-  explicit Formatter(
-    std::format_string<Args...> _fmt,
-    const std::source_location& _src = std::source_location::current()
-  ) : fmt(_fmt), src(_src) {}
-};
-
 class ISink {
 public:
   ISink() = default;
@@ -35,8 +24,8 @@ public:
   ISink(ISink&&) = default;
   ISink& operator=(ISink&&) = default;
 
-  virtual void flush() = 0;
-  virtual void write(Level level, std::string_view text) = 0;
+  virtual void Flush() = 0;
+  virtual void Write(Level level, std::string_view text) = 0;
 };
 
 class ConsoleSink : public ISink {
@@ -44,8 +33,14 @@ public:
   ConsoleSink() = default;
   ~ConsoleSink() override;
 
-  void flush() override;
-  void write(Level level, std::string_view text) override;
+  void Flush() override {
+
+  };
+
+
+  void Write(Level level, std::string_view text) override {
+    std::cout << text;
+  };
 };
 
 }
