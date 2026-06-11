@@ -4,46 +4,48 @@ import std;
 
 export namespace ime::core {
 
-template <typename... Args>
-struct Formatter {
-  std::format_string<Args...> fmt;
-  std::source_location src;
-
-  template <typename T>
-  consteval Formatter(
-    const T& _fmt,
-    const std::source_location& _src = std::source_location::current()
-  ) : fmt(_fmt), src(_src) {}
-};
-
 class Logger {
 public:
-  Logger() = delete;
   Logger(const Logger&) = delete;
   Logger(Logger&&) = delete;
   Logger& operator=(const Logger&) = delete;
+  Logger& operator=(Logger&&) = delete;
 
-  static const Logger& Instance;
+  static Logger& Instance() {
+    static Logger instance;
+    return instance;
+  };
 
-  void Dispatch();
+  static void Start(Level _level);
+  static void Stop();
+
+  static void SetLevel(const Level _level) { Instance().level = _level; };
+
+  static void AddSink(std::unique_ptr<ISink> _sink);
+
 private:
-  std::vector<std::unique_ptr<ISink>> sinks;
+  Logger() = default;
+  ~Logger() { Stop(); };
+
+  Level level = Level::Debug;
+  std::vector<std::unique_ptr<ISink>> sinks = {};
 };
 
+void Logger::Start(const Level _level) {
+  auto& inst = Instance();
+  SetLevel(_level);
+  inst.sinks.reserve(8);
+  std::clog << __func__ << std::endl;
 }
 
-export namespace ime::log {
-
-template <typename... Args>
-void Info(core::Formatter<std::type_identity_t<Args>...> fmt, Args&&... args) {
-  std::cout
-    << std::format("[{}:{}] ", fmt.src.file_name(), fmt.src.line())
-    << std::format(fmt.fmt, std::forward<Args>(args)...)
-    << std::endl;
+void Logger::Stop() {
+  auto& inst = Instance();
+  inst.sinks.clear();
+  std::clog << __func__ << std::endl;
+}
+void Logger::AddSink(std::unique_ptr<ISink> _sink) {
+  Instance().sinks.emplace_back(std::move(_sink));
 }
 
-}
-
-
-
+}  // namespace ime::core
 

@@ -12,6 +12,9 @@ enum class Level : unsigned char {
   Fatal = 5,
 };
 
+enum class Color : unsigned char {
+};
+
 class ISink {
 public:
   ISink() = default;
@@ -31,12 +34,10 @@ public:
 class ConsoleSink : public ISink {
 public:
   ConsoleSink() = default;
-  ~ConsoleSink() override;
 
   void Flush() override {
 
   };
-
 
   void Write(Level level, std::string_view text) override {
     std::cout << text;

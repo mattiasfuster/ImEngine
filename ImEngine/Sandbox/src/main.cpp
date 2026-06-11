@@ -1,6 +1,7 @@
-import ImEngine.Core;
+import ImEngine.Core.IO;
 import std;
 
 int main() {
-  ime::log::Info("{} {} test", 6, 7);
+  ime::core::Logger::Start(ime::core::Level::Debug);
+  ime::core::Logger::AddSink(std::make_unique<ime::core::ConsoleSink>());
 }
