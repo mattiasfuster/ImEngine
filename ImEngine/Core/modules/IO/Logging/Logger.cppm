@@ -19,9 +19,14 @@ public:
   static void Start(Level _level);
   static void Stop();
 
-  static void SetLevel(const Level _level) { Instance().level = _level; };
+  static void SetLevel(const Level _level) {
+    auto& inst = Instance();
+    inst.level = _level;
+  };
 
   static void AddSink(std::unique_ptr<ISink> _sink);
+
+  void Dispatch(Level _level, std::string_view _text) const;
 
 private:
   Logger() = default;
@@ -35,16 +40,30 @@ void Logger::Start(const Level _level) {
   auto& inst = Instance();
   SetLevel(_level);
   inst.sinks.reserve(8);
-  std::clog << __func__ << std::endl;
 }
 
 void Logger::Stop() {
   auto& inst = Instance();
+  std::ranges::for_each(
+    inst.sinks,
+    [&](const std::unique_ptr<ISink>& _sink) {
+      _sink->Flush();
+    });
   inst.sinks.clear();
-  std::clog << __func__ << std::endl;
 }
 void Logger::AddSink(std::unique_ptr<ISink> _sink) {
-  Instance().sinks.emplace_back(std::move(_sink));
+  auto& inst = Instance();
+  inst.sinks.emplace_back(std::move(_sink));
+}
+void Logger::Dispatch(Level _level, std::string_view _text) const {
+  if (_level < level) return;
+
+  auto& inst = Instance();
+  std::ranges::for_each(
+    inst.sinks,
+    [&](const std::unique_ptr<ISink>& _sink) {
+      _sink->Write(_level, _text);
+    });
 }
 
 }  // namespace ime::core
