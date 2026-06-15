@@ -24,9 +24,14 @@ public:
     inst.level = _level;
   };
 
+  static Level GetLevel() {
+    const auto& inst = Instance();
+    return inst.level;
+  };
+
   static void AddSink(std::unique_ptr<ISink> _sink);
 
-  void Dispatch(Level _level, std::string_view _text) const;
+  static void Dispatch(Level _level, std::string_view _text);
 
 private:
   Logger() = default;
@@ -51,13 +56,12 @@ void Logger::Stop() {
     });
   inst.sinks.clear();
 }
+
 void Logger::AddSink(std::unique_ptr<ISink> _sink) {
   auto& inst = Instance();
   inst.sinks.emplace_back(std::move(_sink));
 }
-void Logger::Dispatch(Level _level, std::string_view _text) const {
-  if (_level < level) return;
-
+void Logger::Dispatch(const Level _level, const std::string_view _text) {
   auto& inst = Instance();
   std::ranges::for_each(
     inst.sinks,

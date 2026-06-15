@@ -13,6 +13,7 @@ set(IME_CORE_MODULES
         modules/IO/IO.cppm
         modules/IO/Logging/Logger.cppm
         modules/IO/Logging/Sinks/Sink.cppm
+        modules/IO/Logging/Format.cppm
 )
 
 set(IME_CORE_SOURCES)
